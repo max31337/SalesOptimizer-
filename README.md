@@ -14,14 +14,15 @@ SalesOptimizer is a **data-driven predictive sales analytics and customer relati
 ## ⚙️ Tech Stack  
 - **Under Planning** 
 
+📜 License
+This project is licensed under the Apache License 2.0. You are free to use, modify, distribute, and even commercialize this software, as long as you include the original license and attribution.
+
 ## 🚀 Getting Started  
 ### 1️⃣ Clone the Repository  
 ```bash
 git clone https://github.com/max31337/SalesOptimizer.git
 cd SalesOptimizer
 
-📜 License
-This project is licensed under the Apache License 2.0. You are free to use, modify, distribute, and even commercialize this software, as long as you include the original license and attribution.
 
 📧 Contact
 For any questions or feedback, feel free to reach out!
