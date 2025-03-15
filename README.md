@@ -24,7 +24,7 @@ git clone https://github.com/max31337/SalesOptimizer.git
 cd SalesOptimizer
 
 
-📧 Contact
+## 📧 Contact
 For any questions or feedback, feel free to reach out!
 🔗 GitHub Repository: SalesOptimizer
 
