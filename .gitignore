@@ -1,6 +1,6 @@
 # Ignore Python virtual environments
 venv/
-.env
+backend/.env
 
 # Byte-compiled files
 __pycache__/
