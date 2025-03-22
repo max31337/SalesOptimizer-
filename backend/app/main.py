@@ -1,10 +1,11 @@
 from fastapi import FastAPI
-from app.routes import user
+from app.api.routes import router as api_router
+from app.ml.regression import train_model  # Ensure model is trained at startup
 
 app = FastAPI()
 
-app.include_router(user.router)
+@app.on_event("startup")
+def startup_event():
+    train_model()  
 
-@app.get("/")
-def home():
-    return {"message": "Welcome to SalesOptimizer API"}
+app.include_router(api_router)
