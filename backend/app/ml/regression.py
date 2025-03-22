@@ -1,22 +1,24 @@
-import os
 import joblib
 import numpy as np
+import os
 from sklearn.linear_model import LinearRegression
 
-MODEL_DIR = "backend/app/ml"
+MODEL_DIR = "storage/saved_models"
 MODEL_PATH = os.path.join(MODEL_DIR, "sales_model.pkl")
 
 def train_model():
-    os.makedirs(MODEL_DIR, exist_ok=True)
-
-    X_train = np.array([[1], [2], [3], [4], [5]])
-    y_train = np.array([10, 20, 30, 40, 50])
+    """Train a simple regression model and save it"""
+    
+    # Dummy training data
+    X = np.array([[1], [2], [3], [4], [5], [6]])
+    y = np.array([10, 20, 30, 40, 50, 60])
 
     model = LinearRegression()
-    model.fit(X_train, y_train)
+    model.fit(X, y)
 
+    # Create directory if it doesn't exist
+    os.makedirs(MODEL_DIR, exist_ok=True)
+
+    # Save model
     joblib.dump(model, MODEL_PATH)
-    print(f"✅ Model trained and saved at: {MODEL_PATH}")
-
-if __name__ == "__main__":
-    train_model()
+    print(f"✅ Model saved at {MODEL_PATH}")

@@ -2,7 +2,8 @@ import joblib
 import numpy as np
 import os
 
-MODEL_PATH = "backend/app/ml/sales_model.pkl"
+MODEL_DIR = "storage/saved_models"
+MODEL_PATH = os.path.join(MODEL_DIR, "sales_model.pkl")
 
 def predict_sales(value: float):
     """Load trained model and predict sales"""
