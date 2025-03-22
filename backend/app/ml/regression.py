@@ -17,6 +17,19 @@ def train_model():
     model.fit(X, y)
 
     os.makedirs(MODEL_DIR, exist_ok=True)
-
     joblib.dump(model, MODEL_PATH)
     print(f"✅ Model saved at {MODEL_PATH}")
+
+def predict_sales(value: float):
+    """Load trained model and predict sales"""
+    
+    if not os.path.exists(MODEL_PATH):
+        raise FileNotFoundError("❌ Model file not found. Please train the model first.")
+
+    # Load trained model
+    model = joblib.load(MODEL_PATH)
+
+    # Predict sales
+    prediction = model.predict(np.array([[value]]))
+
+    return float(prediction[0])  
