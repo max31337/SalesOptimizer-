@@ -16,9 +16,7 @@ def train_model():
     model = LinearRegression()
     model.fit(X, y)
 
-    # Create directory if it doesn't exist
     os.makedirs(MODEL_DIR, exist_ok=True)
 
-    # Save model
     joblib.dump(model, MODEL_PATH)
     print(f"✅ Model saved at {MODEL_PATH}")
