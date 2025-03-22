@@ -34,7 +34,7 @@ This project is licensed under the Apache License 2.0. You are free to use, modi
 ## 📧 Contact
 For any questions or feedback, feel free to reach out!
 🔗 GitHub Repository: SalesOptimizer
-
+📨📭 navarro.markanthony.tud@gmail.com
 
 ## 🚀 Getting Started  
 ### 1️⃣ Clone the Repository  
