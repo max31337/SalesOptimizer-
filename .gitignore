@@ -1,6 +1,7 @@
 # Ignore Python virtual environments
 backend/venv
 backend/.env
+backend/alembic.ini
 
 # Byte-compiled files
 __pycache__/
