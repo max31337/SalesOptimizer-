@@ -1,10 +1,19 @@
 from fastapi import FastAPI
-from app.api.routes import router as api_router
+from app.api.auth import auth_routes
+from app.db.database import engine, Base
+from fastapi.middleware.cors import CORSMiddleware
+
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
-app.include_router(api_router)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  #papalitan pa ba to? di naman magdedeploy e lol
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-@app.get("/")
-def home():
-    return {"message": "Welcome to SalesOptimizer API!"}
+# Include routes
+app.include_router(auth_routes.router)

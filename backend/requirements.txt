@@ -1,0 +1,13 @@
+#needed libraries, too lazy to install them one by one lol
+
+fastapi
+python-jose
+pyjwt
+python-dotenv
+passlib[bcrypt]
+sqlalchemy
+psycopg2
+joblib
+numpy
+scikit-learn
+pydantic[email]

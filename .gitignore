@@ -1,5 +1,5 @@
 # Ignore Python virtual environments
-backend/venv
+backend/.venv
 backend/.env
 
 # Byte-compiled files

@@ -1,3 +1,5 @@
+#this is for regression analysis, not yet done
+
 from fastapi import APIRouter, Depends
 import psycopg2
 import os
