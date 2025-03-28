@@ -42,6 +42,6 @@ For any questions or feedback, feel free to reach out!
 ## 🚀 Getting Started  
 ### 1️⃣ Clone the Repository  
 ```bash
-git clone https://github.com/max31337/SalesOptimizer.git
-cd SalesOptimizer
+git clone https://github.com/max31337/SalesOptimizer-.git
+cd SalesOptimizer-
 
