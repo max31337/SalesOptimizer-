@@ -1,10 +1,16 @@
 /* Google Material-inspired Theme */
 :root {
     --primary-color: #6200ea; /* Soft Purple */
+    --primary-dark: #4a00b4;
     --secondary-color: #03dac6; /* Pastel Teal */
     --bg-color: #f3f3f3;
     --text-color: #333;
     --error-color: #d32f2f;
+    --card-bg: #ffffff;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --border-radius: 12px;
+    --transition-speed: 0.3s;
+    --input-border: #ddd;
 }
 
 /* Reset styles */
@@ -12,19 +18,19 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    font-family: 'Roboto', sans-serif;
 }
 
 /* Global Styles */
 body {
-    font-family: 'Roboto', sans-serif;
     background-color: var(--bg-color);
     color: var(--text-color);
-    margin: 0;
-    padding: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     height: 100vh;
+    margin: 0;
 }
 
 /* Navbar (Fixed at the top) */
@@ -39,7 +45,7 @@ body {
     background-color: var(--primary-color);
     color: white;
     padding: 1rem 2rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     z-index: 1000;
 }
 
@@ -52,8 +58,8 @@ body {
     color: white;
     font-weight: 500;
     padding: 8px 16px;
-    border-radius: 5px;
-    transition: background 0.3s;
+    border-radius: var(--border-radius);
+    transition: background var(--transition-speed);
 }
 
 .app-bar nav a:hover {
@@ -65,10 +71,11 @@ body {
     text-align: center;
     max-width: 600px;
     padding: 2rem;
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-    margin-top: 100px; /* Avoid overlapping with navbar */
+    background: var(--card-bg);
+    border-radius: var(--border-radius);
+    box-shadow: 0 6px 16px var(--shadow-color);
+    margin-top: 120px;
+    animation: fadeInUp 0.5s ease-in-out;
 }
 
 .hero h2 {
@@ -87,67 +94,174 @@ body {
     padding: 12px 24px;
     background: var(--primary-color);
     color: white;
-    border-radius: 8px;
+    border-radius: var(--border-radius);
     text-decoration: none;
     font-weight: 500;
-    transition: background 0.3s;
+    transition: background var(--transition-speed);
 }
 
 .hero .btn:hover {
-    background: #4a00b4;
+    background: var(--primary-dark);
 }
 
-/* Login Form */
-.login-container {
-    width: 380px;
-    background: white;
+/* Card Design for Login & Register */
+.card {
+    width: 400px;
+    background: var(--card-bg);
     padding: 2rem;
-    border-radius: 12px;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    border-radius: var(--border-radius);
+    box-shadow: 0 8px 16px var(--shadow-color);
     text-align: center;
-    margin-top: 120px; 
+    margin-top: 50px;
+    animation: fadeInUp 0.5s ease-in-out;
 }
 
-.login-container h2 {
+.card h2 {
     color: var(--primary-color);
     font-weight: 500;
+    margin-bottom: 15px;
 }
 
-.login-container input {
+/* Form Fields */
+.card form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.card input {
     width: 100%;
     padding: 12px;
-    margin-top: 12px;
-    border: 2px solid #ddd;
-    border-radius: 8px;
+    border: 2px solid var(--input-border);
+    border-radius: var(--border-radius);
     font-size: 1rem;
-    transition: border-color 0.3s;
+    transition: border-color var(--transition-speed);
 }
 
-.login-container input:focus {
+.card input:focus {
     outline: none;
     border-color: var(--primary-color);
+    box-shadow: 0 0 5px rgba(98, 0, 234, 0.3);
 }
 
-.login-container button {
+/* Submit Button */
+.card button {
     width: 100%;
-    margin-top: 16px;
     padding: 12px;
     background: var(--primary-color);
     color: white;
     border: none;
-    border-radius: 8px;
+    border-radius: var(--border-radius);
     font-size: 1rem;
     font-weight: 500;
     cursor: pointer;
-    transition: background 0.3s;
+    transition: background var(--transition-speed);
 }
 
-.login-container button:hover {
-    background: #4a00b4;
+.card button:hover {
+    background: var(--primary-dark);
+    box-shadow: 0 4px 12px rgba(98, 0, 234, 0.2);
 }
 
-#errorMessage {
-    margin-top: 10px;
+/* Error Message */
+.error-message {
     color: var(--error-color);
-    font-size: 0.9rem;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+/* Auth Link (Login/Register) */
+.auth-link {
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+.auth-link a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: bold;
+    transition: color var(--transition-speed);
+}
+
+.auth-link a:hover {
+    text-decoration: underline;
+    color: var(--primary-dark);
+}
+
+/* Animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* Card Design for Login & Register */
+.login-container, .register-container {
+    width: 400px;
+    background: var(--card-bg);
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    box-shadow: 0 8px 16px var(--shadow-color);
+    text-align: center;
+    margin-top: 20px;
+    animation: fadeInUp 0.5s ease-in-out;
+}
+
+.login-container h2,
+.register-container h2 {
+    color: var(--primary-color);
+    font-weight: 500;
+    margin-bottom: 20px;
+}
+
+/* Form Styles */
+.login-container form,
+.register-container form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.login-container input,
+.register-container input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid var(--input-border);
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+    transition: border-color var(--transition-speed);
+}
+
+.login-container input:focus,
+.register-container input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 5px rgba(98, 0, 234, 0.3);
+}
+
+/* Submit Button */
+.login-container button,
+.register-container button {
+    width: 100%;
+    padding: 12px;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background var(--transition-speed);
+}
+
+.login-container button:hover,
+.register-container button:hover {
+    background: var(--primary-dark);
+    box-shadow: 0 4px 12px rgba(98, 0, 234, 0.2);
 }
