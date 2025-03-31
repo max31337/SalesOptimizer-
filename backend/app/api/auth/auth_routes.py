@@ -24,7 +24,7 @@ def register_user(user_data: UserCreate, db: Session = Depends(get_db)):
     db.refresh(new_user)
 
     # Debugging: Print user data
-    print("📢 New User Created:", new_user.name)
+    # print("📢 New User Created:", new_user.name)
 
     # Generate JWT token for the new user
     access_token = create_access_token(data={"sub": new_user.email})
@@ -37,7 +37,7 @@ def register_user(user_data: UserCreate, db: Session = Depends(get_db)):
     }
 
     # Debugging: Print response before returning
-    print("📢 API Response:", response)
+    # print("📢 API Response:", response)
 
     return response
 
