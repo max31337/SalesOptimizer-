@@ -11,10 +11,10 @@ $(document).ready(function() {
         
         // Send password reset request
         $.ajax({
-            url: "http://localhost:8000/api/auth/forgot-password/",
-            method: "POST",
-            contentType: "application/json",
-            data: JSON.stringify({ email: email }),
+            url: 'http://localhost:8000/api/auth/forgot-password/',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ email: $('#email').val() }),
             success: function(response) {
                 messageElement
                     .text("If the email exists, password reset instructions have been sent.")

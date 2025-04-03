@@ -36,6 +36,7 @@ $(document).ready(function() {
         }
 
         // Send password reset request
+        // Update the AJAX request URL to include /api prefix
         $.ajax({
             url: `http://localhost:8000/api/auth/reset-password/${token}`,
             method: "POST",
