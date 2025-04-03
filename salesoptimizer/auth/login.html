@@ -3,27 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <meta name="description" content="Login to SalesOptimizer - AI-powered sales forecasting platform">
+    <meta name="theme-color" content="#7209B7">
+    <title>Login - SalesOptimizer</title>
     <link rel="stylesheet" href="../assets/css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="../assets/js/auth.js" defer></script>
 </head>
 <body>
+    <header class="app-bar">
+        <a href="../index.html" class="brand">
+            <img src="../assets/images/logo.png" alt="SalesOptimizer Logo" width="32" height="32">
+            <h1>SalesOptimizer</h1>
+        </a>
+        <nav>
+            <a href="login.html" class="btn-text">Login</a>
+            <a href="register.html" class="btn-text">Register</a>
+        </nav>
+    </header>55
 
-    <div class="login-container">
-        <h2>Login to SalesOptimizer</h2>
-        
-        <form id="loginForm">
-            <input type="email" id="email" placeholder="Email" required>
-            <input type="password" id="password" placeholder="Password" required>
-            <button type="submit">Login</button>
-            <p id="errorMessage"></p>
-        </form>
-        
-        <p class="auth-link">
-            Don't have an account? <a href="register.html">Sign up here</a>
-        </p>
-    </div>
-
+    <main>
+        <div class="login-container">
+            <h2>Login</h2>
+            
+            <form id="loginForm">
+                <input type="email" id="email" placeholder="Email" required>
+                <input type="password" id="password" placeholder="Password" required>
+                <button type="submit">Login</button>
+                <p id="errorMessage" class="error-message"></p>
+            </form>
+            
+            <p class="auth-link">
+                Don't have an account? <a href="register.html">Sign up here</a>
+            </p>
+        </div>
+    </main>
 </body>
 </html>

@@ -3,29 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register</title>
+    <meta name="description" content="Register for SalesOptimizer - AI-powered sales forecasting platform">
+    <meta name="theme-color" content="#7209B7">
+    <title>Register - SalesOptimizer</title>
     <link rel="stylesheet" href="../assets/css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="../assets/js/auth.js" defer></script>
 </head>
 <body>
+    <header class="app-bar">
+        <a href="../index.html" class="brand">
+            <img src="../assets/images/logo.png" alt="SalesOptimizer Logo" width="32" height="32">
+            <h1>SalesOptimizer</h1>
+        </a>
+        <nav>
+            <a href="login.html" class="btn-text">Login</a>
+            <a href="register.html" class="btn-text">Register</a>
+        </nav>
+    </header>
 
-    <!-- Registration Card -->
-    <div class="register-container">
-        <h2>Register</h2>
-        <form id="registerForm">
-            <input type="text" id="name" placeholder="Full Name" required>
-            <input type="email" id="email" placeholder="Email" required>
-            <input type="password" id="password" placeholder="Password" required>
-            <input type="password" id="confirmPassword" placeholder="Confirm Password" required>
+    <main>
+        <div class="register-container">
+            <h2>Create Your Account</h2>
+            <form id="registerForm">
+                <input type="text" id="name" placeholder="Full Name" required>
+                <input type="email" id="email" placeholder="Email" required>
+                <input type="password" id="password" placeholder="Password" required>
+                <input type="password" id="confirmPassword" placeholder="Confirm Password" required>
+                <button type="submit">Create Account</button>
+                <p id="registerErrorMessage" class="error-message"></p>
+            </form>
 
-            <button type="submit">Register</button>
-        </form>
-
-        <p id="registerErrorMessage" class="error-message"></p>
-
-        <p class="auth-link">Already have an account? <a href="login.html">Login</a></p>
-    </div>
-
+            <p class="auth-link">
+                Already have an account? <a href="login.html">Login</a>
+            </p>
+        </div>
+    </main>
 </body>
 </html>
