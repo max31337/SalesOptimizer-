@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - SalesOptimizer</title>
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link rel="stylesheet" href="../assets/css/admin.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <div class="admin-layout">
+        <nav class="admin-sidebar">
+            <div class="brand">
+                <img src="../assets/images/logo.png" alt="SalesOptimizer Logo" width="32" height="32">
+                <h1>Admin Panel</h1>
+            </div>
+            <ul class="nav-links">
+                <li class="active"><a href="#users">User Management</a></li>
+                <li><a href="#audit">Audit Logs</a></li>
+                <li><a href="#settings">Settings</a></li>
+            </ul>
+            <div class="user-info">
+                <span id="adminName"></span>
+                <button onclick="logout()" class="btn-secondary">Logout</button>
+            </div>
+        </nav>
+
+        <main class="admin-main">
+            <section id="users" class="admin-section">
+                <div class="section-header">
+                    <h2>User Management</h2>
+                    <button onclick="showInviteModal()" class="btn-primary">Invite User</button>
+                </div>
+
+                <div class="filters">
+                    <input type="text" id="searchUser" placeholder="Search users...">
+                    <select id="roleFilter">
+                        <option value="">All Roles</option>
+                        <option value="admin">Admin</option>
+                        <option value="sales-rep">Sales Rep</option>
+                        <option value="analyst">Analyst</option>
+                    </select>
+                    <select id="statusFilter">
+                        <option value="">All</option>
+                        <option value="true">Active</option>
+                        <option value="false">Inactive</option>
+                    </select>
+                </div>
+
+                <div class="table-container">
+                    <table id="usersTable">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                    <div class="pagination">
+                        <button id="prevPage">Previous</button>
+                        <span id="pageInfo">Page 1</span>
+                        <button id="nextPage">Next</button>
+                    </div>
+                </div>
+            </section>
+
+            <section id="audit" class="admin-section hidden">
+                <h2>Audit Logs</h2>
+                <div class="audit-filters">
+                    <input type="date" id="auditDateFrom">
+                    <input type="date" id="auditDateTo">
+                    <select id="auditActionFilter">
+                        <option value="">All Actions</option>
+                        <option value="update">Update</option>
+                        <option value="delete">Delete</option>
+                    </select>
+                </div>
+                <div class="table-container">
+                    <table id="auditTable">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>User</th>
+                                <th>Action</th>
+                                <th>Details</th>
+                                <th>Performed By</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </section>
+            <!-- Add this before the closing </main> tag -->
+            <section id="settings" class="admin-section hidden">
+                <div class="section-header">
+                    <h2>Admin Settings</h2>
+                </div>
+                <div class="settings-container">
+                    <form id="adminSettingsForm">
+                        <div class="setting-group">
+                            <h3>Notifications</h3>
+                            <label class="setting-item">
+                                <input type="checkbox" id="emailNotifications">
+                                Email Notifications
+                            </label>
+                            <label class="setting-item">
+                                <input type="checkbox" id="twoFactorAuth">
+                                Two-Factor Authentication
+                            </label>
+                        </div>
+                        
+                        <div class="setting-group">
+                            <h3>Appearance</h3>
+                            <label class="setting-item">
+                                Theme
+                                <select id="themeSelect">
+                                    <option value="light">Light</option>
+                                    <option value="dark">Dark</option>
+                                    <option value="system">System Default</option>
+                                </select>
+                            </label>
+                        </div>
+                        
+                        <button type="submit" class="btn-primary">Save Settings</button>
+                    </form>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <div id="inviteModal" class="modal">
+        <div class="modal-content">
+            <h3>Invite New User</h3>
+            <form id="inviteForm">
+                <input type="email" id="inviteEmail" placeholder="Email" required>
+                <input type="text" id="inviteName" placeholder="Name" required>
+                <select id="inviteRole" required>
+                    <option value="sales-rep">Sales Representative</option>
+                    <option value="analyst">Analyst</option>
+                    <option value="admin">Administrator</option>
+                </select>
+                <button type="submit">Send Invitation</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add this before the closing body tag -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <h3>Edit User</h3>
+            <form id="editForm">
+                <select id="editRole" required>
+                    <option value="admin">Admin</option>
+                    <option value="sales-rep">Sales Rep</option>
+                    <option value="analyst">Analyst</option>
+                </select>
+                <label>
+                    <input type="checkbox" id="editStatus"> Active
+                </label>
+                <button type="submit" class="btn-primary">Save Changes</button>
+                <button type="button" class="btn-secondary" onclick="$('#editModal').hide()">Cancel</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="../assets/js/admin.js"></script>
+</body>
+</html>

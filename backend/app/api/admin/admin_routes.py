@@ -7,6 +7,8 @@ from app.models.models import User
 from app.api.auth.auth import get_current_user, hash_password  # Add hash_password import
 from app.services.email import send_invite_email
 from app.utils.token import generate_verification_token
+from pydantic import BaseModel
+from typing import Optional
 
 router = APIRouter()
 
@@ -57,13 +59,57 @@ async def invite_user(
         raise HTTPException(status_code=500, detail=str(e))
 
 # Update this route too
-@router.get("/users/")  # Changed from "/admin/users/"
+@router.post("/admin/verify-user/{user_id}")
+async def verify_user(
+    user_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(check_admin)
+):
+    """Verify a user (admin only)"""
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    user.is_verified = True
+    user.verification_token = None
+    db.commit()
+    
+    return {"message": f"User {user.email} has been verified"}
+
+# Update the list_users function to include verification status
+@router.get("/users/")
 async def list_users(
     db: Session = Depends(get_db),
     current_user: User = Depends(check_admin)
 ):
     """List all users (admin only)"""
     users = db.query(User).all()
-    return [{"id": user.id, "email": user.email, "role": user.role, 
-             "is_active": user.is_active, "is_verified": user.is_verified} 
-            for user in users]
+    return [{"id": user.id, "email": user.email, "role": user.role,
+             "is_active": user.is_active, "is_verified": user.is_verified,
+             "name": user.name} for user in users]
+
+
+class AdminSettings(BaseModel):
+    email_notifications: bool
+    two_factor_auth: bool
+    theme: str
+
+@router.put("/admin/settings")
+async def update_admin_settings(
+    settings: AdminSettings,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(check_admin)
+):
+    """Update admin settings"""
+    try:
+        # Update user preferences in the database
+        current_user.preferences = {
+            "email_notifications": settings.email_notifications,
+            "two_factor_auth": settings.two_factor_auth,
+            "theme": settings.theme
+        }
+        db.commit()
+        return {"message": "Settings updated successfully"}
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=str(e))

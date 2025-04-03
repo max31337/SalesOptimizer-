@@ -10,10 +10,11 @@ from app.crud.user import verify_user_email
 from app.utils.token import generate_verification_token
 from app.services.email import send_verification_email
 from pydantic import BaseModel
+from app.api.auth.auth import get_current_user
 
 router = APIRouter()
 
-@router.post("/auth/register/")  # Remove the /api prefix
+@router.post("/auth/register/")
 def register_user(user_data: UserCreate, db: Session = Depends(get_db)):
     try:
         # Check if user already exists
@@ -30,7 +31,7 @@ def register_user(user_data: UserCreate, db: Session = Depends(get_db)):
         hashed_pwd = hash_password(user_data.password)
 
         new_user = User(
-            username=user_data.username,  # Add username
+            username=user_data.username,
             name=user_data.name,
             email=user_data.email,
             password=hashed_pwd,
@@ -40,36 +41,23 @@ def register_user(user_data: UserCreate, db: Session = Depends(get_db)):
             verification_token=verification_token
         )
         
-        print(f"Creating user with email: {user_data.email}")
         db.add(new_user)
         db.commit()
         db.refresh(new_user)
-        print(f"User created successfully: {new_user.email}")
 
         # Send verification email
-        try:
-            send_verification_email(new_user.email, verification_token)
-            print(f"Verification email sent to: {new_user.email}")
-        except Exception as e:
-            print(f"Error sending verification email: {e}")
+        send_verification_email(new_user.email, verification_token)
 
-        # Generate JWT token for the new user
-        access_token = create_access_token(data={"sub": new_user.email})
-
-        response = {
+        return {
             "msg": "User created successfully. Please check your email to verify your account.",
-            "access_token": access_token,
-            "token_type": "bearer",
+            "username": new_user.username,
             "name": new_user.name,
             "role": new_user.role,
             "is_verified": new_user.is_verified
         }
-
-        return response
     except Exception as e:
-        print(f"Error in register_user: {str(e)}")
-        raise
-
+        db.rollback()
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.post("/auth/login/")  # Remove the /api prefix
@@ -79,13 +67,19 @@ def login(user_data: UserLogin, db: Session = Depends(get_db)):
     if not user or not verify_password(user_data.password, user.password):
         raise HTTPException(status_code=401, detail="Invalid email or password")
 
+    if not user.is_active:
+        raise HTTPException(status_code=401, detail="User account is inactive")
+
     access_token = create_access_token({"sub": user.email})
 
     return {
         "msg": "Login successful",
         "access_token": access_token,
         "token_type": "bearer",
-        "name": user.name
+        "name": user.name,
+        "role": user.role,
+        "is_active": user.is_active,
+        "is_verified": user.is_verified
     }
 
 
@@ -122,7 +116,7 @@ def complete_registration(
         raise HTTPException(status_code=400, detail="Registration already completed")
     
     # Update user information
-    user.username = registration_data.username
+    user.username = registration_data.username  # Set the username
     user.password = hash_password(registration_data.password)
     user.is_active = True
     user.invitation_token = None  # Clear the invitation token
