@@ -6,12 +6,13 @@ from app.models.models import User
 from app.schemas.user import PasswordReset, PasswordUpdate
 from app.api.auth.auth import hash_password
 from app.utils.token import generate_verification_token
-from app.services.password_reset_email import send_password_reset_email  
+from app.services.password_reset_email import send_password_reset_email  # Updated import
 
 router = APIRouter()
 
 @router.post("/auth/forgot-password/")
 def request_password_reset(email_data: PasswordReset, db: Session = Depends(get_db)):
+    """Initiate password reset process"""
     user = db.query(User).filter(User.email == email_data.email).first()
     
     if not user:

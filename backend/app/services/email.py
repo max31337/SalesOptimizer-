@@ -8,9 +8,10 @@ from email.mime.multipart import MIMEMultipart  # Add this import at the top
 load_dotenv()
 
 SMTP_SERVER = os.getenv("SMTP_SERVER")
-SMTP_PORT = int(os.getenv("SMTP_PORT", 587))  # Default to 587 if not provided
+SMTP_PORT = int(os.getenv("SMTP_PORT", 587))
 SMTP_USERNAME = os.getenv("SMTP_USERNAME")
 SMTP_PASSWORD = os.getenv("SMTP_PASSWORD")
+SYSTEM_EMAIL = "system@salesoptimizer.com"
 
 def send_invite_email(email: str, token: str):
     """Send an invite email with a pre-filled token link."""
@@ -43,8 +44,9 @@ def send_invite_email(email: str, token: str):
     
     msg = MIMEMultipart('alternative')
     msg["Subject"] = "You're Invited to SalesOptimizer!"
-    msg["From"] = SMTP_USERNAME
+    msg["From"] = f"SalesOptimizer <{SYSTEM_EMAIL}>"
     msg["To"] = email
+    msg["Reply-To"] = SYSTEM_EMAIL
     
     msg.attach(MIMEText(html_content, 'html'))
 
@@ -90,8 +92,9 @@ def send_verification_email(email: str, token: str):
     
     msg = MIMEMultipart('alternative')
     msg["Subject"] = "Verify Your SalesOptimizer Account"
-    msg["From"] = SMTP_USERNAME
+    msg["From"] = f"SalesOptimizer <{SYSTEM_EMAIL}>"
     msg["To"] = email
+    msg["Reply-To"] = SYSTEM_EMAIL
     
     msg.attach(MIMEText(html_content, 'html'))
 

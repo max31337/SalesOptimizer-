@@ -16,10 +16,8 @@ $(document).ready(function() {
         const password = $("#password").val();
         const confirmPassword = $("#confirmPassword").val();
 
-        // Reset message styling
         messageElement.removeClass("error-message success-message");
 
-        // Validate passwords match
         if (password !== confirmPassword) {
             messageElement
                 .text("Passwords do not match!")
@@ -27,7 +25,6 @@ $(document).ready(function() {
             return;
         }
 
-        // Validate password strength
         if (password.length < 8) {
             messageElement
                 .text("Password must be at least 8 characters long!")

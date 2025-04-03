@@ -10,6 +10,7 @@ SMTP_SERVER = os.getenv("SMTP_SERVER")
 SMTP_PORT = int(os.getenv("SMTP_PORT", 587))
 SMTP_USERNAME = os.getenv("SMTP_USERNAME")
 SMTP_PASSWORD = os.getenv("SMTP_PASSWORD")
+SYSTEM_EMAIL = "system@salesoptimizer.com"
 
 def send_password_reset_email(email: str, token: str):
     """Send a password reset email with token link."""
@@ -44,8 +45,9 @@ def send_password_reset_email(email: str, token: str):
     
     msg = MIMEMultipart('alternative')
     msg["Subject"] = "Password Reset Request - SalesOptimizer"
-    msg["From"] = SMTP_USERNAME
+    msg["From"] = f"SalesOptimizer <{SYSTEM_EMAIL}>"
     msg["To"] = email
+    msg["Reply-To"] = SYSTEM_EMAIL
     
     msg.attach(MIMEText(html_content, 'html'))
 
@@ -53,7 +55,7 @@ def send_password_reset_email(email: str, token: str):
         with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
             server.starttls()
             server.login(SMTP_USERNAME, SMTP_PASSWORD)
-            server.sendmail(SMTP_USERNAME, email, msg.as_string())
+            server.sendmail(SYSTEM_EMAIL, email, msg.as_string())
             print(f"✅ Password reset email sent to {email}")
     except Exception as e:
         print(f"❌ Error sending email: {e}")
