@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from app.api.auth import auth_routes
 from app.api.admin import admin_routes
+from app.api.auth import password_reset_routes
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
@@ -17,3 +18,4 @@ app.add_middleware(
 # Include routers with prefix
 app.include_router(auth_routes.router, prefix="/api")
 app.include_router(admin_routes.router, prefix="/api")  # Make sure this line exists
+app.include_router(password_reset_routes.router, prefix="/api")

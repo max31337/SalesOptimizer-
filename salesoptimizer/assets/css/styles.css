@@ -383,3 +383,28 @@ body {
         font-size: 1.5rem;
     }
 }
+
+.info-text {
+    text-align: center;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.message {
+    text-align: center;
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+.success-message {
+    background-color: #D1FAE5;
+    color: #065F46;
+    border: 1px solid #34D399;
+}
+
+.error-message {
+    background-color: #FEE2E2;
+    color: #991B1B;
+    border: 1px solid #F87171;
+}

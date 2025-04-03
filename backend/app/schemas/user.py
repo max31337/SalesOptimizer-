@@ -12,3 +12,9 @@ class UserCreate(BaseModel):
 class UserLogin(BaseModel):
     email: str
     password: str
+
+class PasswordReset(BaseModel):
+    email: EmailStr
+
+class PasswordUpdate(BaseModel):
+    password: str

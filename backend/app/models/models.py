@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Boolean
+from sqlalchemy import Column, Integer, String, Boolean, DateTime  # Added DateTime
 from app.db.database import Base  
 
 class User(Base):
@@ -13,7 +13,9 @@ class User(Base):
     is_active = Column(Boolean, default=True)
     is_verified = Column(Boolean, default=False)
     verification_token = Column(String, unique=True, nullable=True)
-    invitation_token = Column(String, unique=True, nullable=True)  
+    invitation_token = Column(String, unique=True, nullable=True)
+    reset_token = Column(String, unique=True, nullable=True)
+    reset_token_expires = Column(DateTime, nullable=True)  
 
 
 class Customer(Base):
