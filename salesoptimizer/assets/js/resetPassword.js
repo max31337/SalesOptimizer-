@@ -35,8 +35,6 @@ $(document).ready(function() {
             return;
         }
 
-        // Send password reset request
-        // Update the AJAX request URL to include /api prefix
         $.ajax({
             url: `http://localhost:8000/api/auth/reset-password/${token}`,
             method: "POST",
@@ -47,10 +45,8 @@ $(document).ready(function() {
                     .text("Password reset successful! Redirecting to login...")
                     .addClass("success-message");
                 
-                // Clear the form
                 $("#resetPasswordForm")[0].reset();
                 
-                // Redirect to login page after 3 seconds
                 setTimeout(() => {
                     window.location.href = "login.html";
                 }, 3000);

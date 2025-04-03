@@ -5,7 +5,6 @@ import os
 from datetime import datetime
 from passlib.context import CryptContext
 
-# Add the parent directory to Python path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from app.models.models import Base, User
@@ -18,10 +17,8 @@ def create_dummy_users():
     SessionLocal = sessionmaker(bind=engine)
     db = SessionLocal()
     
-    # Clear existing users
     db.query(User).delete()
     
-    # Create superadmin
     superadmin = User(
         username="superadmin",
         name="Super Admin",
@@ -33,8 +30,7 @@ def create_dummy_users():
     )
     db.add(superadmin)
     
-    # Create 19 dummy users
-    roles = ["user", "user", "user", "admin"]  # More users than admins
+    roles = ["user", "user", "user", "admin"] 
     for i in range(1, 20):
         role = roles[i % len(roles)]
         user = User(

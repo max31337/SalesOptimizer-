@@ -40,7 +40,6 @@ def create_user(db: Session, user: UserCreate) -> User:
         db.commit()
         db.refresh(db_user)
         
-        # Send verification email
         send_verification_email(user.email, verification_token)
         
         return db_user
@@ -68,7 +67,7 @@ def verify_user_email(db: Session, token: str) -> User:
         )
     
     user.is_verified = True
-    user.verification_token = None  # Clear the token after verification
+    user.verification_token = None 
     db.commit()
     db.refresh(user)
     return user

@@ -1,16 +1,11 @@
-let currentPage = 1;  // Remove the # symbol
+let currentPage = 1;  
 const itemsPerPage = 10;
 let selectedUserId = null;
 
 $(document).ready(function() {
-    // Check if user is admin
     checkAdminAccess();
-    
-    // Load initial data
     loadUsers();
     loadAuditLogs();
-    
-    // Set up event listeners
     setupEventListeners();
 });
 
@@ -90,10 +85,7 @@ function updatePagination(total) {
     $('#nextPage').prop('disabled', currentPage >= totalPages);
 }
 
-// Add event listeners for pagination
-$(document).ready(function() {
-    // Existing ready function code...
-    
+$(document).ready(function() {    
     $('#prevPage').click(() => {
         if (currentPage > 1) {
             currentPage--;
@@ -105,8 +97,6 @@ $(document).ready(function() {
         currentPage++;
         loadUsers();
     });
-
-    // Load initial data
     loadUsers();
 });
 
@@ -175,10 +165,7 @@ function updatePagination(total) {
     $('#nextPage').prop('disabled', currentPage >= totalPages);
 }
 
-// Add event listeners for pagination
-$(document).ready(function() {
-    // Existing ready function code...
-    
+$(document).ready(function() {    
     $('#prevPage').click(() => {
         if (currentPage > 1) {
             currentPage--;
@@ -190,8 +177,6 @@ $(document).ready(function() {
         currentPage++;
         loadAuditLogs();
     });
-
-    // Load initial data
     loadAuditLogs();
 });
 
@@ -222,7 +207,6 @@ function displayAuditLogs(logs) {
 }
 
 function setupEventListeners() {
-    // Navigation
     $('.nav-links a').click(function(e) {
         e.preventDefault();
         const target = $(this).attr('href').substring(1);
@@ -231,21 +215,15 @@ function setupEventListeners() {
         $('.nav-links li').removeClass('active');
         $(this).parent().addClass('active');
     });
-
-    // Close modal when clicking outside
     $('.modal').click(function(e) {
         if (e.target === this) {
             $(this).hide();
         }
     });
-
-    // Settings form submission
     $('#adminSettingsForm').submit(function(e) {
         e.preventDefault();
         updateAdminSettings();
     });
-
-    // User filters with debounce
     let filterTimeout;
     $('#searchUser').on('input', function() {
         clearTimeout(filterTimeout);
@@ -259,8 +237,6 @@ function setupEventListeners() {
         currentPage = 1;
         loadUsers();
     });
-
-    // Pagination
     $('#prevPage').click(function() {
         if (currentPage > 1) {
             currentPage--;
@@ -344,11 +320,7 @@ function inviteUser() {
             $('#inviteForm')[0].reset();
             loadUsers();
             showNotification('User invited successfully');
-
-            // Remove any existing success messages
             $('#inviteModal .modal-content .success-message').remove();
-
-            // Display a success message inside the modal
             $('<p class="success-message">Invitation sent successfully!</p>')
                 .css({
                     'color': '#28a745',

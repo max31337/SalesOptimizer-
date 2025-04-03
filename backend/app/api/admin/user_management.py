@@ -70,11 +70,10 @@ async def list_users(
     total = query.count()
     users = query.offset(skip).limit(limit).all()
     
-    # Update the user list dictionary format
     user_list = [
         {
             "id": user.id,
-            "username": user.username,  # Add username
+            "username": user.username, 
             "name": user.name,
             "email": user.email,
             "role": user.role,
@@ -109,10 +108,9 @@ async def get_user_by_id(
         "is_verified": user.is_verified
     }
 
-# Update the UserResponse model to match the actual user data structure
 class UserResponse(BaseModel):
     id: int
-    name: str  # Remove username since it's not in the database
+    name: str  
     email: str
     role: str
     is_active: bool
@@ -121,7 +119,6 @@ class UserResponse(BaseModel):
     class Config:
         orm_mode = True
 
-# Update the PUT endpoint response model
 @router.put("/admin/users/{user_id}", response_model=Dict[str, str])
 async def update_user(
     user_id: int,
@@ -134,11 +131,9 @@ async def update_user(
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     
-    # Update user details
     for field, value in user_update.dict(exclude_unset=True).items():
         setattr(user, field, value)
     
-    # Create audit log
     log_user_action(
         db=db,
         user_id=user_id,
@@ -161,7 +156,6 @@ async def delete_user(
     if not db_user:
         raise HTTPException(status_code=404, detail="User not found")
     
-    # Prevent deleting the last admin
     if db_user.role == "admin":
         admin_count = db.query(User).filter(User.role == "admin", User.is_active == True).count()
         if admin_count <= 1:
@@ -169,7 +163,6 @@ async def delete_user(
     
     db_user.is_active = False
     
-    # Create audit log entry
     audit_log = AuditLog(
         user_id=user_id,
         action="delete",

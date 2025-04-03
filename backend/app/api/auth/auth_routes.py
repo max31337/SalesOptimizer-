@@ -115,16 +115,14 @@ def complete_registration(
     if user.is_active:
         raise HTTPException(status_code=400, detail="Registration already completed")
     
-    # Update user information
-    user.username = registration_data.username  # Set the username
+    user.username = registration_data.username  
     user.password = hash_password(registration_data.password)
     user.is_active = True
-    user.invitation_token = None  # Clear the invitation token
+    user.invitation_token = None  
     
     try:
         db.commit()
         
-        # Generate access token
         access_token = create_access_token(data={"sub": user.email})
         
         return {

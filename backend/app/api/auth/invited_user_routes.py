@@ -28,14 +28,13 @@ def register_invited_user(user_data: UserCreate, db: Session = Depends(get_db)):
     invite.name = user_data.name
     invite.password = hash_password(user_data.password)
     invite.is_active = True
-    invite.is_verified = True  # Auto-verify invited users
-    invite.invitation_token = None  # Clear the invitation token
+    invite.is_verified = True  
+    invite.invitation_token = None  
 
     try:
         db.commit()
         db.refresh(invite)
 
-        # Generate JWT token for the new user
         access_token = create_access_token(data={"sub": invite.email})
 
         return {

@@ -3,8 +3,6 @@ $(document).ready(function () {
     
     $("#loginForm").submit(function (event) {
         event.preventDefault();
-        
-        // Hide error message when submitting
         errorMessage.removeClass('show').text('');
         
         const data = {

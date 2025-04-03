@@ -22,14 +22,13 @@ async def list_audit_logs(
     limit: int = Query(10, ge=1, le=100),
     user_id: Optional[int] = None,
     action: Optional[str] = None,
-    from_date: Optional[str] = None,  # Changed from datetime to str
-    to_date: Optional[str] = None,    # Changed from datetime to str
+    from_date: Optional[str] = None, 
+    to_date: Optional[str] = None,    
     performed_by: Optional[int] = None,
     db: Session = Depends(get_db),
     current_user: User = Depends(check_admin)
 ):
     """Get audit logs with filtering and pagination"""
-    # Convert date strings to datetime objects if they're not empty
     from_datetime = datetime.fromisoformat(from_date) if from_date else None
     to_datetime = datetime.fromisoformat(to_date) if to_date else None
     

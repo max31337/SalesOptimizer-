@@ -1,5 +1,4 @@
     document.addEventListener("DOMContentLoaded", () => {
-        // Navigation Handling
         const pages = document.querySelectorAll('.page');
         const navLinks = document.querySelectorAll('.sidebar nav a');
         
@@ -17,8 +16,6 @@
                 showPage(pageId);
             });
         });
-    
-        // Initialize Dashboard
         showPage('dashboard');
     
         // Charts Initialization

@@ -5,11 +5,7 @@ $(document).ready(function() {
         e.preventDefault();
         
         const email = $("#email").val();
-        
-        // Reset message styling
         messageElement.removeClass("error-message success-message");
-        
-        // Send password reset request
         $.ajax({
             url: 'http://localhost:8000/api/auth/forgot-password/',
             method: 'POST',
@@ -20,10 +16,8 @@ $(document).ready(function() {
                     .text("If the email exists, password reset instructions have been sent.")
                     .addClass("success-message");
                 
-                // Clear the form
                 $("#email").val("");
                 
-                // Redirect to login page after 3 seconds
                 setTimeout(() => {
                     window.location.href = "login.html";
                 }, 3000);
