@@ -1,21 +1,30 @@
-import os
 from logging.config import fileConfig
-from sqlalchemy import engine_from_config, pool
+from sqlalchemy import engine_from_config
+from sqlalchemy import pool
 from alembic import context
-from app.db.database import Base 
-from app.models import models  
+import os
 from dotenv import load_dotenv
+from app.models.models import Base
 
+# Load environment variables
 load_dotenv()
+
+# Get database URL from environment variable
+db_url = os.getenv("DATABASE_URL", "postgresql://postgres@localhost/SalesOptimizerDB")
+
+# Ensure proper postgresql:// prefix
+if db_url.startswith("postgres://"):
+    db_url = db_url.replace("postgres://", "postgresql://")
 
 config = context.config
 
-config.set_main_option("sqlalchemy.url", os.getenv("DATABASE_URL"))
+# Override sqlalchemy.url with environment variable
+config.set_main_option("sqlalchemy.url", db_url)
+
+target_metadata = Base.metadata
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
-
-target_metadata = Base.metadata
 
 def run_migrations_offline():
     """Run migrations in 'offline' mode."""

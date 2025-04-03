@@ -117,7 +117,6 @@
             }
         });
     
-        // User and Logout Handling (existing code)
     // --- User and Logout ---
     const logoutButton = document.getElementById("logoutButton");
     const userNameDisplay = document.getElementById("userNameDisplay");
