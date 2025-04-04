@@ -41,41 +41,57 @@ function checkAdminAccess() {
     });
 }
 
-function loadUsers() {
+function loadUsers(page = 1) {
     const token = localStorage.getItem('token');
-    const search = $('#searchUser').val();
-    const role = $('#roleFilter').val();
-    const status = $('#statusFilter').val();
+    const searchTerm = $('#userSearch').val();
+    const roleFilter = $('#roleFilter').val();
+    const statusFilter = $('#statusFilter').val();
+    const limit = 10;
+    const skip = (page - 1) * limit;
 
-    const params = new URLSearchParams({
-        skip: (currentPage-1)*itemsPerPage,
-        limit: itemsPerPage
-    });
-
-    if (search) params.append('search', search);
-    if (role) params.append('role', role);
-    if (status !== '') {
-        params.append('is_active', status === 'true');
+    let url = `http://localhost:8000/api/admin/users/?skip=${skip}&limit=${limit}`;
+    
+    if (searchTerm) {
+        url += `&search=${encodeURIComponent(searchTerm)}`;
+    }
+    if (roleFilter && roleFilter !== 'all') {
+        url += `&role=${encodeURIComponent(roleFilter)}`;
+    }
+    if (statusFilter && statusFilter !== 'all') {
+        url += `&is_active=${statusFilter === 'active'}`;
     }
 
     $.ajax({
-        url: `http://localhost:8000/api/admin/users/?${params.toString()}`,
+        url: url,
         headers: { 'Authorization': `Bearer ${token}` },
         method: 'GET',
         success: function(response) {
-            if (response && response.users) {
-                displayUsers(response.users);
-                updatePagination(response.total);
-            } else {
-                displayUsers([]);
-                showNotification('No users found', 'info');
-            }
+            displayUsers(response.users);
+            updatePagination(response.total, page, limit);
         },
         error: function(xhr) {
-            console.error('Error loading users:', xhr);
             showNotification(xhr.responseJSON?.detail || 'Failed to load users', 'error');
         }
     });
+}
+
+// Add event listeners for search and filters
+$(document).ready(function() {
+    $('#userSearch').on('input', debounce(() => loadUsers(1), 300));
+    $('#roleFilter, #statusFilter').on('change', () => loadUsers(1));
+});
+
+// Debounce function to prevent too many API calls
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
 }
 
 function updatePagination(total) {
@@ -114,11 +130,18 @@ function displayUsers(users) {
     }
 
     users.forEach(user => {
+        // Format role display
+        const roleDisplay = {
+            'admin': 'Admin',
+            'analyst': 'Analyst',
+            'sales-rep': 'Sales Rep'
+        }[user.role] || user.role;
+
         tbody.append(`
             <tr>
                 <td>${user.name || 'N/A'}</td>
                 <td>${user.email}</td>
-                <td>${user.role}</td>
+                <td>${roleDisplay}</td>
                 <td>${user.is_active ? 'Active' : 'Inactive'}</td>
                 <td>
                     <button onclick="editUser(${user.id})" class="btn-primary">Edit</button>
@@ -335,6 +358,20 @@ function showInviteModal() {
     $('#inviteModal').show();
 }
 
+$(document).ready(function() {
+    $('#inviteForm').on('submit', function(e) {
+        e.preventDefault();
+        inviteUser();
+    });
+
+    // Add close button handler for invite modal
+    $('.modal').click(function(event) {
+        if ($(event.target).is('.modal')) {
+            $(this).hide();
+        }
+    });
+});
+
 function inviteUser() {
     const token = localStorage.getItem('token');
     const data = {
@@ -345,23 +382,37 @@ function inviteUser() {
 
     $.ajax({
         url: 'http://localhost:8000/api/admin/invite/',
-        headers: { 'Authorization': `Bearer ${token}` },
+        headers: { 
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        },
         method: 'POST',
-        contentType: 'application/json',
         data: JSON.stringify(data),
         success: function(response) {
-            $('#inviteModal').hide();
-            $('#inviteForm')[0].reset();
-            loadUsers();
-            showNotification('User invited successfully');
+            // Remove any existing success message
             $('#inviteModal .modal-content .success-message').remove();
+            
+            // Add new success message
             $('<p class="success-message">Invitation sent successfully!</p>')
                 .css({
                     'color': '#28a745',
                     'font-weight': 'bold',
-                    'margin-top': '10px'
+                    'margin-top': '10px',
+                    'text-align': 'center'
                 })
                 .appendTo('#inviteModal .modal-content');
+            
+            // Clear the form
+            $('#inviteForm')[0].reset();
+            
+            // Refresh user list
+            loadUsers();
+            
+            // Hide modal after delay
+            setTimeout(() => {
+                $('#inviteModal').hide();
+                $('#inviteModal .modal-content .success-message').remove();
+            }, 2000);
         },
         error: function(xhr) {
             showNotification(xhr.responseJSON?.detail || 'Failed to invite user', 'error');
@@ -380,9 +431,8 @@ function showNotification(message, type = 'success') {
 
 function editUser(userId) {
     selectedUserId = userId;
-    const token = localStorage.getItem('token');
-    
-    // Get current user data
+        const token = localStorage.getItem('token');
+          
     $.ajax({
         url: `http://localhost:8000/api/admin/users/${userId}`,
         headers: { 'Authorization': `Bearer ${token}` },
@@ -398,6 +448,12 @@ function editUser(userId) {
     });
 }
 
+// Add form submission handler
+$('#editForm').on('submit', function(e) {
+    e.preventDefault();
+    updateUser();
+});
+
 function updateUser() {
     const token = localStorage.getItem('token');
     const data = {
@@ -411,9 +467,9 @@ function updateUser() {
         method: 'PUT',
         contentType: 'application/json',
         data: JSON.stringify(data),
-        success: function() {
+        success: function(response) {
             $('#editModal').hide();
-            loadUsers();
+            loadUsers(currentPage); // Maintain current page
             showNotification('User updated successfully');
         },
         error: function(xhr) {
@@ -421,6 +477,13 @@ function updateUser() {
         }
     });
 }
+
+// Initialize event handlers when document is ready
+$(document).ready(function() {
+    $('#users').addClass('active').show();
+    $('.nav-links li:first-child').addClass('active');
+    $('.admin-section:not(#users)').removeClass('active').hide();
+});
 
 function deleteUser(userId) {
     if (!confirm('Are you sure you want to deactivate this user?')) return;

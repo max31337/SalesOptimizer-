@@ -35,17 +35,17 @@
                 </div>
 
                 <div class="filters">
-                    <input type="text" id="searchUser" placeholder="Search users...">
+                    <input type="text" id="userSearch" placeholder="Search users...">
                     <select id="roleFilter">
-                        <option value="">All Roles</option>
+                        <option value="all">All Roles</option>
                         <option value="admin">Admin</option>
-                        <option value="sales-rep">Sales Rep</option>
                         <option value="analyst">Analyst</option>
+                        <option value="sales-rep">Sales Rep</option>
                     </select>
                     <select id="statusFilter">
-                        <option value="">All</option>
-                        <option value="true">Active</option>
-                        <option value="false">Inactive</option>
+                        <option value="all">All Status</option>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
                     </select>
                 </div>
 
@@ -156,7 +156,8 @@
                     <option value="analyst">Analyst</option>
                     <option value="admin">Administrator</option>
                 </select>
-                <button type="submit">Send Invitation</button>
+                <button type="submit" class="btn-primary">Send Invitation</button>
+                <button type="button" class="btn-secondary" onclick="$('#inviteModal').hide()">Cancel</button>
             </form>
         </div>
     </div>
@@ -166,10 +167,11 @@
         <div class="modal-content">
             <h3>Edit User</h3>
             <form id="editForm">
-                <select id="editRole" required>
+                <!-- Add this in the edit modal form -->
+                <select id="editRole">
                     <option value="admin">Admin</option>
-                    <option value="sales-rep">Sales Rep</option>
                     <option value="analyst">Analyst</option>
+                    <option value="sales-rep">Sales Rep</option>
                 </select>
                 <label>
                     <input type="checkbox" id="editStatus"> Active
