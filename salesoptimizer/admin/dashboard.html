@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - SalesOptimizer</title>
-    <link rel="stylesheet" href="../assets/css/styles.css">
     <link rel="stylesheet" href="../assets/css/admin.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -28,7 +27,8 @@
         </nav>
 
         <main class="admin-main">
-            <section id="users" class="admin-section">
+            <!-- Update the section classes -->
+            <section id="users" class="admin-section active">
                 <div class="section-header">
                     <h2>User Management</h2>
                     <button onclick="showInviteModal()" class="btn-primary">Invite User</button>
@@ -103,15 +103,20 @@
                 </div>
                 <div class="settings-container">
                     <form id="adminSettingsForm">
+                        <div id="settingsStatus" class="settings-status hidden">
+                            <p>Settings saved successfully!</p>
+                        </div>
                         <div class="setting-group">
                             <h3>Notifications</h3>
                             <label class="setting-item">
                                 <input type="checkbox" id="emailNotifications">
                                 Email Notifications
+                                <span class="setting-description">Receive important updates via email</span>
                             </label>
                             <label class="setting-item">
                                 <input type="checkbox" id="twoFactorAuth">
                                 Two-Factor Authentication
+                                <span class="setting-description">Enhanced account security</span>
                             </label>
                         </div>
                         
@@ -135,6 +140,11 @@
     </div>
 
     <!-- Modals -->
+    <!-- Move modals outside of main content -->
+    </main>
+    </div>
+    
+    <!-- Modals at the end of body -->
     <div id="inviteModal" class="modal">
         <div class="modal-content">
             <h3>Invite New User</h3>

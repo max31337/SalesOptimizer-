@@ -4,13 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SalesOptimizer Dashboard</title>
-    <link rel="stylesheet" href="../assets/css/dashboard.css">
+    <link rel="stylesheet" href="../assets/css/user.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <script src="../assets/js/auth-guard.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="../assets/js/dashboard.js" defer></script>
+    <script src="https://unpkg.com/alpinejs" defer></script>
+    <script>
+        // Immediately apply dark mode if it was previously set
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            document.body.classList.add('dark-mode');
+        }
+    </script>
 </head>
-<body>
+<body x-data="{ darkMode: localStorage.getItem('darkMode') === 'true' }" 
+      :class="{ 'dark-mode': darkMode }"
+      x-init="$watch('darkMode', val => { 
+          localStorage.setItem('darkMode', val);
+          document.documentElement.setAttribute('data-theme', val ? 'dark' : 'light');
+      }); 
+      document.documentElement.setAttribute('data-theme', darkMode ? 'dark' : 'light');">
+    <!-- Add dark mode toggle to the top bar -->
     <aside class="sidebar">
         <h2>SalesOptimizer</h2>
         <nav>
@@ -22,7 +38,6 @@
                 <li><a href="#settings">Settings</a></li>
             </ul>
         </nav>
-        <div class="divider"></div>
         <div class="user-info">
             <span id="userNameDisplay"></span>
             <button class="logout-btn" id="logoutButton">Logout</button>
@@ -34,6 +49,12 @@
         <div class="page" id="dashboard">
             <header class="top-bar">
                 <h1>Dashboard</h1>
+                <div class="theme-toggle">
+                    <label class="switch">
+                        <input type="checkbox" x-model="darkMode">
+                        <span class="slider"></span>
+                    </label>
+                </div>
             </header>
             <section class="dashboard-intro">
                 <h2>Welcome to Your Dashboard</h2>

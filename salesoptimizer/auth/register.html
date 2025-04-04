@@ -10,19 +10,29 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="../assets/js/auth.js" defer></script>
+    <script src="https://unpkg.com/alpinejs" defer></script>
 </head>
-<body>
+<body x-data="{ darkMode: localStorage.getItem('darkMode') === 'true' }" 
+      :class="{ 'dark-mode': darkMode }"
+      x-init="$watch('darkMode', val => { 
+          localStorage.setItem('darkMode', val);
+          document.documentElement.setAttribute('data-theme', val ? 'dark' : 'light');
+      })">
     <header class="app-bar">
         <a href="../index.html" class="brand">
             <img src="../assets/images/logo.png" alt="SalesOptimizer Logo" width="32" height="32">
             <h1>SalesOptimizer</h1>
         </a>
         <nav>
+            <div class="theme-toggle">
+                <label class="switch">
+                    <input type="checkbox" x-model="darkMode">
+                    <span class="slider"></span>
+                </label>
+            </div>
             <a href="login.html" class="btn-text">Login</a>
-            <a href="register.html" class="btn-text">Register</a>
         </nav>
     </header>
-
     <main>
         <div class="register-container">
             <h2>Complete Your Registration</h2>

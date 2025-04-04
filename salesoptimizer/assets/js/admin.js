@@ -137,7 +137,8 @@ function loadAuditLogs() {
 
     const params = new URLSearchParams({
         skip: (currentPage - 1) * itemsPerPage,
-        limit: itemsPerPage
+        limit: itemsPerPage,
+        include_names: true  
     });
 
     if (fromDate) params.append('from_date', fromDate);
@@ -194,13 +195,50 @@ function displayAuditLogs(logs) {
     }
 
     logs.forEach(log => {
+        const date = new Date(log.timestamp);
+        const formattedDate = date.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+
+        let formattedDetails = log.details;
+        if (log.details.startsWith('Updated user details:')) {
+            try {
+                const detailsStr = log.details.replace('Updated user details:', '').trim();
+                const details = JSON.parse(detailsStr.replace(/'/g, '"'));
+                
+                const changes = [];
+                if (details.role) {
+                    const readableRole = details.role
+                        .split('-')
+                        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                        .join(' ');
+                    changes.push(`role changed to ${readableRole}`);
+                }
+                if (details.is_active !== undefined) {
+                    changes.push(details.is_active ? 'account activated' : 'account deactivated');
+                }
+                formattedDetails = changes.join(' and ');
+            } catch (e) {
+                console.error('Error parsing details:', e);
+            }
+        }
+
+        const formattedAction = log.action.toLowerCase()
+            .split('_')
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(' ');
+
         tbody.append(`
             <tr>
-                <td>${new Date(log.timestamp).toLocaleString()}</td>
-                <td>${log.user_id}</td>
-                <td>${log.action}</td>
-                <td>${log.details}</td>
-                <td>${log.performed_by}</td>
+                <td>${formattedDate}</td>
+                <td>${log.user_name} (${log.user_email})</td>
+                <td>${formattedAction}</td>
+                <td>${formattedDetails}</td>
+                <td>${log.performer_name} (${log.performer_email})</td>
             </tr>
         `);
     });
@@ -209,46 +247,29 @@ function displayAuditLogs(logs) {
 function setupEventListeners() {
     $('.nav-links a').click(function(e) {
         e.preventDefault();
-        const target = $(this).attr('href').substring(1);
-        $('.admin-section').addClass('hidden');
-        $(`#${target}`).removeClass('hidden');
+        const targetId = $(this).attr('href').substring(1);
+        
+        // Hide all sections
+        $('.admin-section').removeClass('active').hide();
+        $(`#${targetId}`).addClass('active').show();
         $('.nav-links li').removeClass('active');
         $(this).parent().addClass('active');
-    });
-    $('.modal').click(function(e) {
-        if (e.target === this) {
-            $(this).hide();
-        }
-    });
-    $('#adminSettingsForm').submit(function(e) {
-        e.preventDefault();
-        updateAdminSettings();
-    });
-    let filterTimeout;
-    $('#searchUser').on('input', function() {
-        clearTimeout(filterTimeout);
-        filterTimeout = setTimeout(() => {
-            currentPage = 1;
-            loadUsers();
-        }, 300);
-    });
 
-    $('#roleFilter, #statusFilter').on('change', function() {
-        currentPage = 1;
-        loadUsers();
-    });
-    $('#prevPage').click(function() {
-        if (currentPage > 1) {
-            currentPage--;
+        if (targetId === 'audit') {
+            loadAuditLogs();
+        } else if (targetId === 'users') {
             loadUsers();
+        } else if (targetId === 'settings') {
+            loadAdminSettings();
         }
-    });
-
-    $('#nextPage').click(function() {
-        currentPage++;
-        loadUsers();
     });
 }
+
+$(document).ready(function() {
+    $('#users').addClass('active').show();
+    $('.nav-links li:first-child').addClass('active');
+    $('.admin-section:not(#users)').removeClass('active').hide();
+});
 
 function updateAdminSettings() {
     const token = localStorage.getItem('token');
@@ -265,37 +286,50 @@ function updateAdminSettings() {
         contentType: 'application/json',
         data: JSON.stringify(data),
         success: function(response) {
-            showNotification('Settings updated successfully');
+            const statusDiv = $('#settingsStatus');
+            statusDiv.removeClass('error').addClass('success')
+                .html('<p>Settings saved successfully!</p>')
+                .show();
+            
+            setTimeout(() => {
+                statusDiv.fadeOut();
+            }, 3000);
+
+            applyTheme(data.theme);
+            
+            if (data.two_factor_auth) {
+                setupTwoFactorAuth();
+            }
         },
         error: function(xhr) {
-            showNotification('Failed to update settings', 'error');
+            const statusDiv = $('#settingsStatus');
+            statusDiv.removeClass('success').addClass('error')
+                .html('<p>Failed to save settings. Please try again.</p>')
+                .show();
         }
     });
 }
 
-// Pagination
-    $('#prevPage').click(() => {
-        if (currentPage > 1) {
-            currentPage--;
-            loadUsers();
+function setupTwoFactorAuth() {
+    const token = localStorage.getItem('token');
+    
+    $.ajax({
+        url: 'http://localhost:8000/api/admin/setup-2fa',
+        headers: { 'Authorization': `Bearer ${token}` },
+        method: 'POST',
+        success: function(response) {
+            showQRCodeModal(response.qr_code);
+        },
+        error: function(xhr) {
+            showNotification('Failed to setup 2FA', 'error');
         }
     });
+}
 
-    $('#nextPage').click(() => {
-        currentPage++;
-        loadUsers();
-    });
-
-    // Forms
-    $('#inviteForm').submit(function(e) {
-        e.preventDefault();
-        inviteUser();
-    });
-
-    $('#editForm').submit(function(e) {
-        e.preventDefault();
-        updateUser();
-    });
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('admin-theme', theme);
+}
 
 function showInviteModal() {
     $('#inviteModal').show();
@@ -393,7 +427,7 @@ function deleteUser(userId) {
 
     const token = localStorage.getItem('token');
     $.ajax({
-        url: `http://localhost:8000/api/admin/users/${userId}`,  // Updated endpoint
+        url: `http://localhost:8000/api/admin/users/${userId}`,  
         headers: { 'Authorization': `Bearer ${token}` },
         method: 'DELETE',
         success: function() {
@@ -412,3 +446,37 @@ function logout() {
     localStorage.removeItem('userName');
     window.location.href = '../auth/login.html'
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    const navLinks = document.querySelectorAll('.nav-links a');
+    const sections = document.querySelectorAll('.admin-section');
+
+    sections[0].classList.add('active');
+
+    navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            
+            sections.forEach(section => section.classList.remove('active'));
+            
+            navLinks.forEach(navLink => navLink.parentElement.classList.remove('active'));
+            
+            link.parentElement.classList.add('active');
+            
+            const targetId = link.getAttribute('href').substring(1);
+            document.getElementById(targetId).classList.add('active');
+        });
+    });
+});
+
+const themeSelect = document.getElementById('themeSelect');
+
+const savedTheme = localStorage.getItem('admin-theme') || 'light';
+document.documentElement.setAttribute('data-theme', savedTheme);
+themeSelect.value = savedTheme;
+
+themeSelect.addEventListener('change', function() {
+    const theme = this.value;
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('admin-theme', theme);
+});

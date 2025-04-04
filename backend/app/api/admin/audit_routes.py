@@ -2,9 +2,9 @@ from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from datetime import datetime
-
+from sqlalchemy.orm import aliased
 from app.db.database import get_db
-from app.models.models import User, AuditLog  # Update this import
+from app.models.models import User, AuditLog  
 from app.api.auth.auth import get_current_user
 from app.crud.audit_log import get_audit_logs
 from app.schemas.audit_log import AuditLogResponse, AuditLogFilter
@@ -29,28 +29,48 @@ async def list_audit_logs(
     current_user: User = Depends(check_admin)
 ):
     """Get audit logs with filtering and pagination"""
-    from_datetime = datetime.fromisoformat(from_date) if from_date else None
-    to_datetime = datetime.fromisoformat(to_date) if to_date else None
+
+    UserTarget = aliased(User, name='user_target')
+    UserPerformer = aliased(User, name='user_performer')
     
-    filters = AuditLogFilter(
-        user_id=user_id if user_id else None,
-        action=action if action and action.strip() else None,
-        from_date=from_datetime,
-        to_date=to_datetime,
-        performed_by=performed_by if performed_by else None
-    )
+    query = (db.query(AuditLog, 
+                     UserTarget.email.label('user_email'),
+                     UserTarget.name.label('user_name'),
+                     UserPerformer.email.label('performer_email'),
+                     UserPerformer.name.label('performer_name'))
+            .join(UserTarget, AuditLog.user_id == UserTarget.id)
+            .join(UserPerformer, AuditLog.performed_by == UserPerformer.id))
     
-    audit_logs = get_audit_logs(db, skip=skip, limit=limit, filters=filters)
-    total = len(audit_logs)
+    if from_date:
+        query = query.filter(AuditLog.timestamp >= datetime.fromisoformat(from_date))
+    if to_date:
+        query = query.filter(AuditLog.timestamp <= datetime.fromisoformat(to_date))
+    if action:
+        query = query.filter(AuditLog.action == action)
+    if user_id:
+        query = query.filter(AuditLog.user_id == user_id)
+    if performed_by:
+        query = query.filter(AuditLog.performed_by == performed_by)
+
+    total = query.count()
+    results = query.order_by(AuditLog.timestamp.desc()).offset(skip).limit(limit).all()
     
-    if total == 0:
-        return {
-            "total": 0,
-            "logs": [],
-            "message": "No audit logs found"
+    logs_response = []
+    for result in results:
+        log_entry = {
+            "timestamp": result.AuditLog.timestamp,
+            "user_id": result.AuditLog.user_id,
+            "user_email": result.user_email,
+            "user_name": result.user_name,
+            "action": result.AuditLog.action,
+            "details": result.AuditLog.details,
+            "performed_by": result.AuditLog.performed_by,
+            "performer_name": result.performer_name,
+            "performer_email": result.performer_email
         }
+        logs_response.append(log_entry)
     
     return {
         "total": total,
-        "logs": audit_logs
+        "logs": logs_response
     }

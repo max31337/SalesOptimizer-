@@ -414,3 +414,139 @@ body {
     color: #991B1B;
     border: 1px solid #F87171;
 }
+
+body.light {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+body.dark {
+    background-color: #000000;
+    color: #ffffff;
+}
+
+/* Dark mode toggle switch */
+.theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    margin-right: 1rem;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 24px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: var(--primary-color);
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
+
+/* Dark mode variables */
+:root {
+    --bg-color: #ffffff;
+    --text-color: #333333;
+    --card-bg: #ffffff;
+    --border-color: #e0e0e0;
+}
+
+[data-theme="dark"] {
+    --bg-color: #121212;
+    --text-color: #ffffff;
+    --card-bg: #1e1e1e;
+    --border-color: #404040;
+    --gray-800: #ffffff;
+    --gray-200: #333333;
+    --gray-100: #1e1e1e;
+    --white: #121212;
+    --shadow-color: rgba(0, 0, 0, 0.3);
+}
+
+/* Dark mode specific styles */
+[data-theme="dark"] body {
+    background: var(--bg-color);
+    color: var(--text-color);
+}
+
+[data-theme="dark"] .app-bar {
+    background: var(--card-bg);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .hero {
+    background: linear-gradient(135deg, rgba(140, 198, 63, 0.1) 0%, rgba(27, 117, 188, 0.1) 100%);
+}
+
+[data-theme="dark"] .hero h2,
+[data-theme="dark"] .hero p {
+    color: var(--text-color);
+}
+
+[data-theme="dark"] .login-container,
+[data-theme="dark"] .register-container {
+    background: var(--card-bg);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .btn-text {
+    color: var(--primary-color);
+}
+
+[data-theme="dark"] .btn-text:hover {
+    background-color: rgba(140, 198, 63, 0.2);
+}
+
+[data-theme="dark"] input,
+[data-theme="dark"] select {
+    background: var(--bg-color);
+    color: var(--text-color);
+    border-color: var(--border-color);
+}
+
+[data-theme="dark"] input::placeholder {
+    color: #666;
+}
+
+[data-theme="dark"] .brand h1 {
+    color: var(--primary-color);
+}
+
+/* Add transition for smooth theme switching */
+body, .app-bar, .hero, input, select, .btn-text, .login-container, .register-container {
+    transition: all 0.3s ease;
+}

@@ -7,7 +7,6 @@ from app.db.database import get_db
 from app.models.models import User
 from app.api.auth.auth import get_current_user
 from pydantic import BaseModel
-
 from app.crud.user import get_user
 from app.crud.audit_log import log_user_action
 
@@ -131,14 +130,25 @@ async def update_user(
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     
-    for field, value in user_update.dict(exclude_unset=True).items():
+    changes = []
+    update_dict = user_update.dict(exclude_unset=True)
+    
+    if 'role' in update_dict:
+        changes.append(f"role to {update_dict['role']}")
+    if 'is_active' in update_dict:
+        status = "activated" if update_dict['is_active'] else "deactivated"
+        changes.append(f"status {status}")
+    
+    for field, value in update_dict.items():
         setattr(user, field, value)
+    
+    details = f"Updated user {', '.join(changes)}"
     
     log_user_action(
         db=db,
         user_id=user_id,
         action="UPDATE_USER",
-        details=f"Updated user details: {user_update.dict(exclude_unset=True)}",
+        details=details,
         performed_by=current_user.id
     )
     

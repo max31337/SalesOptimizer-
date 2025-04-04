@@ -10,17 +10,38 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="../assets/js/auth.js" defer></script>
+    <script src="https://unpkg.com/alpinejs" defer></script>
+    <script>
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            document.body.classList.add('dark-mode');
+        }
+    </script>
 </head>
-<body>
+<body x-data="{ darkMode: localStorage.getItem('darkMode') === 'true' }" 
+      :class="{ 'dark-mode': darkMode }"
+      x-init="$watch('darkMode', val => { 
+          localStorage.setItem('darkMode', val);
+          document.documentElement.setAttribute('data-theme', val ? 'dark' : 'light');
+      }); 
+      document.documentElement.setAttribute('data-theme', darkMode ? 'dark' : 'light');">
     <header class="app-bar">
         <a href="../index.html" class="brand">
             <img src="../assets/images/logo.png" alt="SalesOptimizer Logo" width="32" height="32">
             <h1>SalesOptimizer</h1>
         </a>
         <nav>
-            <a href="ContactUs.html" class="btn-text">Contact Us</a>
+            <div class="theme-toggle">
+                <label class="switch">
+                    <input type="checkbox" x-model="darkMode">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <a href="register.html" class="btn-text">Register</a>
         </nav>
     </header>
+    <a href="ContactUs.html" class="btn-text">Contact Us</a>
+</header>
 
     <main>
         <div class="login-container">

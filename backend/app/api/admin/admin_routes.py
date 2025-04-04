@@ -4,7 +4,7 @@ from typing import List, Literal
 from pydantic import BaseModel, EmailStr
 from app.db.database import get_db
 from app.models.models import User
-from app.api.auth.auth import get_current_user, hash_password  # Add hash_password import
+from app.api.auth.auth import get_current_user, hash_password  
 from app.services.email import send_invite_email
 from app.utils.token import generate_verification_token
 from pydantic import BaseModel
@@ -105,3 +105,46 @@ async def update_admin_settings(
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/admin/settings")
+async def get_admin_settings(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(check_admin)
+):
+    """Get admin settings"""
+    preferences = current_user.preferences or {}
+    return {
+        "email_notifications": preferences.get("email_notifications", False),
+        "two_factor_auth": preferences.get("two_factor_auth", False),
+        "theme": preferences.get("theme", "light")
+    }
+
+#still working on this functionality
+@router.post("/admin/setup-2fa")
+async def setup_two_factor_auth(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(check_admin)
+):
+    """Setup 2FA for admin"""
+    import pyotp
+    import qrcode
+    import base64
+    from io import BytesIO
+
+    secret = pyotp.random_base32()
+    totp = pyotp.TOTP(secret)
+    
+    qr = qrcode.QRCode(version=1, box_size=10, border=5)
+    provisioning_uri = totp.provisioning_uri(current_user.email, issuer_name="SalesOptimizer")
+    qr.add_data(provisioning_uri)
+    qr.make(fit=True)
+    
+    img = qr.make_image(fill_color="black", back_color="white")
+    buffered = BytesIO()
+    img.save(buffered, format="PNG")
+    qr_code = base64.b64encode(buffered.getvalue()).decode()
+    
+    current_user.totp_secret = secret
+    db.commit()
+    
+    return {"qr_code": qr_code}
