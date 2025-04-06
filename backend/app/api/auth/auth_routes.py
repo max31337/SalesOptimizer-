@@ -118,7 +118,9 @@ def complete_registration(
     user.username = registration_data.username  
     user.password = hash_password(registration_data.password)
     user.is_active = True
+    user.is_verified = True  # Automatically verify the user
     user.invitation_token = None  
+    user.verification_token = None  # Clear verification token
     
     try:
         db.commit()
@@ -128,7 +130,8 @@ def complete_registration(
         return {
             "message": "Registration completed successfully",
             "access_token": access_token,
-            "token_type": "bearer"
+            "token_type": "bearer",
+            "is_verified": True  # Include verification status in response
         }
     except Exception as e:
         db.rollback()

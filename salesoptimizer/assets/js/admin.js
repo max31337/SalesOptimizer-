@@ -117,38 +117,44 @@ $(document).ready(function() {
 });
 
 function displayUsers(users) {
-    const tbody = $('#usersTable tbody');
-    tbody.empty();
-
-    if (!users || users.length === 0) {
-        tbody.append(`
-            <tr>
-                <td colspan="5" class="text-center">No users found</td>
-            </tr>
-        `);
-        return;
-    }
+    const userTableBody = $('#userTableBody');
+    userTableBody.empty();
 
     users.forEach(user => {
-        // Format role display
-        const roleDisplay = {
-            'admin': 'Admin',
-            'analyst': 'Analyst',
-            'sales-rep': 'Sales Rep'
-        }[user.role] || user.role;
-
-        tbody.append(`
-            <tr>
-                <td>${user.name || 'N/A'}</td>
-                <td>${user.email}</td>
-                <td>${roleDisplay}</td>
-                <td>${user.is_active ? 'Active' : 'Inactive'}</td>
-                <td>
-                    <button onclick="editUser(${user.id})" class="btn-primary">Edit</button>
-                    <button onclick="deleteUser(${user.id})" class="btn-danger">Delete</button>
-                </td>
-            </tr>
+        const row = $('<tr>');
+        row.append(`<td>${user.name}</td>`);
+        row.append(`<td>${user.email}</td>`);
+        row.append(`<td>${user.role}</td>`);
+        row.append(`<td><span class="status-badge ${user.is_active ? 'active' : 'inactive'}">${user.is_active ? 'Active' : 'Inactive'}</span></td>`);
+        row.append(`<td><span class="verification-badge ${user.is_verified ? 'verified' : 'unverified'}">${user.is_verified ? 'Verified' : 'Unverified'}</span></td>`);
+        row.append(`
+            <td>
+                <button class="btn-edit" onclick="editUser(${user.id})">Edit</button>
+                <button class="btn-delete" onclick="deleteUser(${user.id})">Delete</button>
+                ${!user.is_verified ? `<button class="btn-verify" onclick="verifyUser(${user.id})">Verify</button>` : ''}
+            </td>
         `);
+        userTableBody.append(row);
+    });
+}
+
+// Add this new function to handle manual verification
+function verifyUser(userId) {
+    if (!confirm('Are you sure you want to verify this user?')) return;
+
+    $.ajax({
+        url: `http://localhost:8000/api/admin/verify-user/${userId}`,
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        success: function(response) {
+            showNotification('User verified successfully', 'success');
+            loadUsers(); // Refresh the user list
+        },
+        error: function(xhr) {
+            showNotification(xhr.responseJSON?.detail || 'Failed to verify user', 'error');
+        }
     });
 }
 
@@ -204,6 +210,51 @@ $(document).ready(function() {
     loadAuditLogs();
 });
 
+function formatAuditDetails(action, details) {
+    // Format based on action type
+    switch(action) {
+        case 'UPDATE_USER':
+            return formatUserUpdate(details);
+        case 'DELETE_USER':
+            return `User account deleted`;
+        case 'VERIFY_USER':
+            return `User email verified`;
+        case 'INVITE_USER':
+            return `New user invited to platform`;
+        case 'PASSWORD_RESET':
+            return `Password reset requested`;
+        default:
+            return details;
+    }
+}
+
+function formatUserUpdate(details) {
+    try {
+        const changes = [];
+        if (details.includes('role')) {
+            const roleMatch = details.match(/role to (\w+(-\w+)*)/);
+            if (roleMatch) {
+                const role = roleMatch[1]
+                    .split('-')
+                    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                    .join(' ');
+                changes.push(`Role changed to ${role}`);
+            }
+        }
+        if (details.includes('status')) {
+            const status = details.includes('activated') ? 'Activated' : 'Deactivated';
+            changes.push(`Account ${status.toLowerCase()}`);
+        }
+        if (details.includes('verified')) {
+            changes.push('Email verified');
+        }
+        return changes.length > 0 ? changes.join(' • ') : details;
+    } catch (e) {
+        console.error('Error formatting details:', e);
+        return details;
+    }
+}
+
 function displayAuditLogs(logs) {
     const tbody = $('#auditTable tbody');
     tbody.empty();
@@ -224,44 +275,24 @@ function displayAuditLogs(logs) {
             month: 'long',
             day: 'numeric',
             hour: '2-digit',
-            minute: '2-digit'
+            minute: '2-digit',
+            second: '2-digit'
         });
 
-        let formattedDetails = log.details;
-        if (log.details.startsWith('Updated user details:')) {
-            try {
-                const detailsStr = log.details.replace('Updated user details:', '').trim();
-                const details = JSON.parse(detailsStr.replace(/'/g, '"'));
-                
-                const changes = [];
-                if (details.role) {
-                    const readableRole = details.role
-                        .split('-')
-                        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-                        .join(' ');
-                    changes.push(`role changed to ${readableRole}`);
-                }
-                if (details.is_active !== undefined) {
-                    changes.push(details.is_active ? 'account activated' : 'account deactivated');
-                }
-                formattedDetails = changes.join(' and ');
-            } catch (e) {
-                console.error('Error parsing details:', e);
-            }
-        }
-
-        const formattedAction = log.action.toLowerCase()
+        const formattedAction = log.action
             .split('_')
-            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
             .join(' ');
+
+        const formattedDetails = formatAuditDetails(log.action, log.details);
 
         tbody.append(`
             <tr>
                 <td>${formattedDate}</td>
-                <td>${log.user_name} (${log.user_email})</td>
-                <td>${formattedAction}</td>
+                <td><strong>${log.user_name}</strong><br><small>${log.user_email}</small></td>
+                <td><span class="action-badge ${log.action.toLowerCase()}">${formattedAction}</span></td>
                 <td>${formattedDetails}</td>
-                <td>${log.performer_name} (${log.performer_email})</td>
+                <td><strong>${log.performer_name}</strong><br><small>${log.performer_email}</small></td>
             </tr>
         `);
     });

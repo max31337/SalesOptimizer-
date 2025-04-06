@@ -4,6 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - SalesOptimizer</title>
+    <!-- Add auth-guard.js before other scripts -->
+    <script src="../assets/js/auth-guard.js"></script>
+    <script>
+        // Immediate check before page loads
+        (function() {
+            const token = localStorage.getItem('token');
+            const userRole = localStorage.getItem('userRole');
+            
+            if (!token || userRole !== 'admin') {
+                window.location.replace('../pages/404.html');
+            }
+        })();
+    </script>
     <style>
         html[data-theme='dark'] {
             color-scheme: dark;
@@ -19,6 +32,15 @@
         document.documentElement.setAttribute('data-theme', 
             localStorage.getItem('darkMode') === 'true' ? 'dark' : 'light'
         );
+
+        // Check for authorization
+        document.addEventListener('DOMContentLoaded', function() {
+            const token = localStorage.getItem('token');
+            const userRole = localStorage.getItem('userRole');
+            if (!token || userRole !== 'admin') {
+                window.location.href = '../pages/404.html';
+            }
+        });
     </script>
 </head>
 <body>
@@ -63,24 +85,27 @@
                     </select>
                 </div>
 
-                <div class="table-container">
-                    <table id="usersTable">
+                <div class="user-list">
+                    <table>
                         <thead>
                             <tr>
                                 <th>Name</th>
                                 <th>Email</th>
                                 <th>Role</th>
                                 <th>Status</th>
+                                <th>Verified</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody></tbody>
+                        <tbody id="userTableBody">
+                            <!-- Users will be populated here -->
+                        </tbody>
                     </table>
-                    <div class="pagination">
-                        <button id="prevPage">Previous</button>
-                        <span id="pageInfo">Page 1</span>
-                        <button id="nextPage">Next</button>
-                    </div>
+                </div>
+                <div class="pagination">
+                    <button id="prevPage">Previous</button>
+                    <span id="pageInfo">Page 1</span>
+                    <button id="nextPage">Next</button>
                 </div>
             </section>
 

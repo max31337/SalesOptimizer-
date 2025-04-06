@@ -18,7 +18,7 @@ class User(Base):
     reset_token = Column(String, nullable=True)
     reset_token_expires = Column(DateTime, nullable=True)
     invitation_token = Column(String, nullable=True)
-
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)  # Add this line
     audit_logs = relationship("AuditLog", foreign_keys="[AuditLog.user_id]", back_populates="user")
     performed_actions = relationship("AuditLog", foreign_keys="[AuditLog.performed_by]", back_populates="performer")
 
