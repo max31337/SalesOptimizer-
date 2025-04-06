@@ -525,23 +525,24 @@ th {
     font-size: 1rem;
 }
 
-.failure-list, .ip-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
 .failure-list li, .ip-list li {
     padding: 0.5rem;
     border-bottom: 1px solid var(--border-color);
     display: flex;
     justify-content: space-between;
+    align-items: center;
 }
 
 .failure-list li:last-child, .ip-list li:last-child {
     border-bottom: none;
 }
 
-.suspicious-ip {
+.suspicious-ip span:last-child {
     color: var(--danger-color);
+    font-weight: 500;
+}
+
+/* Add some spacing between the two lists */
+#recentFailures {
+    margin-bottom: 1.5rem;
 }
