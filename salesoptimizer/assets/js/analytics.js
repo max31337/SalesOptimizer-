@@ -1,3 +1,7 @@
+let userDistributionChart = null;
+let roleDistributionChart = null;
+let loginActivityChart = null;
+let loginSuccessChart = null;
 let registrationChart = null;
 
 function loadRegistrationTrends(days = 30) {
@@ -87,8 +91,6 @@ $(document).ready(function() {
     setInterval(loadLoginActivity, 300000);
 });
 
-// Add this after the existing code
-let userDistributionChart = null;
 
 function loadActiveUsers() {
     const token = localStorage.getItem('token');
@@ -145,9 +147,6 @@ function loadActiveUsers() {
     });
 }
 
-// Add after the existing charts
-let roleDistributionChart = null;
-
 function loadRoleDistribution() {
     const token = localStorage.getItem('token');
     
@@ -202,9 +201,6 @@ function loadRoleDistribution() {
         }
     });
 }
-
-let loginActivityChart = null;
-let loginSuccessChart = null;
 
 function loadLoginActivity() {
     const token = localStorage.getItem('token');
@@ -341,4 +337,21 @@ function loadLoginActivity() {
             $('.failure-list').html('<li>Failed to load data</li>');
             $('.ip-list').html('<li>Failed to load data</li>');
         }
-    });}
+    });
+}
+
+
+function loadAllAnalytics() {
+    loadRegistrationTrends();
+    loadActiveUsers();
+    loadLoginActivity();
+    loadRoleDistribution();
+}
+
+// Update the existing charts' initialization
+$(document).ready(function() {
+    loadAllAnalytics();
+    
+    // Refresh data every 30 seconds
+    setInterval(loadAllAnalytics, 30000);
+});

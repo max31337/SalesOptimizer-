@@ -283,9 +283,17 @@ th {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.5);
     z-index: 1000;
-    overflow-y: auto;
+}
+
+.modal[x-cloak] {
+    display: none;
+}
+
+/* Show modal when Alpine.js sets x-show to true */
+.modal:not([x-cloak]) {
+    display: block;
 }
 
 .modal-content {
@@ -545,4 +553,80 @@ th {
 /* Add some spacing between the two lists */
 #recentFailures {
     margin-bottom: 1.5rem;
+}
+
+.modal-message {
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 4px;
+    text-align: center;
+}
+
+.modal-message.success-message {
+    background-color: rgba(40, 167, 69, 0.1);
+    color: #28a745;
+    border: 1px solid #28a745;
+}
+
+.modal {
+    display: none;
+}
+
+.modal[x-cloak] {
+    display: none;
+}
+
+/* Update the user-info section styling */
+.user-info {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 250px; /* Match sidebar width */
+    padding: 1.5rem;
+    background: var(--sidebar-bg);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+#adminName {
+    color: var(--text-color);
+    font-weight: 500;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Style the logout button */
+.user-info .btn-secondary {
+    background-color: #ffcdd2; /* Pastel red */
+    color: #d32f2f; /* Darker red for text */
+    border: none;
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    width: 100%;
+    text-align: center;
+    font-weight: 500;
+    margin-top: 0.5rem;
+    box-shadow: 0 2px 4px rgba(211, 47, 47, 0.1);
+}
+
+.user-info .btn-secondary:hover {
+    background-color: #ef5350; /* Brighter red on hover */
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(211, 47, 47, 0.2);
+}
+
+.user-info .btn-secondary:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(211, 47, 47, 0.1);
+}
+
+/* Add some bottom padding to the nav-links to prevent overlap */
+.nav-links {
+    padding-bottom: 120px;
 }

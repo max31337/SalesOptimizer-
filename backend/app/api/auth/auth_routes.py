@@ -13,6 +13,7 @@ from app.services.email import send_verification_email
 from pydantic import BaseModel
 from app.api.auth.auth import get_current_user
 from app.models.models import LoginActivity
+from fastapi_csrf_protect import CsrfProtect
 
 router = APIRouter()
 
@@ -62,7 +63,7 @@ def register_user(user_data: UserCreate, db: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.post("/auth/login/")  # Remove the /api prefix
+@router.post("/auth/login/")  
 def login(user_data: UserLogin, request: Request, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == user_data.email).first()
     success = False
@@ -74,7 +75,6 @@ def login(user_data: UserLogin, request: Request, db: Session = Depends(get_db))
         if not user.is_active:
             raise HTTPException(status_code=401, detail="User account is inactive")
 
-        # Record login activity
         login_activity = LoginActivity(
             user_id=user.id,
             ip_address=request.client.host,
@@ -97,7 +97,6 @@ def login(user_data: UserLogin, request: Request, db: Session = Depends(get_db))
         }
     finally:
         if not success:
-            # Record failed login attempt
             login_activity = LoginActivity(
                 user_id=user.id if user else None,
                 ip_address=request.client.host,
@@ -107,7 +106,7 @@ def login(user_data: UserLogin, request: Request, db: Session = Depends(get_db))
             db.commit()
 
 
-@router.get("/auth/verify/{token}")  # Remove the /api prefix
+@router.get("/auth/verify/{token}")  
 def verify_email(token: str, db: Session = Depends(get_db)):
     """Verify user email with token."""
     try:
@@ -130,7 +129,6 @@ def complete_registration(
     registration_data: CompleteRegistrationRequest,
     db: Session = Depends(get_db)
 ):
-    # Find the user with the invitation token
     user = db.query(User).filter(User.invitation_token == registration_data.token).first()
     
     if not user:
@@ -142,9 +140,9 @@ def complete_registration(
     user.username = registration_data.username  
     user.password = hash_password(registration_data.password)
     user.is_active = True
-    user.is_verified = True  # Automatically verify the user
+    user.is_verified = True  
     user.invitation_token = None  
-    user.verification_token = None  # Clear verification token
+    user.verification_token = None  
     
     try:
         db.commit()
@@ -155,14 +153,35 @@ def complete_registration(
             "message": "Registration completed successfully",
             "access_token": access_token,
             "token_type": "bearer",
-            "is_verified": True  # Include verification status in response
+            "is_verified": True  
         }
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=str(e))
 
 
-# Add this new endpoint after your existing routes
+@router.get("/auth/check-session")
+async def check_session(current_user: User = Depends(get_current_user)):
+    """Verify user session and permissions"""
+    if not current_user.is_active:
+        raise HTTPException(status_code=401, detail="User account is inactive")
+    
+    # Add role-specific checks
+    if current_user.role == "admin":
+        return {
+            "valid": True,
+            "role": "admin",
+            "is_active": current_user.is_active,
+            "allowed_paths": ["/admin/"]
+        }
+    else:
+        return {
+            "valid": True,
+            "role": current_user.role,
+            "is_active": current_user.is_active,
+            "allowed_paths": ["/pages/"]
+        }
+
 @router.get("/auth/me")
 async def get_current_user_info(current_user: User = Depends(get_current_user)):
     """Get current user information"""

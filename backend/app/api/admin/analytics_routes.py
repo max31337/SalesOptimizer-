@@ -103,7 +103,6 @@ async def get_login_activity(
         end_date = datetime.now()
         start_date = end_date - timedelta(days=days)
         
-        # Get daily login counts
         daily_logins = (
             db.query(
                 func.date(LoginActivity.timestamp).label('date'),
@@ -116,16 +115,13 @@ async def get_login_activity(
             .all()
         )
         
-        # Create date range
         date_range = [(start_date + timedelta(days=x)).date() for x in range(days + 1)]
         
-        # Convert to dict for lookup
         login_dict = {str(login.date): login.count for login in daily_logins}
         
         dates = [str(date) for date in date_range]
         counts = [login_dict.get(date, 0) for date in dates]
         
-        # Get total successful and failed attempts
         total_success = db.query(LoginActivity).filter(
             LoginActivity.success == True,
             LoginActivity.timestamp >= start_date
@@ -136,7 +132,6 @@ async def get_login_activity(
             LoginActivity.timestamp >= start_date
         ).count()
         
-        # Enhanced failure metrics
         recent_failures = (
             db.query(LoginActivity)
             .filter(
@@ -148,7 +143,6 @@ async def get_login_activity(
             .all()
         )
 
-        # Get IP-based statistics
         ip_failures = (
             db.query(
                 LoginActivity.ip_address,
@@ -159,7 +153,7 @@ async def get_login_activity(
                 LoginActivity.timestamp >= start_date
             )
             .group_by(LoginActivity.ip_address)
-            .having(func.count(LoginActivity.id) > 3)  # IPs with multiple failures
+            .having(func.count(LoginActivity.id) > 3) 
             .all()
         )
 

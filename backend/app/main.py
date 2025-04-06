@@ -4,6 +4,7 @@ from app.api.auth import auth_routes
 from app.api.admin import admin_routes, audit_routes, user_management
 from app.api.auth import password_reset_routes  
 from app.api.admin.analytics_routes import router as analytics_router
+from app.core.config import SECRET_KEY 
 
 app = FastAPI()
 

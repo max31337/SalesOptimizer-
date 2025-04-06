@@ -1,13 +1,20 @@
 #needed libraries, too lazy to install them one by one lol
 
 fastapi
-python-jose
+uvicorn
+python-jose[cryptography]
 pyjwt
 python-dotenv
 passlib[bcrypt]
 sqlalchemy
-psycopg2
+psycopg2-binary
 joblib
 numpy
 scikit-learn
 pydantic[email]
+alembic
+pyotp
+qrcode
+pillow
+pytest
+requests
