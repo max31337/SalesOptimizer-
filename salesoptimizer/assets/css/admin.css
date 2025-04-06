@@ -412,3 +412,136 @@ th {
     color: var(--text-secondary);
     font-size: 0.85em;
 }
+
+.analytics-section {
+    margin-bottom: 2rem;
+}
+
+.analytics-card {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    height: 400px;
+}
+
+.debug-section {
+    margin-top: 20px;
+    padding: 15px;
+    background: #f5f5f5;
+    border-radius: 4px;
+}
+
+.debug-section pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.time-range-select {
+    width: auto;
+    min-width: 150px;
+    padding: 0.5rem;
+    margin-left: auto;
+    background: var(--white);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    color: var(--text-color);
+}
+
+#overview {
+    margin-bottom: 2rem;
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.metric-card canvas {
+    margin-top: 1rem;
+    height: 200px !important;
+    width: 100% !important;
+}
+
+.metric-card {
+    background: var(--white);
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+}
+
+.metric-card h3 {
+    color: var(--text-secondary);
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.metric-card p {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.metric-card canvas {
+    margin-top: 1rem;
+    max-height: 200px !important;
+    width: 100% !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .metrics-grid {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+}
+
+@media (max-width: 480px) {
+    .metrics-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.failed-login-stats {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+}
+
+.failed-login-stats h4 {
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+}
+
+.failure-list, .ip-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.failure-list li, .ip-list li {
+    padding: 0.5rem;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+}
+
+.failure-list li:last-child, .ip-list li:last-child {
+    border-bottom: none;
+}
+
+.suspicious-ip {
+    color: var(--danger-color);
+}

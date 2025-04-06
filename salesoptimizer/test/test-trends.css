@@ -1,0 +1,50 @@
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.controls {
+    margin: 20px 0;
+    display: flex;
+    gap: 10px;
+}
+
+#tokenInput {
+    width: 300px;
+    padding: 8px;
+}
+
+#daysSelect {
+    padding: 8px;
+}
+
+button {
+    padding: 8px 16px;
+    background-color: #2196F3;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #1976D2;
+}
+
+.response-section {
+    margin: 20px 0;
+    padding: 20px;
+    background-color: #f5f5f5;
+    border-radius: 4px;
+}
+
+#rawResponse {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.chart-container {
+    height: 400px;
+    margin: 20px 0;
+}

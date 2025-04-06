@@ -1,7 +1,8 @@
-from fastapi import APIRouter, Depends, HTTPException
+# Update the imports at the top
+from fastapi import APIRouter, Depends, HTTPException, Request  # Add Request here
 from sqlalchemy.orm import Session
 from app.db.database import get_db
-from app.models.models import User
+from app.models.models import User, LoginActivity  # Update this line to include LoginActivity
 from app.schemas.user import UserCreate
 from app.schemas.user import UserLogin
 from app.api.auth.auth import verify_password, create_access_token
@@ -11,6 +12,7 @@ from app.utils.token import generate_verification_token
 from app.services.email import send_verification_email
 from pydantic import BaseModel
 from app.api.auth.auth import get_current_user
+from app.models.models import LoginActivity
 
 router = APIRouter()
 
@@ -61,26 +63,48 @@ def register_user(user_data: UserCreate, db: Session = Depends(get_db)):
 
 
 @router.post("/auth/login/")  # Remove the /api prefix
-def login(user_data: UserLogin, db: Session = Depends(get_db)):
+def login(user_data: UserLogin, request: Request, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == user_data.email).first()
+    success = False
+    
+    try:
+        if not user or not verify_password(user_data.password, user.password):
+            raise HTTPException(status_code=401, detail="Invalid email or password")
 
-    if not user or not verify_password(user_data.password, user.password):
-        raise HTTPException(status_code=401, detail="Invalid email or password")
+        if not user.is_active:
+            raise HTTPException(status_code=401, detail="User account is inactive")
 
-    if not user.is_active:
-        raise HTTPException(status_code=401, detail="User account is inactive")
-
-    access_token = create_access_token({"sub": user.email})
-
-    return {
-        "msg": "Login successful",
-        "access_token": access_token,
-        "token_type": "bearer",
-        "name": user.name,
-        "role": user.role,
-        "is_active": user.is_active,
-        "is_verified": user.is_verified
-    }
+        # Record login activity
+        login_activity = LoginActivity(
+            user_id=user.id,
+            ip_address=request.client.host,
+            success=True
+        )
+        db.add(login_activity)
+        db.commit()
+        
+        access_token = create_access_token({"sub": user.email})
+        success = True
+        
+        return {
+            "msg": "Login successful",
+            "access_token": access_token,
+            "token_type": "bearer",
+            "name": user.name,
+            "role": user.role,
+            "is_active": user.is_active,
+            "is_verified": user.is_verified
+        }
+    finally:
+        if not success:
+            # Record failed login attempt
+            login_activity = LoginActivity(
+                user_id=user.id if user else None,
+                ip_address=request.client.host,
+                success=False
+            )
+            db.add(login_activity)
+            db.commit()
 
 
 @router.get("/auth/verify/{token}")  # Remove the /api prefix
@@ -136,3 +160,18 @@ def complete_registration(
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=str(e))
+
+
+# Add this new endpoint after your existing routes
+@router.get("/auth/me")
+async def get_current_user_info(current_user: User = Depends(get_current_user)):
+    """Get current user information"""
+    return {
+        "id": current_user.id,
+        "email": current_user.email,
+        "name": current_user.name,
+        "username": current_user.username,
+        "role": current_user.role,
+        "is_active": current_user.is_active,
+        "is_verified": current_user.is_verified
+    }

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Registration Trends</title>
+    <link rel="stylesheet" href="test-trends.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Registration Trends Test</h1>
+        
+        <div class="controls">
+            <input type="text" id="tokenInput" placeholder="Enter admin token">
+            <select id="daysSelect">
+                <option value="7">7 days</option>
+                <option value="30" selected>30 days</option>
+                <option value="90">90 days</option>
+            </select>
+            <button id="fetchData">Fetch Data</button>
+        </div>
+
+        <div class="response-section">
+            <h2>Raw Response:</h2>
+            <pre id="rawResponse"></pre>
+        </div>
+
+        <div class="chart-container">
+            <canvas id="trendsChart"></canvas>
+        </div>
+    </div>
+    <script src="test-trends.js"></script>
+</body>
+</html>

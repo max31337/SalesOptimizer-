@@ -35,3 +35,18 @@ class AuditLog(Base):
     # Relationships
     user = relationship("User", foreign_keys=[user_id])
     performer = relationship("User", foreign_keys=[performed_by])
+
+
+class LoginActivity(Base):
+    __tablename__ = "login_activities"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=True)
+    timestamp = Column(DateTime, default=datetime.utcnow)
+    ip_address = Column(String)
+    success = Column(Boolean, default=True)
+    
+    user = relationship("User", back_populates="login_activities")
+
+# Add this to the User class
+User.login_activities = relationship("LoginActivity", back_populates="user", cascade="all, delete")

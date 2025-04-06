@@ -509,12 +509,64 @@ function updateUser() {
     });
 }
 
-// Initialize event handlers when document is ready
-$(document).ready(function() {
-    $('#users').addClass('active').show();
-    $('.nav-links li:first-child').addClass('active');
-    $('.admin-section:not(#users)').removeClass('active').hide();
-});
+function setupFilterHandlers() {
+    $('#registrationTimeRange').on('change', function(e) {
+        loadRegistrationTrends(parseInt($(this).val()));
+    });
+}
+
+function setupNavigationHandlers() {
+    $('.nav-links a').click(function(e) {
+        e.preventDefault();
+        const targetId = $(this).attr('href').substring(1);
+        
+        // Hide all sections
+        $('.admin-section').removeClass('active').hide();
+        
+        // Show target section
+        $(`#${targetId}`).addClass('active').show();
+        
+        // Update active nav link
+        $('.nav-links li').removeClass('active');
+        $(this).parent().addClass('active');
+        
+        // Refresh section data if needed
+        if (targetId === 'overview') {
+            loadRegistrationTrends();
+        } else if (targetId === 'users') {
+            loadUsers();
+        } else if (targetId === 'audit') {
+            loadAuditLogs();
+        }
+    });
+}
+
+    // Initialize event handlers when document is ready
+    $(document).ready(function() {
+        // Initial setup
+        checkAdminAccess();
+        
+        // Hide all sections first
+        $('.admin-section').removeClass('active').hide();
+        
+        // Show overview section by default
+        $('#overview').addClass('active').show();
+        
+        // Set correct navigation highlight
+        $('.nav-links li').removeClass('active');
+        $('.nav-links li:first-child').addClass('active');
+        
+        // Setup event listeners
+        setupNavigationHandlers();
+        setupFilterHandlers();
+        
+        // Remove the registration trends handler as it's now in analytics.js
+        // $('#registrationTimeRange').on('change', function() {...});
+    });
+
+    // Remove any registration trends related variables and functions
+    // let registrationChart = null;
+    // function loadRegistrationTrends() {...}
 
 function deleteUser(userId) {
     if (!confirm('Are you sure you want to deactivate this user?')) return;
@@ -541,36 +593,49 @@ function logout() {
     window.location.href = '../auth/login.html'
 }
 
+// Remove or comment out the conflicting event listeners
 document.addEventListener('DOMContentLoaded', function() {
-    const navLinks = document.querySelectorAll('.nav-links a');
-    const sections = document.querySelectorAll('.admin-section');
+    // Initialize the registration trends chart
+    loadRegistrationTrends();
+    
+    // Add event listener for time range selector
+    document.getElementById('registrationTimeRange').addEventListener('change', function(e) {
+        loadRegistrationTrends(parseInt(e.target.value));
+    });
 
-    sections[0].classList.add('active');
-
-    navLinks.forEach(link => {
-        link.addEventListener('click', (e) => {
-            e.preventDefault();
-            
-            sections.forEach(section => section.classList.remove('active'));
-            
-            navLinks.forEach(navLink => navLink.parentElement.classList.remove('active'));
-            
-            link.parentElement.classList.add('active');
-            
-            const targetId = link.getAttribute('href').substring(1);
-            document.getElementById(targetId).classList.add('active');
+    // Update chart when theme changes
+    const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            if (mutation.attributeName === 'data-theme') {
+                loadRegistrationTrends(parseInt(document.getElementById('registrationTimeRange').value));
+            }
         });
+    });
+
+    observer.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['data-theme']
     });
 });
 
-const themeSelect = document.getElementById('themeSelect');
-
-const savedTheme = localStorage.getItem('admin-theme') || 'light';
-document.documentElement.setAttribute('data-theme', savedTheme);
-themeSelect.value = savedTheme;
-
-themeSelect.addEventListener('change', function() {
-    const theme = this.value;
-    document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('admin-theme', theme);
+// Add the navigation handler to show correct section
+document.querySelectorAll('.nav-links a').forEach(link => {
+    link.addEventListener('click', function(e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('href').substring(1);
+        
+        // Hide all sections
+        document.querySelectorAll('.admin-section').forEach(section => {
+            section.classList.remove('active');
+        });
+        
+        // Show target section
+        document.getElementById(targetId).classList.add('active');
+        
+        // Update active nav link
+        document.querySelectorAll('.nav-links li').forEach(li => {
+            li.classList.remove('active');
+        });
+        this.parentElement.classList.add('active');
+    });
 });
