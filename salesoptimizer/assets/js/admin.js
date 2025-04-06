@@ -994,24 +994,22 @@ function setupNavigationHandlers() {
         // Initial setup
         checkAdminAccess();
         
-        // Hide all sections first
         $('.admin-section').removeClass('active').hide();
         
-        // Show overview section by default
         $('#overview').addClass('active').show();
         
-        // Set correct navigation highlight
         $('.nav-links li').removeClass('active');
         $('.nav-links li:first-child').addClass('active');
-        
-        // Setup event listeners
         setupNavigationHandlers();
         setupFilterHandlers();
-        
-        // Remove the registration trends handler as it's now in analytics.js
-        // $('#registrationTimeRange').on('change', function() {...});
     });
 
-    // Remove any registration trends related variables and functions
-    // let registrationChart = null;
-    // function loadRegistrationTrends() {...}
+    function logout() {
+        // Clear local storage
+        localStorage.removeItem('token');
+        localStorage.removeItem('userRole');
+        localStorage.removeItem('userName');
+        
+        // Redirect to login page
+        window.location.href = '../auth/login.html';
+    }
