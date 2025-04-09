@@ -7,7 +7,7 @@ def test_list_users(client, test_admin):
     token = login_response.json()["access_token"]
     
     response = client.get(
-        "/api/admin/users/",  # Correct endpoint from user_management.py
+        "/api/admin/users/list",
         headers={"Authorization": f"Bearer {token}"}
     )
     assert response.status_code == 200
@@ -65,7 +65,7 @@ def test_create_user(client, test_admin):
     
     # Create new user
     response = client.post(
-        "/api/admin/users",  # Added trailing slash
+        "/api/admin/users/create",
         headers={"Authorization": f"Bearer {token}"},
         json={
             "email": "newuser@test.com",
@@ -89,7 +89,7 @@ def test_update_user(client, test_admin):
     
     # Create user first
     create_response = client.post(
-        "/api/admin/users/",  # Added trailing slash
+        "/api/admin/users/create",
         headers={"Authorization": f"Bearer {token}"},
         json={
             "email": "updatetest@test.com",
@@ -103,7 +103,7 @@ def test_update_user(client, test_admin):
     
     # Update user
     response = client.put(
-        f"/api/admin/users/{user_id}/",  # Added trailing slash
+        f"/api/admin/users/update/{user_id}",
         headers={"Authorization": f"Bearer {token}"},
         json={
             "role": "sales-rep",  # Updated role to match enum

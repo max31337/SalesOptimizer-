@@ -49,7 +49,7 @@ function loadUsers(page = 1) {
     const limit = 10;
     const skip = (page - 1) * limit;
 
-    let url = `http://localhost:8000/api/admin/users/?skip=${skip}&limit=${limit}`;
+    let url = `http://localhost:8000/api/admin/users/list/?skip=${skip}&limit=${limit}`;
     
     if (searchTerm) {
         url += `&search=${encodeURIComponent(searchTerm)}`;

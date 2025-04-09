@@ -43,7 +43,7 @@ def check_admin(current_user: User = Depends(get_current_user)):
         raise HTTPException(status_code=403, detail="Admin access required")
     return current_user
 
-@router.get("/admin/users", response_model=Dict[str, Any])
+@router.get("/admin/users/list", response_model=Dict[str, Any])
 async def list_users(
     skip: int = Query(0, ge=0),
     limit: int = Query(10, ge=1, le=100),
@@ -90,7 +90,7 @@ async def list_users(
         "total": total
     }
 
-@router.get("/admin/users/{user_id}", response_model=Dict[str, Any])
+@router.get("/admin/users/details/{user_id}", response_model=Dict[str, Any])
 async def get_user_details(
     user_id: int,
     db: Session = Depends(get_db),
@@ -121,7 +121,49 @@ class UserResponse(BaseModel):
     class Config:
         orm_mode = True
 
-@router.put("/admin/users/{user_id}", response_model=Dict[str, str])
+@router.post("/admin/users/create", response_model=Dict[str, Any])
+async def create_user(
+    user_id: int,
+    user_update: UserUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(check_admin)
+):
+    """Update user details"""
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    changes = []
+    update_dict = user_update.model_dump(exclude_unset=True)
+    
+    try:
+        # Apply updates and track changes
+        for field, value in update_dict.items():
+            if field == 'role' and value != user.role:
+                changes.append(f"role from '{user.role}' to '{value}'")
+            elif field == 'is_active' and value != user.is_active:
+                status_change = "activated" if value else "deactivated"
+                changes.append(f"status {status_change}")
+            setattr(user, field, value)
+        
+        if changes:
+            # Create audit log using the proper function
+            log_user_action(
+                db=db,
+                user_id=user_id,
+                action="UPDATE_USER",
+                details=f"Updated user: {', '.join(changes)}",
+                performed_by=current_user.id
+            )
+        
+        db.commit()
+        return {"message": "User updated successfully"}
+        
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=400, detail=str(e))
+
+@router.put("/admin/users/update/{user_id}", response_model=Dict[str, str])
 async def update_user(
     user_id: int,
     user_update: UserUpdate,
@@ -163,8 +205,8 @@ async def update_user(
         db.rollback()
         raise HTTPException(status_code=400, detail=str(e))
 
-@router.delete("/admin/users/{user_id}")
-async def delete_user(
+@router.delete("/admin/users/deactivate/{user_id}")
+async def deactivate_user(
     user_id: int,
     db: Session = Depends(get_db),
     current_user: User = Depends(check_admin)
