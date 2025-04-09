@@ -4,6 +4,54 @@ let loginActivityChart = null;
 let loginSuccessChart = null;
 let registrationChart = null;
 
+function destroyAllCharts() {
+    const charts = [
+        userDistributionChart,
+        roleDistributionChart,
+        loginActivityChart,
+        loginSuccessChart,
+        registrationChart
+    ];
+    
+    charts.forEach(chart => {
+        if (chart) {
+            chart.destroy();
+        }
+    });
+}
+
+function loadAllAnalytics() {
+    destroyAllCharts();
+    
+    // Add a small delay before recreating charts
+    setTimeout(() => {
+        loadRegistrationTrends();
+        loadActiveUsers();
+        loadLoginActivity();
+        loadRoleDistribution();
+    }, 50);
+}
+
+// Update document ready handler
+$(document).ready(function() {
+    // Only load analytics if we're on the overview section
+    if ($('#overview').is(':visible')) {
+        loadAllAnalytics();
+        
+        // Refresh data every 30 seconds only if overview section is visible
+        const refreshInterval = setInterval(() => {
+            if ($('#overview').is(':visible')) {
+                loadAllAnalytics();
+            }
+        }, 30000);
+    }
+});
+
+// Export function for use in other files
+window.loadAllAnalytics = loadAllAnalytics;
+window.destroyAllCharts = destroyAllCharts;
+
+
 function loadRegistrationTrends(days = 30) {
     const token = localStorage.getItem('token');
     console.log('Loading registration trends...');
@@ -70,27 +118,6 @@ function loadRegistrationTrends(days = 30) {
         }
     });
 }
-
-// Initialize trends when document is ready
-$(document).ready(function() {
-    // Setup registration trends time range handler
-    $('#registrationTimeRange').on('change', function() {
-        loadRegistrationTrends(parseInt($(this).val()));
-    });
-    
-    // Load active users metrics
-    loadActiveUsers();
-    
-    // Load all metrics
-    loadRoleDistribution();
-    loadLoginActivity();
-    
-    // Refresh metrics every 5 minutes
-    setInterval(loadActiveUsers, 300000);
-    setInterval(loadRoleDistribution, 300000);
-    setInterval(loadLoginActivity, 300000);
-});
-
 
 function loadActiveUsers() {
     const token = localStorage.getItem('token');
@@ -339,19 +366,3 @@ function loadLoginActivity() {
         }
     });
 }
-
-
-function loadAllAnalytics() {
-    loadRegistrationTrends();
-    loadActiveUsers();
-    loadLoginActivity();
-    loadRoleDistribution();
-}
-
-// Update the existing charts' initialization
-$(document).ready(function() {
-    loadAllAnalytics();
-    
-    // Refresh data every 30 seconds
-    setInterval(loadAllAnalytics, 30000);
-});

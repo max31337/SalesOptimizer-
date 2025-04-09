@@ -28,6 +28,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
     <script>
         // Apply theme before page loads
         document.documentElement.setAttribute('data-theme', 
@@ -51,15 +52,45 @@
                 <img src="../assets/images/logo.png" alt="SalesOptimizer Logo" width="32" height="32">
                 <h1>Admin Panel</h1>
             </div>
-            <ul class="nav-links">
-                <li class="active"><a href="#overview">Overview</a></li>
-                <li><a href="#users">User Management</a></li>
-                <li><a href="#audit">Audit Logs</a></li>
-                <li><a href="#settings">Settings</a></li>
-            </ul>
+            
+            <div class="nav-group">
+                <span class="nav-group-title">DASHBOARD</span>
+                <ul class="nav-links">
+                    <li class="active">
+                        <a href="#overview">
+                            <i data-lucide="layout-dashboard"></i>
+                            <span>Overview</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="nav-group">
+                <span class="nav-group-title">MANAGEMENT</span>
+                <ul class="nav-links">
+                    <li>
+                        <a href="#users">
+                            <i data-lucide="users"></i>
+                            <span>User Management</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#audit">
+                            <i data-lucide="history"></i>
+                            <span>Audit Logs</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#settings">
+                            <i data-lucide="settings"></i>
+                            <span>Settings</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
             <div class="user-info">
                 <span id="adminName"></span>
-                <!-- Remove the theme-toggle div -->
                 <button onclick="logout()" class="btn-secondary">Logout</button>
             </div>
         </nav>
@@ -268,9 +299,6 @@
         </div>
     </div>
 
-    <!-- Add this before the closing body tag -->
-    <!-- Replace the existing edit modal -->
-    <!-- Replace the Alpine.js modal with jQuery version -->
     <div id="editUserModal" class="modal">
         <div class="modal-content">
             <h3>Edit User</h3>
@@ -317,6 +345,11 @@
             document.body.classList.toggle('dark-mode', isDark);
         });
     </script>
+
+<script>
+    // Initialize Lucide icons
+    lucide.createIcons();
+</script>
 </body>
 </html>
 

@@ -128,14 +128,23 @@ function displayUsers(users) {
         row.append(`<td><span class="status-badge ${user.is_active ? 'active' : 'inactive'}">${user.is_active ? 'Active' : 'Inactive'}</span></td>`);
         row.append(`<td><span class="verification-badge ${user.is_verified ? 'verified' : 'unverified'}">${user.is_verified ? 'Verified' : 'Unverified'}</span></td>`);
         row.append(`
-            <td>
-                <button class="btn-edit" onclick="editUser(${user.id})">Edit</button>
-                <button class="btn-delete" onclick="deleteUser(${user.id})">Delete</button>
+<td>
+                <button class="btn-edit" onclick="editUser(${user.id})">
+                    <i data-lucide="edit"></i>
+                    Edit
+                </button>
+                <button class="btn-delete" onclick="deleteUser(${user.id})">
+                    <i data-lucide="trash-2"></i>
+                    Delete
+                </button>
                 ${!user.is_verified ? `<button class="btn-verify" onclick="verifyUser(${user.id})">Verify</button>` : ''}
             </td>
         `);
         userTableBody.append(row);
     });
+
+    lucide.createIcons();
+
 }
 
 // Add this new function to handle manual verification
@@ -302,12 +311,23 @@ function setupEventListeners() {
     $('.nav-links a').click(function(e) {
         e.preventDefault();
         const targetId = $(this).attr('href').substring(1);
+
+        if (targetId !== 'overview' && window.destroyAllCharts) {
+            destroyAllCharts();
+        }
+        $('.admin-section').fadeOut(150, function() {
+            $('.admin-section').hide();
+            $(`#${targetId}`).fadeIn(150);
+            
+            // Initialize charts after fade in if overview
+            if (targetId === 'overview') {
+                setTimeout(loadAllAnalytics, 200);
+            }
+        });
         
-        // Hide all sections
-        $('.admin-section').removeClass('active').hide();
-        $(`#${targetId}`).addClass('active').show();
         $('.nav-links li').removeClass('active');
         $(this).parent().addClass('active');
+    });
 
         if (targetId === 'audit') {
             loadAuditLogs();
@@ -316,8 +336,7 @@ function setupEventListeners() {
         } else if (targetId === 'settings') {
             loadAdminSettings();
         }
-    });
-}
+    }
 
 $(document).ready(function() {
     $('#users').addClass('active').show();
