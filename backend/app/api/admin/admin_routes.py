@@ -31,25 +31,6 @@ async def create_new_user(
         "role": user.role
     }
 
-@router.put("/admin/users/{user_id}")
-async def update_user_details(
-    user_id: int,
-    user_data: UserUpdate,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(check_admin)
-):
-    updated_user = update_user(db, user_id, user_data)
-    return {
-        "message": "User updated successfully",
-        "user": {
-            "id": updated_user.id,
-            "email": updated_user.email,
-            "name": updated_user.name,
-            "role": updated_user.role,
-            "is_active": updated_user.is_active
-        }
-    }
-
 class InviteUserRequest(BaseModel):
      email: EmailStr
      role: Literal["sales-rep", "analyst", "admin"]

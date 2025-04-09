@@ -184,15 +184,17 @@ function loadAuditLogs() {
     if (action) params.append('action', action);
 
     $.ajax({
+        // Update the URL to match the backend route
         url: `http://localhost:8000/api/audit-logs?${params.toString()}`,
         headers: { 'Authorization': `Bearer ${token}` },
         method: 'GET',
         success: function(response) {
-            displayAuditLogs(response.logs);
+            displayAuditLogs(response);
             updatePagination(response.total);
         },
         error: function(xhr) {
             showNotification('Failed to load audit logs', 'error');
+            console.error('Error loading audit logs:', xhr.responseJSON?.detail);
         }
     });
 }

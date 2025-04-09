@@ -4,11 +4,13 @@ from sqlalchemy import or_
 from datetime import datetime
 from sqlalchemy.orm import Session
 from app.db.database import get_db
-from app.models import User  # Updated import
+from app.models import User
+from app.models.audit import AuditLog  # Update this import
 from app.api.auth.auth import get_current_user
 from pydantic import BaseModel
 from app.crud.user import get_user
 from app.crud.audit_log import log_user_action
+from app.schemas.audit_log import AuditLogCreate  # Use this instead of creating a new model
 
 router = APIRouter()
 
@@ -28,12 +30,13 @@ class UserUpdate(BaseModel):
     role: Optional[str] = None
     is_active: Optional[bool] = None
 
-class AuditLog(BaseModel):
-    user_id: int
-    action: str
-    details: str
-    timestamp: datetime
-    performed_by: int
+# Remove this duplicate model since we're using the schema
+# class AuditLog(BaseModel):
+#     user_id: int
+#     action: str
+#     details: str
+#     timestamp: datetime
+#     performed_by: int
 
 def check_admin(current_user: User = Depends(get_current_user)):
     if current_user.role != "admin":
@@ -131,30 +134,34 @@ async def update_user(
         raise HTTPException(status_code=404, detail="User not found")
     
     changes = []
-    # Convert Pydantic model to dict excluding unset values
     update_dict = user_update.model_dump(exclude_unset=True)
     
-    if 'role' in update_dict:
-        changes.append(f"role to {update_dict['role']}")
-    if 'is_active' in update_dict:
-        status = "activated" if update_dict['is_active'] else "deactivated"
-        changes.append(f"status {status}")
-    
-    for field, value in update_dict.items():
-        setattr(user, field, value)
-    
-    details = f"Updated user {', '.join(changes)}"
-    
-    log_user_action(
-        db=db,
-        user_id=user_id,
-        action="UPDATE_USER",
-        details=details,
-        performed_by=current_user.id
-    )
-    
-    db.commit()
-    return {"message": "User updated successfully"}
+    try:
+        # Apply updates and track changes
+        for field, value in update_dict.items():
+            if field == 'role' and value != user.role:
+                changes.append(f"role from '{user.role}' to '{value}'")
+            elif field == 'is_active' and value != user.is_active:
+                status_change = "activated" if value else "deactivated"
+                changes.append(f"status {status_change}")
+            setattr(user, field, value)
+        
+        if changes:
+            # Create audit log using the proper function
+            log_user_action(
+                db=db,
+                user_id=user_id,
+                action="UPDATE_USER",
+                details=f"Updated user: {', '.join(changes)}",
+                performed_by=current_user.id
+            )
+        
+        db.commit()
+        return {"message": "User updated successfully"}
+        
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=400, detail=str(e))
 
 @router.delete("/admin/users/{user_id}")
 async def delete_user(
