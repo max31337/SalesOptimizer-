@@ -131,7 +131,8 @@ async def update_user(
         raise HTTPException(status_code=404, detail="User not found")
     
     changes = []
-    update_dict = user_update.dict(exclude_unset=True)
+    # Convert Pydantic model to dict excluding unset values
+    update_dict = user_update.model_dump(exclude_unset=True)
     
     if 'role' in update_dict:
         changes.append(f"role to {update_dict['role']}")

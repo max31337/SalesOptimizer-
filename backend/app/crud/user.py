@@ -5,7 +5,7 @@ from typing import Optional, List  # Added List import
 from sqlalchemy.exc import IntegrityError  # Added for database error handling
 
 from app.models import User  # Updated import
-from app.schemas.user import UserCreate
+from app.schemas.user import UserCreate, UserUpdate  # Added User   Update import
 from app.api.auth.auth import hash_password, verify_password
 from app.utils.token import generate_verification_token
 from app.services.email import send_verification_email
@@ -73,21 +73,27 @@ def verify_user_email(db: Session, token: str) -> User:
     db.refresh(user)
     return user
 
-def update_user(db: Session, user_id: int, user_data: dict) -> User:
+def update_user(db: Session, user_id: int, user_data: UserUpdate) -> User:
     """Update user details."""
     db_user = get_user(db, user_id)
     if not db_user:
         raise HTTPException(status_code=404, detail="User not found")
     
-    if "password" in user_data:
-        user_data["password"] = hash_password(user_data["password"])
+    # Convert Pydantic model to dict excluding unset values
+    update_data = user_data.model_dump(exclude_unset=True)
     
-    for key, value in user_data.items():
+    for key, value in update_data.items():
+        if key == "password" and value:
+            value = hash_password(value)
         setattr(db_user, key, value)
     
-    db.commit()
-    db.refresh(db_user)
-    return db_user
+    try:
+        db.commit()
+        db.refresh(db_user)
+        return db_user
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=400, detail=str(e))
 
 def delete_user(db: Session, user_id: int) -> bool:
     """Delete a user."""
