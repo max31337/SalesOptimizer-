@@ -43,7 +43,7 @@ def check_admin(current_user: User = Depends(get_current_user)):
         raise HTTPException(status_code=403, detail="Admin access required")
     return current_user
 
-@router.get("/admin/users/", response_model=Dict[str, Any])
+@router.get("/admin/users", response_model=Dict[str, Any])
 async def list_users(
     skip: int = Query(0, ge=0),
     limit: int = Query(10, ge=1, le=100),
@@ -91,7 +91,7 @@ async def list_users(
     }
 
 @router.get("/admin/users/{user_id}", response_model=Dict[str, Any])
-async def get_user_by_id(
+async def get_user_details(
     user_id: int,
     db: Session = Depends(get_db),
     current_user: User = Depends(check_admin)

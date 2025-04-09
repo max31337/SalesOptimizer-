@@ -65,7 +65,7 @@ def test_create_user(client, test_admin):
     
     # Create new user
     response = client.post(
-        "/api/admin/users/",  # Added trailing slash
+        "/api/admin/users",  # Added trailing slash
         headers={"Authorization": f"Bearer {token}"},
         json={
             "email": "newuser@test.com",
