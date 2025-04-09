@@ -1,6 +1,6 @@
 import enum
 
-class InteractionType(enum.Enum):
+class InteractionType(str, enum.Enum):
     CALL = "call"
     EMAIL = "email"
     MEETING = "meeting"
