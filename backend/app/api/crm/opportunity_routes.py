@@ -1,0 +1,1 @@
+from app.models import Opportunity, Customer, User  # Updated import

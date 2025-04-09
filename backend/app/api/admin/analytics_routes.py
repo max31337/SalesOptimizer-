@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func
 from datetime import datetime, timedelta
 from app.db.database import get_db
-from app.models.models import User, LoginActivity  # Add LoginActivity here
+from app.models import User, LoginActivity  # Updated import
 from app.api.admin.admin_routes import check_admin
 
 router = APIRouter()

@@ -1,10 +1,10 @@
-# Update the imports at the top
-from fastapi import APIRouter, Depends, HTTPException, Request  # Add Request here
+from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks, Request
 from sqlalchemy.orm import Session
 from app.db.database import get_db
-from app.models.models import User, LoginActivity  # Update this line to include LoginActivity
-from app.schemas.user import UserCreate
-from app.schemas.user import UserLogin
+from app.utils.token import generate_verification_token, create_verification_token, verify_token
+from app.models import User, LoginActivity  # Updated import path
+from .auth import hash_password, create_access_token, get_current_user
+from app.schemas.user import UserCreate, UserLogin
 from app.api.auth.auth import verify_password, create_access_token
 from app.api.auth.auth import hash_password  
 from app.crud.user import verify_user_email
@@ -12,7 +12,6 @@ from app.utils.token import generate_verification_token
 from app.services.email import send_verification_email
 from pydantic import BaseModel
 from app.api.auth.auth import get_current_user
-from app.models.models import LoginActivity
 from fastapi_csrf_protect import CsrfProtect
 
 router = APIRouter()

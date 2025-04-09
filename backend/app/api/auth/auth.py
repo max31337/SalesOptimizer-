@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 from app.db.database import get_db
-from app.models.models import User
+from app.models import User  # Updated import
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 

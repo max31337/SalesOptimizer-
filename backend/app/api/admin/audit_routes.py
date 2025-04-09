@@ -4,7 +4,7 @@ from typing import List, Optional
 from datetime import datetime
 from sqlalchemy.orm import aliased
 from app.db.database import get_db
-from app.models.models import User, AuditLog  
+from app.models import AuditLog, User  
 from app.api.auth.auth import get_current_user
 from app.crud.audit_log import get_audit_logs
 from app.schemas.audit_log import AuditLogResponse, AuditLogFilter

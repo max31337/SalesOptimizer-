@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from datetime import datetime
 from typing import List, Optional
 
-from app.models.models import AuditLog  # Update this import
+from app.models import AuditLog  # Updated import
 from app.schemas.audit_log import AuditLogCreate, AuditLogFilter
 
 def create_audit_log(db: Session, audit_log: AuditLogCreate) -> AuditLog:

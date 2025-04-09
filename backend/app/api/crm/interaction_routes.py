@@ -1,0 +1,1 @@
+from app.models import Interaction, Customer, User  # Updated import

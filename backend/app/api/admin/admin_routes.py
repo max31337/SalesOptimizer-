@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from typing import List, Literal
 from pydantic import BaseModel, EmailStr
 from app.db.database import get_db
-from app.models.models import User
+from app.models import User  # Updated import
 from app.api.auth.auth import get_current_user, hash_password  
 from app.services.email import send_invite_email
 from app.utils.token import generate_verification_token

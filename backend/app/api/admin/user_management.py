@@ -4,7 +4,7 @@ from sqlalchemy import or_
 from datetime import datetime
 from sqlalchemy.orm import Session
 from app.db.database import get_db
-from app.models.models import User
+from app.models import User  # Updated import
 from app.api.auth.auth import get_current_user
 from pydantic import BaseModel
 from app.crud.user import get_user
