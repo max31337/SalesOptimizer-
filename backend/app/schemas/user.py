@@ -30,3 +30,10 @@ class PasswordReset(BaseModel):
 
 class PasswordUpdate(BaseModel):
     password: str
+
+# Add this new schema class
+class InviteUser(BaseModel):
+    email: EmailStr
+    name: str
+    role: Literal["admin", "sales-rep", "analyst"]
+    username: str  # Added username field

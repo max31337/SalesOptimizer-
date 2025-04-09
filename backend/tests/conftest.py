@@ -68,3 +68,9 @@ def test_sales_rep(db_session):
     db_session.add(sales_rep)
     db_session.commit()
     return sales_rep
+
+@pytest.fixture(autouse=True)
+def cleanup_database(db_session):
+    yield
+    db_session.query(User).delete()
+    db_session.commit()
