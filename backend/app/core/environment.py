@@ -13,7 +13,13 @@ class Environment(str, Enum):
     TESTING = "testing"
 
 class Settings(BaseSettings):
-    DATABASE_URL: str = os.getenv("DATABASE_URL", "").replace("postgres://", "postgresql+psycopg2://") + "?sslmode=require"
+    DATABASE_URL: str = Field(..., env="DATABASE_URL")
+    
+    @validator("DATABASE_URL")
+    def fix_db_url(cls, v):
+        if v.startswith("postgres://"):
+            return v.replace("postgres://", "postgresql+psycopg2://", 1) + "?sslmode=require"
+        return v
     ENV: Environment = Environment.DEVELOPMENT if not os.getenv("RAILWAY_ENVIRONMENT") else Environment.PRODUCTION
     DATABASE_URL: str
     SECRET_KEY: str
