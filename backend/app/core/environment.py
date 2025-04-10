@@ -19,8 +19,8 @@ class Settings(BaseSettings):
     FRONTEND_URL: str = "http://localhost:3000"
     CORS_ORIGINS: list = [
         "http://localhost:3000",
-        "https://salesoptimizer.vercel.app/",  # Add your Vercel URL here
-        "https://salesoptimizer-production.up.railway.app"
+        "https://salesoptimizer.vercel.app",  # Remove trailing slash
+        "https://noble-warmth-production.up.railway.app"
     ]
     
     SMTP_SERVER: str

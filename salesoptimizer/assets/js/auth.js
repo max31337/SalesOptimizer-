@@ -6,15 +6,17 @@ $(document).ready(function () {
     $("#loginForm").submit(function (event) {
         event.preventDefault();
         
+        // In login function
         $.ajax({
-            url: `${apiConfig.apiUrl}/auth/login/`,
-            method: 'POST',
-            contentType: 'application/json',
+            url: `${apiConfig.apiUrl}/auth/login/`,  // Ensure trailing slash
+            method: "POST",
+            contentType: "application/json",  // Must include this header
             data: JSON.stringify({
                 email: $("#email").val(),
                 password: $("#password").val()
             }),
-            success: function (response) {
+            success: function(response) {
+                console.log("Login response:", response);  // Add logging
                 localStorage.setItem('token', response.access_token);
                 localStorage.setItem('userName', response.name);
                 localStorage.setItem('userRole', response.role);
@@ -25,7 +27,8 @@ $(document).ready(function () {
                     window.location.href = '../dashboard.html';
                 }
             },
-            error: function (xhr) {
+            error: function(xhr) {
+                console.error("Login failed:", xhr);  // Add error logging
                 $("#errorMessage")
                     .text(xhr.responseJSON?.detail || "Login failed")
                     .addClass('show');

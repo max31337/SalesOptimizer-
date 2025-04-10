@@ -18,7 +18,6 @@ RUN pip install --no-cache-dir -r requirements.txt || (sleep 5 && pip install --
 
 # Set environment variables
 ENV PYTHONPATH=/app
-ENV PORT=8000
 
 # Start the application
 CMD sh -c "alembic upgrade head && python scripts/create_admin.py && uvicorn app.main:app --host 0.0.0.0 --port ${PORT}"
