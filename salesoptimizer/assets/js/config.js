@@ -1,3 +1,3 @@
 const apiConfig = {
-    apiUrl: process.env.API_BASE_URL || "http://localhost:8000/api"  // Fallback for local dev
+    apiUrl: window.API_BASE_URL || "https://noble-warmth-production.up.railway.app/api"
 };
