@@ -1,6 +1,9 @@
 # Ignore Python virtual environments
 backend/.venv
 backend/.env
+backend/.env.production
+backend/.env.development
+backend/.env.testing
 backend/alembic.ini
 backend/migrations/env.py
 

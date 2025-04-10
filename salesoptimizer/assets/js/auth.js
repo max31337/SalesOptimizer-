@@ -1,3 +1,5 @@
+import { apiConfig } from './config.js';
+
 $(document).ready(function () {
     const errorMessage = $("#errorMessage");
     
@@ -5,7 +7,7 @@ $(document).ready(function () {
         event.preventDefault();
         
         $.ajax({
-            url: 'http://localhost:8000/api/auth/login/',
+            url: `${apiConfig.apiUrl}/auth/login/`,
             method: 'POST',
             contentType: 'application/json',
             data: JSON.stringify({

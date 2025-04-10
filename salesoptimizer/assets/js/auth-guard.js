@@ -1,3 +1,5 @@
+import { apiConfig } from './config.js';
+
 function verifySession() {
     const token = localStorage.getItem('token');
     const userRole = localStorage.getItem('userRole');
@@ -7,15 +9,8 @@ function verifySession() {
         return;
     }
 
-    // Check if admin is trying to access non-admin pages
-    const currentPath = window.location.pathname;
-    if (currentPath.includes('/pages/') && userRole === 'admin') {
-        window.location.href = '/salesoptimizer/admin/dashboard.html';
-        return;
-    }
-
     $.ajax({
-        url: 'http://localhost:8000/api/auth/check-session',
+        url: `${apiConfig.apiUrl}/auth/check-session`,
         headers: { 'Authorization': `Bearer ${token}` },
         method: 'GET',
         success: function(response) {
