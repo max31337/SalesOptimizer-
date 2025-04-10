@@ -4,6 +4,10 @@ backend/.env
 backend/.env.production
 backend/.env.development
 backend/.env.testing
+<<<<<<< HEAD
+=======
+backend/migrations/env.py
+>>>>>>> ba4b152609a704dfafa87bb84c82858a9cb859dc
 
 # Byte-compiled files
 __pycache__/
