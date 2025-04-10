@@ -6,6 +6,28 @@ from sqlalchemy import pool
 from alembic import context
 import os
 from dotenv import load_dotenv
+from app.core.environment import get_settings
+
+settings = get_settings()
+
+# Load the appropriate .env file based on environment
+if settings.ENV == "production":
+    load_dotenv(".env.production")
+else:
+    load_dotenv(".env.development")
+
+config = context.config
+
+if config.config_file_name is not None:
+    fileConfig(config.config_file_name)
+
+# Get DATABASE_URL with Railway compatibility
+DATABASE_URL = os.getenv("DATABASE_URL")
+if DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+
+# Override sqlalchemy.url with environment variable
+config.set_main_option("sqlalchemy.url", DATABASE_URL)
 
 # Import Base and all models to ensure they're included in migrations
 from app.db.database import Base
