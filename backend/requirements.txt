@@ -1,5 +1,6 @@
 #needed libraries, too lazy to install them one by one lol
 
+wait-for
 fastapi
 uvicorn
 python-jose[cryptography]
