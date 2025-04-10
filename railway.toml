@@ -20,6 +20,3 @@ restartPolicyType = "on_failure"
 
 [variables]
 PYTHONPATH = "/app/backend"
-NIXPACKS_PYTHON_VERSION = "3.9"
-NIXPACKS_INSTALL_CMD = "pip install -r requirements.txt"
-NIXPACKS_BUILD_CMD = "echo 'No build step needed'"
