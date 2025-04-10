@@ -10,8 +10,14 @@ services:
       - key: ENV
         value: production
       - key: DATABASE_URL
-        sync: false
+        fromDatabase:
+          name: salesoptimizer-db
+          property: connectionString
       - key: SECRET_KEY
         generateValue: true
       - key: FRONTEND_URL
-        value: https://your-github-username.github.io/SalesOptimizer-
+        value: https://salesoptimizer.vercel.app
+
+databases:
+  - name: salesoptimizer-db
+    plan: free
