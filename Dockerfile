@@ -24,4 +24,4 @@ ENV PYTHONPATH=/app/backend
 # Add wait-for-db script to prevent race conditions
 COPY scripts/wait_for_db.py .
 # Add database connection check before migrations
-CMD sh -c "python scripts/wait_for_db.py && alembic upgrade head && python scripts/create_admin.py && uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8080}"
+CMD sh -c "python scripts/wait_for_db.py && alembic upgrade head && python scripts/create_admin.py && uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8080} --timeout-keep-alive 60"

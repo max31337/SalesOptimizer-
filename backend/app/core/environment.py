@@ -13,6 +13,7 @@ class Environment(str, Enum):
     TESTING = "testing"
 
 class Settings(BaseSettings):
+    DATABASE_URL: str = os.getenv("DATABASE_URL", "").replace("postgres://", "postgresql+psycopg2://") + "?sslmode=require"
     ENV: Environment = Environment.DEVELOPMENT if not os.getenv("RAILWAY_ENVIRONMENT") else Environment.PRODUCTION
     DATABASE_URL: str
     SECRET_KEY: str

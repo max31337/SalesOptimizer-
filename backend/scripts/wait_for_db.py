@@ -6,7 +6,7 @@ import time
 
 DB_URL = os.getenv("DATABASE_URL")
 if DB_URL.startswith("postgres://"):
-    DB_URL = DB_URL.replace("postgres://", "postgresql://", 1)
+    DB_URL = DB_URL.replace("postgres://", "postgresql+psycopg2://", 1) + "?sslmode=require"
 
 engine = create_engine(DB_URL)
 timeout = 30
