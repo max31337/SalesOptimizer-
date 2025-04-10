@@ -17,7 +17,7 @@ class Settings(BaseSettings):
     ENV: Environment = Environment.DEVELOPMENT if not os.getenv("RAILWAY_ENVIRONMENT") else Environment.PRODUCTION
     DATABASE_URL: str
     SECRET_KEY: str
-    FRONTEND_URL: str = "http://localhost:3000"
+    FRONTEND_URL: str = "https://salesoptimizer.vercel.app"
     CORS_ORIGINS: list = [
         "http://localhost:3000",
         "https://salesoptimizer.vercel.app",  # Remove trailing slash
