@@ -20,7 +20,7 @@ WORKDIR /app/backend
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:${PORT}/ || exit 1
 
-# Use shell form with absolute paths
-CMD alembic upgrade head && \
-    python scripts/create_admin.py && \
-    uvicorn app.main:app --host 0.0.0.0 --port ${PORT}
+# Use absolute paths for commands
+CMD /usr/local/bin/alembic upgrade head && \
+    /usr/local/bin/python scripts/create_admin.py && \
+    /usr/local/bin/uvicorn app.main:app --host 0.0.0.0 --port ${PORT}
