@@ -19,5 +19,5 @@ RUN pip install --no-cache-dir -r requirements.txt || (sleep 5 && pip install --
 # Remove hardcoded PORT
 ENV PYTHONPATH=/app/backend
 
-# Start the application with Railway's PORT
-CMD sh -c "alembic upgrade head && python scripts/create_admin.py && uvicorn app.main:app --host 0.0.0.0 --port ${PORT}"
+# Start the application with port fallback
+CMD sh -c "alembic upgrade head && python scripts/create_admin.py && uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8080}"

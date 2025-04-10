@@ -18,20 +18,12 @@ app = FastAPI()
 @app.get("/api/health")
 async def health_check():
     try:
-        # Test database connection
-        db = next(get_db())
-        db.execute("SELECT 1")
-        return {
-            "status": "healthy",
-            "database": "connected",
-            "timestamp": datetime.utcnow().isoformat()
-        }
+        # Simple connection test
+        db = SessionLocal()
+        db.execute(text("SELECT 1"))
+        return {"status": "ok", "database": "connected"}
     except Exception as e:
-        return {
-            "status": "unhealthy",
-            "error": str(e),
-            "timestamp": datetime.utcnow().isoformat()
-        }
+        return {"status": "error", "database": str(e)}
 
 from app.core.environment import get_settings
 
