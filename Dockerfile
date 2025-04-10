@@ -1,6 +1,6 @@
 FROM python:3.9-slim
 
-WORKDIR /backend
+WORKDIR /app
 
 # Install system dependencies
 RUN apt-get update && \
