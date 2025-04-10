@@ -10,8 +10,9 @@ RUN apt-get update && \
 # Copy only the backend directory
 COPY backend/ .
 
-# Install Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+# Install Python dependencies with upgrade pip
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
 
 # Set environment variables
 ENV PYTHONPATH=/app
@@ -19,15 +20,7 @@ ENV PORT=8000
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:${PORT}/ || exit 1
+    CMD curl -f http://localhost:${PORT}/api/health || exit 1
 
-# Start the application: wait for DB, run migrations, then start server
-CMD ["sh", "-c", "\
-    echo 'Waiting for database...' && \
-    python scripts/wait_for_db.py && \
-    echo 'Running Alembic migrations...' && \
-    alembic upgrade head && \
-    echo 'Creating admin user...' && \
-    python scripts/create_admin.py && \
-    echo 'Starting FastAPI server...' && \
-    uvicorn app.main:app --host 0.0.0.0 --port ${PORT}"]
+# Start the application
+CMD sh -c "python scripts/wait_for_db.py && alembic upgrade head && python scripts/create_admin.py && uvicorn app.main:app --host 0.0.0.0 --port ${PORT}"

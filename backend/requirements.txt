@@ -13,6 +13,7 @@ joblib
 numpy
 scikit-learn
 pydantic[email]
+pydantic-settings>=2.0.0
 alembic
 pyotp
 qrcode

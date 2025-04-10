@@ -1,7 +1,11 @@
 from enum import Enum
 from functools import lru_cache
-from pydantic_settings import BaseSettings
 import os
+
+try:
+    from pydantic_settings import BaseSettings
+except ImportError:
+    from pydantic import BaseSettings  # fallback for older versions
 
 class Environment(str, Enum):
     DEVELOPMENT = "development"
@@ -19,7 +23,6 @@ class Settings(BaseSettings):
         "https://salesoptimizer-production.up.railway.app"
     ]
     
-    # Add SMTP settings
     SMTP_SERVER: str
     SMTP_PORT: str
     SMTP_USERNAME: str
