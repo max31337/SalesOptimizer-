@@ -4,8 +4,9 @@ import os
 
 try:
     from pydantic_settings import BaseSettings
+    from pydantic import Field, validator  # Add missing imports
 except ImportError:
-    from pydantic import BaseSettings  # fallback for older versions
+    from pydantic import BaseSettings, Field, validator  # Fallback with all needed imports
 
 class Environment(str, Enum):
     DEVELOPMENT = "development"
