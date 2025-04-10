@@ -1,10 +1,20 @@
 [build]
 builder = "nixpacks"
-buildCommand = "cd backend && pip install -r requirements.txt"
+buildCommand = """
+apt-get update && apt-get install -y python3-pip
+cd backend
+python3 -m pip install --upgrade pip
+python3 -m pip install -r requirements.txt
+"""
 builderImage = "python:3.9"
 
 [deploy]
-startCommand = "cd backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+startCommand = """
+cd backend
+alembic upgrade head
+python3 scripts/create_admin.py
+uvicorn app.main:app --host 0.0.0.0 --port $PORT
+"""
 healthcheckPath = "/api/health"
 healthcheckTimeout = 100
 restartPolicyType = "on_failure"
