@@ -1,3 +1,3 @@
 const apiConfig = {
-    apiUrl: "https://noble-warmth-production.up.railway.app/api" // Added https://
+    apiUrl: process.env.API_BASE_URL || "http://localhost:8000/api"  // Fallback for local dev
 };

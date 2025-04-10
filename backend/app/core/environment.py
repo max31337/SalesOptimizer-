@@ -14,6 +14,12 @@ class Environment(str, Enum):
     TESTING = "testing"
 
 class Settings(BaseSettings):
+    CORS_ORIGINS: list = [
+        os.getenv("FRONTEND_URL", "http://localhost:3000"),
+        "https://salesoptimizer.vercel.app",  # Vercel deployment
+        "http://crossover.proxy.rlwy.net:32542",
+        "https://crossover.proxy.rlwy.net:32542"
+    ]
     DATABASE_URL: str = Field(..., env="DATABASE_URL")
     
     @validator("DATABASE_URL")
