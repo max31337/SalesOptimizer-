@@ -12,7 +12,6 @@ from app.utils.token import generate_verification_token
 from app.services.email import send_verification_email
 from pydantic import BaseModel
 from app.api.auth.auth import get_current_user
-from fastapi_csrf_protect import CsrfProtect
 
 router = APIRouter()
 
