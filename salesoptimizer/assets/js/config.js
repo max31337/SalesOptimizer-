@@ -1,3 +1,3 @@
-const apiConfig = window.API_CONFIG || {
-    apiUrl: "http://localhost:8000/api" // Fallback for local development
+const apiConfig = {
+  apiUrl: process.env.API_BASE_URL || "http://localhost:8000/api"
 };
