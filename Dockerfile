@@ -8,15 +8,15 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies
-COPY backend/requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+COPY backend/requirements.txt backend/requirements.txt
+RUN pip install --no-cache-dir -r backend/requirements.txt
 
 # Copy application code
-COPY backend/ backend/
+COPY . .
 ENV PYTHONPATH=/app/backend
 
-# Run migrations and start the application
+# Set working directory to backend
 WORKDIR /app/backend
-CMD alembic upgrade head && \
-    python scripts/create_admin.py && \
-    uvicorn app.main:app --host 0.0.0.0 --port $PORT
+
+# Start command using shell form
+CMD /bin/sh -c "alembic upgrade head && python scripts/create_admin.py && uvicorn app.main:app --host 0.0.0.0 --port ${PORT}"
