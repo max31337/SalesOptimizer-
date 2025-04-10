@@ -11,8 +11,10 @@ RUN apt-get update && \
 COPY backend/ .
 
 # Install Python dependencies with upgrade pip
-RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir --upgrade pip || (sleep 5 && pip install --no-cache-dir --upgrade pip)
+RUN pip install --no-cache-dir -r requirements.txt || (sleep 5 && pip install --no-cache-dir -r requirements.txt)
+
+
 
 # Set environment variables
 ENV PYTHONPATH=/app
@@ -23,4 +25,4 @@ HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:${PORT}/api/health || exit 1
 
 # Start the application
-CMD sh -c "python scripts/wait_for_db.py && alembic downgrade base && alembic upgrade head && python scripts/create_admin.py && uvicorn app.main:app --host 0.0.0.0 --port ${PORT}"
+CMD sh -c "alembic upgrade head && python scripts/create_admin.py && uvicorn app.main:app --host 0.0.0.0 --port ${PORT}"
