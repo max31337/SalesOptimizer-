@@ -24,10 +24,9 @@ class CustomerUpdate(CustomerBase):
 
 class Customer(CustomerBase):
     id: int
-    is_active: bool
-    assigned_to: Optional[int]
     created_at: datetime
     updated_at: datetime
 
     class Config:
+        from_attributes = True  # Changed from orm_mode
         orm_mode = True
