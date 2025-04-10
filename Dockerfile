@@ -16,8 +16,9 @@ RUN pip install --no-cache-dir -r requirements.txt || (sleep 5 && pip install --
 
 
 
+# Remove hardcoded PORT environment variable
 # Set environment variables
-ENV PYTHONPATH=/app
+ENV PYTHONPATH=/app/backend 
 
 # Start the application
-CMD sh -c "alembic upgrade head && python scripts/create_admin.py && uvicorn app.main:app --host 0.0.0.0 --port ${PORT}"
+CMD sh -c "alembic upgrade head && python scripts/create_admin.py && uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8080}"
