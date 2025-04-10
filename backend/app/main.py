@@ -17,7 +17,21 @@ app = FastAPI()
 # Add this health check endpoint
 @app.get("/api/health")
 async def health_check():
-    return {"status": "healthy"}
+    try:
+        # Test database connection
+        db = next(get_db())
+        db.execute("SELECT 1")
+        return {
+            "status": "healthy",
+            "database": "connected",
+            "timestamp": datetime.utcnow().isoformat()
+        }
+    except Exception as e:
+        return {
+            "status": "unhealthy",
+            "error": str(e),
+            "timestamp": datetime.utcnow().isoformat()
+        }
 
 from app.core.environment import get_settings
 
