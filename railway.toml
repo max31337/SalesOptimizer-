@@ -7,6 +7,4 @@ healthcheckTimeout = 100
 restartPolicyType = "on_failure"
 
 [variables]
-PYTHONPATH = "/app/backend"
-NIXPACKS_PYTHON_VERSION = "3.9"
-NIXPACKS_PLAN_PROVIDERS = "python"
+PYTHONPATH = "/app"
