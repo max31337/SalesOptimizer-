@@ -14,6 +14,28 @@ branch_labels = None
 depends_on = None
 
 def upgrade() -> None:
+    # Create enum types first with IF NOT EXISTS
+    op.execute("""
+        DO $$
+        BEGIN
+            IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'interactiontype') THEN
+                CREATE TYPE interactiontype AS ENUM ('call', 'email', 'meeting');
+            END IF;
+        END
+        $$;
+    """)
+    
+    op.execute("""
+        DO $$
+        BEGIN
+            IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'opportunitystage') THEN
+                CREATE TYPE opportunitystage AS ENUM ('LEAD', 'PROSPECT', 'NEGOTIATION', 'CLOSED_WON', 'CLOSED_LOST');
+            END IF;
+        END
+        $$;
+    """)
+    
+    # ... rest of the upgrade function remains the same ...
     # Create enum types first
     op.execute("CREATE TYPE interactiontype AS ENUM ('call', 'email', 'meeting')")
     op.execute("CREATE TYPE opportunitystage AS ENUM ('LEAD', 'PROSPECT', 'NEGOTIATION', 'CLOSED_WON', 'CLOSED_LOST')")
