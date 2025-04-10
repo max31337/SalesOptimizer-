@@ -14,24 +14,10 @@ from app.routes import health
 
 app = FastAPI()
 
-# Add this health check endpoint
-@app.get("/api/health")
-async def health_check():
-    try:
-        # Simple connection test
-        db = SessionLocal()
-        db.execute(text("SELECT 1"))
-        return {"status": "ok", "database": "connected"}
-    except Exception as e:
-        return {"status": "error", "database": str(e)}
-
-from app.core.environment import get_settings
-
-settings = get_settings()
-
+# Update CORS configuration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.CORS_ORIGINS,
+    allow_origins=["*"],  # Temporarily allow all for testing
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
