@@ -233,3 +233,24 @@ async def deactivate_user(
     
     db.commit()
     return {"message": "User successfully deactivated"}
+
+@router.post("/admin/verify-user/{user_id}")
+async def verify_user(
+    user_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(check_admin)
+):
+    """Verify a user account"""
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    user.is_verified = True
+    user.verification_token = None
+    
+    try:
+        db.commit()
+        return {"message": "User verified successfully"}
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=str(e))

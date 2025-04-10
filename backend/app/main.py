@@ -7,12 +7,18 @@ from app.api.admin.analytics_routes import router as analytics_router
 from app.core.config import SECRET_KEY
 from app.api.crm import customer_routes
 from app.api.crm import interaction_routes  # Add this import
+from app.api.admin.user_management import router as admin_user_router
+from app.core.environment import get_settings
 
 app = FastAPI()
 
+from app.core.environment import get_settings
+
+settings = get_settings()
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=settings.CORS_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -26,3 +32,4 @@ app.include_router(password_reset_routes.router, prefix="/api")
 app.include_router(analytics_router, prefix="/api", tags=["analytics"])
 app.include_router(customer_routes.router, prefix="/api/crm", tags=["crm"])
 app.include_router(interaction_routes.router, prefix="/api/crm")
+app.include_router(admin_user_router, prefix="/api")
