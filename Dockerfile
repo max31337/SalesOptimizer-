@@ -16,7 +16,7 @@ COPY backend/ backend/
 ENV PYTHONPATH=/app/backend
 
 # Run migrations and start the application
-CMD cd backend && \
-    alembic upgrade head && \
+WORKDIR /app/backend
+CMD alembic upgrade head && \
     python scripts/create_admin.py && \
     uvicorn app.main:app --host 0.0.0.0 --port $PORT
