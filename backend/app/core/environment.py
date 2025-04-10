@@ -17,10 +17,9 @@ class Settings(BaseSettings):
     ENV: Environment = Environment.DEVELOPMENT if not os.getenv("RAILWAY_ENVIRONMENT") else Environment.PRODUCTION
     DATABASE_URL: str
     SECRET_KEY: str
-    FRONTEND_URL: str = "https://salesoptimizer.vercel.app"
+    FRONTEND_URL: str = os.getenv("FRONTEND_URL", "https://salesoptimizer.vercel.app")  # Changed from hardcoded value
     CORS_ORIGINS: list = [
-        "http://localhost:3000",
-        "https://salesoptimizer.vercel.app",  # Remove trailing slash
+        os.getenv("FRONTEND_URL", "http://localhost:3000"),  # Dynamic origin
         "https://noble-warmth-production.up.railway.app"
     ]
     
