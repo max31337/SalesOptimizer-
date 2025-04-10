@@ -29,4 +29,4 @@ class Customer(CustomerBase):
 
     class Config:
         from_attributes = True  # Changed from orm_mode
-        # orm_mode = True  # Remove this line
+        # Remove this line completely: orm_mode = True

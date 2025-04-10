@@ -20,4 +20,8 @@ RUN pip install --no-cache-dir -r requirements.txt || (sleep 5 && pip install --
 ENV PYTHONPATH=/app/backend
 
 # Start the application with port fallback
-CMD sh -c "alembic upgrade head && python scripts/create_admin.py && uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8080}"
+# Start the application with explicit host binding
+# Add wait-for-db script to prevent race conditions
+COPY scripts/wait_for_db.py .
+# Add database connection check before migrations
+CMD sh -c "python scripts/wait_for_db.py && alembic upgrade head && python scripts/create_admin.py && uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8080}"
