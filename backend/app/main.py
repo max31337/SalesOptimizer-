@@ -9,6 +9,8 @@ from app.api.crm import customer_routes
 from app.api.crm import interaction_routes  # Add this import
 from app.api.admin.user_management import router as admin_user_router
 from app.core.environment import get_settings
+from app.routes import health
+
 
 app = FastAPI()
 
@@ -33,3 +35,6 @@ app.include_router(analytics_router, prefix="/api", tags=["analytics"])
 app.include_router(customer_routes.router, prefix="/api/crm", tags=["crm"])
 app.include_router(interaction_routes.router, prefix="/api/crm")
 app.include_router(admin_user_router, prefix="/api")
+
+#healthcheck nigga
+app.include_router(health.router)
