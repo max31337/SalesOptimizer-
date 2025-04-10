@@ -1,7 +1,7 @@
 """update interaction type enum
 
 Revision ID: update_interaction_type_enum
-Revises: your_previous_revision
+Revises: c2bd9d4ca53d
 Create Date: 2023-11-14 10:00:00.000000
 """
 from alembic import op
@@ -10,7 +10,7 @@ from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
 revision = 'update_interaction_type_enum'
-down_revision = 'your_previous_revision'  # replace with your last migration revision
+down_revision = 'c2bd9d4ca53d'  # This should match your initial migration ID
 branch_labels = None
 depends_on = None
 
