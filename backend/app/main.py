@@ -12,6 +12,11 @@ from app.core.environment import get_settings
 
 app = FastAPI()
 
+# Add this health check endpoint
+@app.get("/api/health")
+async def health_check():
+    return {"status": "healthy"}
+
 from app.core.environment import get_settings
 
 settings = get_settings()
