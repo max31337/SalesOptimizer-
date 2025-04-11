@@ -19,8 +19,8 @@ app.add_middleware(
     allow_origins=[
         "https://salesoptimizer.vercel.app",
         "http://localhost:3000",
-        "http://crossover.proxy.rlwy.net:32542",
-        "https://crossover.proxy.rlwy.net:8080"  
+        "https://crossover.proxy.rlwy.net:32542",  # Changed to HTTPS
+        "https://crossover.proxy.rlwy.net:8080"    # Changed to HTTPS
     ],
     allow_credentials=True,
     allow_methods=["*"],
