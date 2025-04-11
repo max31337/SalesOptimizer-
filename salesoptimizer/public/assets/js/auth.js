@@ -5,10 +5,7 @@ $(document).ready(function () {
     
     $("#loginForm").submit(function (event) {
         event.preventDefault();
-        const email = $("#email").val();
-        const password = $("#password").val();
-        
-        console.log("Login attempt with:", { email, apiUrl: apiConfig.apiUrl });
+        console.log("Attempting login to:", apiConfig.apiUrl); 
         
         $.ajax({
             url: `${apiConfig.apiUrl}/auth/login/`,
@@ -18,15 +15,15 @@ $(document).ready(function () {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
-            data: JSON.stringify({ email, password }),
+            data: JSON.stringify({
+                email: $("#email").val(),
+                password: $("#password").val()
+            }),
             success: function(response) {
-                console.log("Login successful:", response);
+                console.log("Login response:", response); 
                 localStorage.setItem('token', response.access_token);
                 localStorage.setItem('userName', response.name);
                 localStorage.setItem('userRole', response.role);
-                
-                console.log("Stored user role:", response.role);
-                console.log("Redirecting to dashboard...");
                 
                 if (response.role === 'admin') {
                     window.location.href = '/admin/dashboard.html';
@@ -35,11 +32,7 @@ $(document).ready(function () {
                 }
             },
             error: function(xhr) {
-                console.error("Login failed:", {
-                    status: xhr.status,
-                    response: xhr.responseText,
-                    headers: xhr.getAllResponseHeaders()
-                });
+                console.error("Login error details:", xhr);  // Enhanced logging
                 $("#errorMessage")
                     .text(xhr.responseJSON?.detail || "Login failed")
                     .addClass('show');
