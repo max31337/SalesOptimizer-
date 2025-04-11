@@ -11,11 +11,8 @@ $(document).ready(function () {
             url: `${apiConfig.apiUrl}/auth/login/`,
             method: "POST",
             contentType: "application/json",
-            xhrFields: {
-                withCredentials: false  // Change to false since we're using token-based auth
-            },
             headers: {
-                'Accept': '*/*',
+                'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
             data: JSON.stringify({
