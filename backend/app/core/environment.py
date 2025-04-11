@@ -31,11 +31,11 @@ class Settings(BaseSettings):
     DATABASE_URL: str
     SECRET_KEY: str
     FRONTEND_URL: str = os.getenv("FRONTEND_URL", "https://salesoptimizer.vercel.app")  # Changed from hardcoded value
-    CORS_ORIGINS: list = [
-        os.getenv("FRONTEND_URL", "http://localhost:3000"),  # Dynamic origin
-        "https://noble-warmth-production.up.railway.app"
-    ]
-    
+    # Remove this duplicate CORS_ORIGINS definition
+    # CORS_ORIGINS: list = [
+    #     os.getenv("FRONTEND_URL", "http://localhost:3000"),
+    #     "https://noble-warmth-production.up.railway.app"
+    # ]
     SMTP_SERVER: str
     SMTP_PORT: str
     SMTP_USERNAME: str
