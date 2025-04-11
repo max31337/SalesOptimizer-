@@ -1,3 +1,5 @@
+import { apiConfig } from './config.js';
+
 $(document).ready(function() {
     const messageElement = $("#message");
 
@@ -7,7 +9,7 @@ $(document).ready(function() {
         const email = $("#email").val();
         messageElement.removeClass("error-message success-message");
         $.ajax({
-            url: '${apiConfig.apiUrl}/auth/forgot-password/',
+            url: `${apiConfig.apiUrl}/auth/forgot-password/`,
             method: 'POST',
             contentType: 'application/json',
             data: JSON.stringify({ email: $('#email').val() }),

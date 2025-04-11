@@ -1,3 +1,6 @@
+import { apiConfig } from './config.js';
+
+
 let currentPage = 1;  
 const itemsPerPage = 10;
 let selectedUserId = null;
@@ -68,7 +71,7 @@ function checkAdminAccess() {
     }
 
     $.ajax({
-        url: '${apiConfig.apiUrl}/auth/me',
+        url: `${apiConfig.apiUrl}/auth/me`,  // Fixed template literal
         headers: { 'Authorization': `Bearer ${token}` },
         method: 'GET',
         success: function(response) {

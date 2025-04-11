@@ -1,3 +1,5 @@
+import { apiConfig } from './config.js';
+
 let userDistributionChart = null;
 let roleDistributionChart = null;
 let loginActivityChart = null;
@@ -57,7 +59,7 @@ function loadRegistrationTrends(days = 30) {
     console.log('Loading registration trends...');
     
     $.ajax({
-        url: `${apiConfig.apiUrl}/analytics/registration-trends?days=${days}`,
+        url: `${apiConfig.apiUrl}/analytics/registration-trends?days=${days}`,  // Fixed template literal
         headers: { 'Authorization': `Bearer ${token}` },
         method: 'GET',
         success: function(response) {
@@ -364,5 +366,4 @@ function loadLoginActivity() {
             $('.failure-list').html('<li>Failed to load data</li>');
             $('.ip-list').html('<li>Failed to load data</li>');
         }
-    });
-}
+    });}

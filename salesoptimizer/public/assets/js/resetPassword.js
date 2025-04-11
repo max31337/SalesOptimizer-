@@ -1,3 +1,5 @@
+import { apiConfig } from './config.js';
+
 $(document).ready(function() {
     const messageElement = $("#message");
     const urlParams = new URLSearchParams(window.location.search);
