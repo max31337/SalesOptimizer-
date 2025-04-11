@@ -29,9 +29,9 @@ $(document).ready(function () {
                 localStorage.setItem('userRole', response.role);
                 
                 if (response.role === 'admin') {
-                    window.location.href = '../admin/dashboard.html';
+                    window.location.href = '/admin/dashboard.html';
                 } else {
-                    window.location.href = '../dashboard.html';
+                    window.location.href = '/pages/dashboard.html';
                 }
             },
             error: function(xhr) {

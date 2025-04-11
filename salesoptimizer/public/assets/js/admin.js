@@ -80,7 +80,7 @@ function checkAdminAccess() {
     const userRole = localStorage.getItem('userRole');
 
     if (!token || userRole !== 'admin') {
-        window.location.href = '../auth/login.html';
+        window.location.href = '/auth/login.html';
         return;
     }
 

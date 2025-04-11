@@ -20,7 +20,7 @@ function verifySession() {
             }
             
             // Enforce role-based access
-            if (response.role === 'admin' && currentPath.includes('/pages/')) {
+            if (response.role === 'admin' && currentPath.includes('/admin/')) {
                 window.location.href = '/admin/dashboard.html';;
             } else if (response.role !== 'admin' && currentPath.includes('/admin/')) {
                 window.location.href = '/pages/dashboard.html';
