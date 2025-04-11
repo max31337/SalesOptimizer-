@@ -1,5 +1,6 @@
 {
-  "dependencies": {
-    "chart.js": "^4.4.8"
+  "scripts": {
+    "build": "robocopy salesoptimizer public /E /NFL /NDL /NJH /NJS /nc /ns /NP",
+    "vercel-build": "npm run build"
   }
 }

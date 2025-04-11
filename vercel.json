@@ -1,9 +1,12 @@
 {
   "version": 2,
-  "public": false,
   "builds": [
     {
-      "src": "salesoptimizer/**/*",
+      "src": "salesoptimizer/**/*.html",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "salesoptimizer/assets/**/*",
       "use": "@vercel/static"
     }
   ],
@@ -11,10 +14,6 @@
     {
       "src": "/api/(.*)",
       "dest": "backend/app/api/$1"
-    },
-    {
-      "src": "/assets/(.*)",
-      "dest": "salesoptimizer/assets/$1"
     },
     {
       "src": "/(.*)",
