@@ -7,6 +7,72 @@ $(document).ready(function() {
     loadUsers();
     loadAuditLogs();
     setupEventListeners();
+    setupNavigationHandlers();
+    setupFilterHandlers();
+     
+    $('.admin-section').removeClass('active').hide();
+    $('.modal').hide();
+    $('#overview').addClass('active').show();
+    
+    // Set correct navigation highlight
+    $('.nav-links li').removeClass('active');
+    $('.nav-links li:first-child').addClass('active');
+
+
+    $('#userSearch').on('input', debounce(() => loadUsers(1), 300));
+    $('#roleFilter, #statusFilter').on('change', () => loadUsers(1));
+
+    $('#users').addClass('active').show();
+    $('.nav-links li:first-child').addClass('active');
+    $('.admin-section:not(#users)').removeClass('active').hide();
+
+    $('.modal').click(function(event) {
+        if ($(event.target).is('.modal')) {
+            $(this).hide();
+        }
+    });
+
+    // Form submission handlers
+    $('#inviteForm').on('submit', function(e) {
+        e.preventDefault();
+        inviteUser();
+    });
+
+        // Form submission handler for edit form
+        $('#editForm').on('submit', function(e) {
+            e.preventDefault();
+            updateUser();
+        });
+    
+        $('#editUserModal .btn-secondary').click(function() {
+            $('#editUserModal').hide();
+        });
+
+    $('#prevPage').click(() => {
+        if (currentPage > 1) {
+            currentPage--;
+            loadUsers();
+        }
+    });
+
+    $('#nextPage').click(() => {
+        currentPage++;
+        loadUsers();
+    });
+    loadUsers();
+
+    $('#prevPage').click(() => {
+        if (currentPage > 1) {
+            currentPage--;
+            loadAuditLogs();
+        }
+    });
+
+    $('#nextPage').click(() => {
+        currentPage++;
+        loadAuditLogs();
+    });
+    loadAuditLogs();
 });
 
 function checkAdminAccess() {
@@ -75,12 +141,6 @@ function loadUsers(page = 1) {
     });
 }
 
-// Add event listeners for search and filters
-$(document).ready(function() {
-    $('#userSearch').on('input', debounce(() => loadUsers(1), 300));
-    $('#roleFilter, #statusFilter').on('change', () => loadUsers(1));
-});
-
 // Debounce function to prevent too many API calls
 function debounce(func, wait) {
     let timeout;
@@ -100,21 +160,6 @@ function updatePagination(total) {
     $('#prevPage').prop('disabled', currentPage <= 1);
     $('#nextPage').prop('disabled', currentPage >= totalPages);
 }
-
-$(document).ready(function() {    
-    $('#prevPage').click(() => {
-        if (currentPage > 1) {
-            currentPage--;
-            loadUsers();
-        }
-    });
-
-    $('#nextPage').click(() => {
-        currentPage++;
-        loadUsers();
-    });
-    loadUsers();
-});
 
 function displayUsers(users) {
     const userTableBody = $('#userTableBody');
@@ -198,28 +243,6 @@ function loadAuditLogs() {
         }
     });
 }
-
-function updatePagination(total) {
-    const totalPages = Math.ceil(total / itemsPerPage);
-    $('#pageInfo').text(`Page ${currentPage} of ${totalPages}`);
-    $('#prevPage').prop('disabled', currentPage <= 1);
-    $('#nextPage').prop('disabled', currentPage >= totalPages);
-}
-
-$(document).ready(function() {    
-    $('#prevPage').click(() => {
-        if (currentPage > 1) {
-            currentPage--;
-            loadAuditLogs();
-        }
-    });
-
-    $('#nextPage').click(() => {
-        currentPage++;
-        loadAuditLogs();
-    });
-    loadAuditLogs();
-});
 
 function formatAuditDetails(action, details) {
     // Format based on action type
@@ -340,12 +363,6 @@ function setupEventListeners() {
         }
     }
 
-$(document).ready(function() {
-    $('#users').addClass('active').show();
-    $('.nav-links li:first-child').addClass('active');
-    $('.admin-section:not(#users)').removeClass('active').hide();
-});
-
 function updateAdminSettings() {
     const token = localStorage.getItem('token');
     const data = {
@@ -410,39 +427,6 @@ function showInviteModal() {
     $('#inviteModal').show();
 }
 
-$(document).ready(function() {
-    // Initial setup
-    checkAdminAccess();
-    
-    // Hide all sections and modals first
-    $('.admin-section').removeClass('active').hide();
-    $('.modal').hide(); // Add this line to ensure all modals are hidden
-    
-    // Show overview section by default
-    $('#overview').addClass('active').show();
-    
-    // Set correct navigation highlight
-    $('.nav-links li').removeClass('active');
-    $('.nav-links li:first-child').addClass('active');
-    
-    // Setup event listeners
-    setupNavigationHandlers();
-    setupFilterHandlers();
-    
-    // Add modal close handlers
-    $('.modal').click(function(event) {
-        if ($(event.target).is('.modal')) {
-            $(this).hide();
-        }
-    });
-
-    // Form submission handlers
-    $('#inviteForm').on('submit', function(e) {
-        e.preventDefault();
-        inviteUser();
-    });
-});
-
 // Remove or comment out any duplicate document.ready handlers
 function inviteUser() {
     const token = localStorage.getItem('token');
@@ -492,6 +476,7 @@ function inviteUser() {
     });
 }
 
+// Keep only one version of each function and remove duplicates
 function showNotification(message, type = 'success') {
     const notification = $('<div>')
         .addClass(`notification ${type}`)
@@ -499,81 +484,6 @@ function showNotification(message, type = 'success') {
         .appendTo('body');
     
     setTimeout(() => notification.remove(), 3000);
-}
-
-function editUser(userId) {
-    currentEditingUserId = userId;
-    const token = localStorage.getItem('token');
-          
-    $.ajax({
-        url: `http://localhost:8000/api/admin/users/${userId}`,
-        headers: { 'Authorization': `Bearer ${token}` },
-        method: 'GET',
-        success: function(user) {
-            $('#editRole').val(user.role);
-            $('#editActive').prop('checked', user.is_active);
-            $('#editMessage').empty();
-            $('#editUserModal').show();
-        },
-        error: function(xhr) {
-            showNotification(xhr.responseJSON?.detail || 'Failed to load user data', 'error');
-        }
-    });
-}
-
-function updateUser() {
-    const token = localStorage.getItem('token');
-    const data = {
-        role: $('#editRole').val(),
-        is_active: $('#editActive').is(':checked')
-    };
-
-    $.ajax({
-        url: `http://localhost:8000/api/admin/users/${currentEditingUserId}`,
-        method: 'PUT',
-        headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-        },
-        data: JSON.stringify(data),
-        success: function(response) {
-            $('#editMessage')
-                .text('User updated successfully!')
-                .addClass('success-message');
-            
-            setTimeout(() => {
-                $('#editUserModal').hide();
-                $('#editMessage').empty();
-                loadUsers();
-                loadAllAnalytics(); // Refresh all analytics data
-            }, 1500);
-        },
-        error: function(xhr) {
-            $('#editMessage')
-                .text(xhr.responseJSON?.detail || 'Failed to update user')
-                .addClass('error-message');
-        }
-    });
-}
-
-// Add this to your document ready function
-$(document).ready(function() {
-    // Form submission handler for edit form
-    $('#editForm').on('submit', function(e) {
-        e.preventDefault();
-        updateUser();
-    });
-
-    // Close button handler for edit modal
-    $('#editUserModal .btn-secondary').click(function() {
-        $('#editUserModal').hide();
-    });
-});
-
-function setupFilterHandlers() {
-    $('#registrationTimeRange').on('change', function(e) {
-        loadRegistrationTrends(parseInt($(this).val()));
-    });
 }
 
 function setupNavigationHandlers() {
@@ -591,9 +501,9 @@ function setupNavigationHandlers() {
         $('.nav-links li').removeClass('active');
         $(this).parent().addClass('active');
         
-        // Refresh section data if needed
+        // Refresh section data
         if (targetId === 'overview') {
-            loadAllAnalytics(); // Replace loadRegistrationTrends with loadAllAnalytics
+            loadAllAnalytics();
         } else if (targetId === 'users') {
             loadUsers();
         } else if (targetId === 'audit') {
@@ -602,32 +512,12 @@ function setupNavigationHandlers() {
     });
 }
 
-    // Initialize event handlers when document is ready
-    $(document).ready(function() {
-        // Initial setup
-        checkAdminAccess();
-        
-        // Hide all sections first
-        $('.admin-section').removeClass('active').hide();
-        
-        // Show overview section by default
-        $('#overview').addClass('active').show();
-        
-        // Set correct navigation highlight
-        $('.nav-links li').removeClass('active');
-        $('.nav-links li:first-child').addClass('active');
-        
-        // Setup event listeners
-        setupNavigationHandlers();
-        setupFilterHandlers();
-        
-        // Remove the registration trends handler as it's now in analytics.js
-        // $('#registrationTimeRange').on('change', function() {...});
+// Single setupFilterHandlers
+function setupFilterHandlers() {
+    $('#registrationTimeRange').on('change', function(e) {
+        loadRegistrationTrends(parseInt($(this).val()));
     });
-
-    // Remove any registration trends related variables and functions
-    // let registrationChart = null;
-    // function loadRegistrationTrends() {...}
+}
 
 function deleteUser(userId) {
     if (!confirm('Are you sure you want to deactivate this user?')) return;
@@ -648,62 +538,6 @@ function deleteUser(userId) {
     });
 }
 
-function inviteUser() {
-    const token = localStorage.getItem('token');
-    const data = {
-        email: $('#inviteEmail').val(),
-        name: $('#inviteName').val(),
-        role: $('#inviteRole').val()
-    };
-
-    $.ajax({
-        url: 'http://localhost:8000/api/admin/invite/',
-        headers: { 
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-        },
-        method: 'POST',
-        data: JSON.stringify(data),
-        success: function(response) {
-            // Remove any existing success message
-            $('#inviteModal .modal-content .success-message').remove();
-            
-            // Add new success message
-            $('<p class="success-message">Invitation sent successfully!</p>')
-                .css({
-                    'color': '#28a745',
-                    'font-weight': 'bold',
-                    'margin-top': '10px',
-                    'text-align': 'center'
-                })
-                .appendTo('#inviteModal .modal-content');
-            
-            // Clear the form
-            $('#inviteForm')[0].reset();
-            
-            // Refresh user list
-            loadUsers();
-            
-            // Hide modal after delay
-            setTimeout(() => {
-                $('#inviteModal').hide();
-                $('#inviteModal .modal-content .success-message').remove();
-            }, 2000);
-        },
-        error: function(xhr) {
-            showNotification(xhr.responseJSON?.detail || 'Failed to invite user', 'error');
-        }
-    });
-}
-
-function showNotification(message, type = 'success') {
-    const notification = $('<div>')
-        .addClass(`notification ${type}`)
-        .text(message)
-        .appendTo('body');
-    
-    setTimeout(() => notification.remove(), 3000);
-}
 
 function editUser(userId) {
     currentEditingUserId = userId;
@@ -725,305 +559,8 @@ function editUser(userId) {
     });
 }
 
-function updateUser() {
-    const token = localStorage.getItem('token');
-    const data = {
-        role: $('#editRole').val(),
-        is_active: $('#editActive').is(':checked')
-    };
 
-    $.ajax({
-        url: `http://localhost:8000/api/admin/users/${currentEditingUserId}`,
-        method: 'PUT',
-        headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-        },
-        data: JSON.stringify(data),
-        success: function(response) {
-            $('#editMessage')
-                .text('User updated successfully!')
-                .addClass('success-message');
-            
-            setTimeout(() => {
-                $('#editUserModal').hide();
-                $('#editMessage').empty();
-                loadUsers();
-                loadAllAnalytics(); // Refresh all analytics data
-            }, 1500);
-        },
-        error: function(xhr) {
-            $('#editMessage')
-                .text(xhr.responseJSON?.detail || 'Failed to update user')
-                .addClass('error-message');
-        }
-    });
-}
 
-// Add this to your document ready function
-$(document).ready(function() {
-    // Form submission handler for edit form
-    $('#editForm').on('submit', function(e) {
-        e.preventDefault();
-        updateUser();
-    });
-
-    // Close button handler for edit modal
-    $('#editUserModal .btn-secondary').click(function() {
-        $('#editUserModal').hide();
-    });
-});
-
-function setupFilterHandlers() {
-    $('#registrationTimeRange').on('change', function(e) {
-        loadRegistrationTrends(parseInt($(this).val()));
-    });
-}
-
-function setupNavigationHandlers() {
-    $('.nav-links a').click(function(e) {
-        e.preventDefault();
-        const targetId = $(this).attr('href').substring(1);
-        
-        // Hide all sections
-        $('.admin-section').removeClass('active').hide();
-        
-        // Show target section
-        $(`#${targetId}`).addClass('active').show();
-        
-        // Update active nav link
-        $('.nav-links li').removeClass('active');
-        $(this).parent().addClass('active');
-        
-        // Refresh section data if needed
-        if (targetId === 'overview') {
-            loadAllAnalytics(); // Replace loadRegistrationTrends with loadAllAnalytics
-        } else if (targetId === 'users') {
-            loadUsers();
-        } else if (targetId === 'audit') {
-            loadAuditLogs();
-        }
-    });
-}
-
-    // Initialize event handlers when document is ready
-    $(document).ready(function() {
-        // Initial setup
-        checkAdminAccess();
-        
-        // Hide all sections first
-        $('.admin-section').removeClass('active').hide();
-        
-        // Show overview section by default
-        $('#overview').addClass('active').show();
-        
-        // Set correct navigation highlight
-        $('.nav-links li').removeClass('active');
-        $('.nav-links li:first-child').addClass('active');
-        
-        // Setup event listeners
-        setupNavigationHandlers();
-        setupFilterHandlers();
-        
-        // Remove the registration trends handler as it's now in analytics.js
-        // $('#registrationTimeRange').on('change', function() {...});
-    });
-
-    // Remove any registration trends related variables and functions
-    // let registrationChart = null;
-    // function loadRegistrationTrends() {...}
-
-function deleteUser(userId) {
-    if (!confirm('Are you sure you want to deactivate this user?')) return;
-
-    const token = localStorage.getItem('token');
-    $.ajax({
-        url: `http://localhost:8000/api/admin/users/${userId}`,  
-        headers: { 'Authorization': `Bearer ${token}` },
-        method: 'DELETE',
-        success: function() {
-            loadUsers();
-            loadAllAnalytics(); // Refresh analytics after user deletion
-            showNotification('User deactivated successfully');
-        },
-        error: function(xhr) {
-            showNotification(xhr.responseJSON?.detail || 'Failed to deactivate user', 'error');
-        }
-    });
-}
-
-function inviteUser() {
-    const token = localStorage.getItem('token');
-    const data = {
-        email: $('#inviteEmail').val(),
-        name: $('#inviteName').val(),
-        role: $('#inviteRole').val()
-    };
-
-    $.ajax({
-        url: 'http://localhost:8000/api/admin/invite/',
-        headers: { 
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-        },
-        method: 'POST',
-        data: JSON.stringify(data),
-        success: function(response) {
-            // Remove any existing success message
-            $('#inviteModal .modal-content .success-message').remove();
-            
-            // Add new success message
-            $('<p class="success-message">Invitation sent successfully!</p>')
-                .css({
-                    'color': '#28a745',
-                    'font-weight': 'bold',
-                    'margin-top': '10px',
-                    'text-align': 'center'
-                })
-                .appendTo('#inviteModal .modal-content');
-            
-            // Clear the form
-            $('#inviteForm')[0].reset();
-            
-            // Refresh user list
-            loadUsers();
-            
-            // Hide modal after delay
-            setTimeout(() => {
-                $('#inviteModal').hide();
-                $('#inviteModal .modal-content .success-message').remove();
-            }, 2000);
-        },
-        error: function(xhr) {
-            showNotification(xhr.responseJSON?.detail || 'Failed to invite user', 'error');
-        }
-    });
-}
-
-function showNotification(message, type = 'success') {
-    const notification = $('<div>')
-        .addClass(`notification ${type}`)
-        .text(message)
-        .appendTo('body');
-    
-    setTimeout(() => notification.remove(), 3000);
-}
-
-function editUser(userId) {
-    currentEditingUserId = userId;
-    const token = localStorage.getItem('token');
-          
-    $.ajax({
-        url: `http://localhost:8000/api/admin/users/${userId}`,
-        headers: { 'Authorization': `Bearer ${token}` },
-        method: 'GET',
-        success: function(user) {
-            $('#editRole').val(user.role);
-            $('#editActive').prop('checked', user.is_active);
-            $('#editMessage').empty();
-            $('#editUserModal').show();
-        },
-        error: function(xhr) {
-            showNotification(xhr.responseJSON?.detail || 'Failed to load user data', 'error');
-        }
-    });
-}
-
-function updateUser() {
-    const token = localStorage.getItem('token');
-    const data = {
-        role: $('#editRole').val(),
-        is_active: $('#editActive').is(':checked')
-    };
-
-    $.ajax({
-        url: `http://localhost:8000/api/admin/users/${currentEditingUserId}`,
-        method: 'PUT',
-        headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-        },
-        data: JSON.stringify(data),
-        success: function(response) {
-            $('#editMessage')
-                .text('User updated successfully!')
-                .addClass('success-message');
-            
-            setTimeout(() => {
-                $('#editUserModal').hide();
-                $('#editMessage').empty();
-                loadUsers();
-                loadAllAnalytics(); // Refresh all analytics data
-            }, 1500);
-        },
-        error: function(xhr) {
-            $('#editMessage')
-                .text(xhr.responseJSON?.detail || 'Failed to update user')
-                .addClass('error-message');
-        }
-    });
-}
-
-// Add this to your document ready function
-$(document).ready(function() {
-    // Form submission handler for edit form
-    $('#editForm').on('submit', function(e) {
-        e.preventDefault();
-        updateUser();
-    });
-
-    // Close button handler for edit modal
-    $('#editUserModal .btn-secondary').click(function() {
-        $('#editUserModal').hide();
-    });
-});
-
-function setupFilterHandlers() {
-    $('#registrationTimeRange').on('change', function(e) {
-        loadRegistrationTrends(parseInt($(this).val()));
-    });
-}
-
-function setupNavigationHandlers() {
-    $('.nav-links a').click(function(e) {
-        e.preventDefault();
-        const targetId = $(this).attr('href').substring(1);
-        
-        // Hide all sections
-        $('.admin-section').removeClass('active').hide();
-        
-        // Show target section
-        $(`#${targetId}`).addClass('active').show();
-        
-        // Update active nav link
-        $('.nav-links li').removeClass('active');
-        $(this).parent().addClass('active');
-        
-        // Refresh section data if needed
-        if (targetId === 'overview') {
-            loadAllAnalytics(); // Replace loadRegistrationTrends with loadAllAnalytics
-        } else if (targetId === 'users') {
-            loadUsers();
-        } else if (targetId === 'audit') {
-            loadAuditLogs();
-        }
-    });
-}
-
-    // Initialize event handlers when document is ready
-    $(document).ready(function() {
-        // Initial setup
-        checkAdminAccess();
-        
-        $('.admin-section').removeClass('active').hide();
-        
-        $('#overview').addClass('active').show();
-        
-        $('.nav-links li').removeClass('active');
-        $('.nav-links li:first-child').addClass('active');
-        setupNavigationHandlers();
-        setupFilterHandlers();
-    });
 
     function logout() {
         // Clear local storage
