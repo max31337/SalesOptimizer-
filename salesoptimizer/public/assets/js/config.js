@@ -1,5 +1,5 @@
 export const apiConfig = {
     apiUrl: window.location.hostname === 'salesoptimizer.vercel.app'
-        ? "https://crossover.proxy.rlwy.net:32542/api"
+        ? "/api"  // Use relative path to let Vercel handle the proxy
         : "http://localhost:8000/api"
 };

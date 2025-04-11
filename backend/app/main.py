@@ -19,8 +19,7 @@ app.add_middleware(
     allow_origins=[
         "https://salesoptimizer.vercel.app",
         "http://localhost:3000",
-        "https://crossover.proxy.rlwy.net:32542",  # Changed to HTTPS
-        "https://crossover.proxy.rlwy.net:8080"    # Changed to HTTPS
+        "http://crossover.proxy.rlwy.net:32542"  # Use HTTP only
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -44,7 +43,6 @@ if __name__ == "__main__":
     uvicorn.run(
         "app.main:app",
         host="0.0.0.0",
-        port=int(os.getenv("PORT", 8080)),
-        ssl_keyfile="/etc/ssl/private/ssl-cert-snakeoil.key",
-        ssl_certfile="/etc/ssl/certs/ssl-cert-snakeoil.pem"
+        port=int(os.getenv("PORT", 8080))
+        # Remove SSL configuration
     )
