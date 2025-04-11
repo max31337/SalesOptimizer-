@@ -11,6 +11,9 @@ $(document).ready(function () {
             url: `${apiConfig.apiUrl}/auth/login/`,
             method: "POST",
             contentType: "application/json",
+            xhrFields: {
+                withCredentials: true
+            },
             data: JSON.stringify({
                 email: $("#email").val(),
                 password: $("#password").val()

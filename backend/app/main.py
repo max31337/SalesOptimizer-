@@ -14,10 +14,12 @@ from app.routes import health
 
 app = FastAPI()
 
-# Update CORS configuration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # This already allows all origins
+    allow_origins=[
+        "https://salesoptimizer.vercel.app",
+        "http://localhost:3000",  # for local development
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
