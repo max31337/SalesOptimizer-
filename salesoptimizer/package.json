@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "build": "webpack --mode production",
+    "build": "echo 'No build step needed - using static files'",
     "start": "webpack serve --mode development"
   },
   "devDependencies": {
