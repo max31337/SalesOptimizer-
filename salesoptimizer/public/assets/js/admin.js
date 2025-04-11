@@ -5,6 +5,15 @@ let currentPage = 1;
 const itemsPerPage = 10;
 let selectedUserId = null;
 
+// Add this check before any admin.js operations
+function verifyLocalStorage() {
+    if (!localStorage.getItem('token') || 
+        !localStorage.getItem('userRole') || 
+        !localStorage.getItem('userName')) {
+        window.location.href = '/auth/login.html';
+    }
+}
+
 $(document).ready(function() {
     // Hide all modals on initial load
     $('.modal').hide();
@@ -16,7 +25,8 @@ $(document).ready(function() {
     setupEventListeners();
     setupNavigationHandlers();
     setupFilterHandlers();
-     
+    verifyLocalStorage
+    
     $('.admin-section').removeClass('active').hide();
     $('#overview').addClass('active').show();
 
@@ -558,5 +568,4 @@ function editUser(userId) {
         localStorage.removeItem('userName');
         
         // Redirect to login page
-        window.location.href = '/auth/login.html';
-    }
+        window.location.href = '/auth/login.html';    }
