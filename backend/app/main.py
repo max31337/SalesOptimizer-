@@ -16,14 +16,10 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-<<<<<<< HEAD
     allow_origins=[
         "https://salesoptimizer.vercel.app",
         "http://localhost:3000",  # for local development
     ],
-=======
-    allow_origins=["*"],
->>>>>>> 975bf260c14fa536794d2564286ec50316e3d6cf
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
