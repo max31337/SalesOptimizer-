@@ -12,7 +12,11 @@ $(document).ready(function () {
             method: "POST",
             contentType: "application/json",
             xhrFields: {
-                withCredentials: true
+                withCredentials: false  // Change to false since we're using token-based auth
+            },
+            headers: {
+                'Accept': '*/*',
+                'Content-Type': 'application/json'
             },
             data: JSON.stringify({
                 email: $("#email").val(),

@@ -17,6 +17,8 @@ class Settings(BaseSettings):
     CORS_ORIGINS: list = [
         "https://salesoptimizer.vercel.app",
         "http://localhost:3000",
+        "http://crossover.proxy.rlwy.net:32542",
+        "https://crossover.proxy.rlwy.net:32542"
     ]
     DATABASE_URL: str = Field(..., env="DATABASE_URL")
     

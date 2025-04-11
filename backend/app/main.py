@@ -18,11 +18,21 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "https://salesoptimizer.vercel.app",
-        "http://localhost:3000",  # for local development
+        "http://localhost:3000",
+        "http://crossover.proxy.rlwy.net:32542",
+        "https://crossover.proxy.rlwy.net:32542"
     ],
     allow_credentials=True,
     allow_methods=["*"],
-    allow_headers=["*"],
+    allow_headers=[
+        "Content-Type",
+        "Authorization",
+        "Accept",
+        "Origin",
+        "X-Requested-With",
+    ],
+    expose_headers=["*"],
+    max_age=3600,
 )
 
 app.include_router(auth_routes.router, prefix="/api")
@@ -35,5 +45,5 @@ app.include_router(customer_routes.router, prefix="/api/crm", tags=["crm"])
 app.include_router(interaction_routes.router, prefix="/api/crm")
 app.include_router(admin_user_router, prefix="/api")
 
-#healthcheck nigga
+#healthcheck nigga fuck you
 app.include_router(health.router)
