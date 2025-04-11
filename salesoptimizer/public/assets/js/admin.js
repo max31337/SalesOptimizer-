@@ -36,7 +36,7 @@ function editUser(userId) {
     const token = localStorage.getItem('token');
           
     $.ajax({
-        url: `http://localhost:8000/api/admin/users/${userId}`,
+        url: `${apiConfig.apiUrl}/admin/users/${userId}`,
         headers: { 'Authorization': `Bearer ${token}` },
         method: 'GET',
         success: function(user) {
@@ -68,7 +68,7 @@ function checkAdminAccess() {
     }
 
     $.ajax({
-        url: 'http://localhost:8000/api/auth/me',
+        url: '${apiConfig.apiUrl}/auth/me',
         headers: { 'Authorization': `Bearer ${token}` },
         method: 'GET',
         success: function(response) {
@@ -98,7 +98,7 @@ function loadUsers(page = 1) {
     const limit = 10;
     const skip = (page - 1) * limit;
 
-    let url = `http://localhost:8000/api/admin/users/list/?skip=${skip}&limit=${limit}`;
+    let url = `${apiConfig.apiUrl}/admin/users/list/?skip=${skip}&limit=${limit}`;
     
     if (searchTerm) {
         url += `&search=${encodeURIComponent(searchTerm)}`;
@@ -180,7 +180,7 @@ function verifyUser(userId) {
     if (!confirm('Are you sure you want to verify this user?')) return;
 
     $.ajax({
-        url: `http://localhost:8000/api/admin/verify-user/${userId}`,
+        url: `${apiConfig.apiUrl}/admin/verify-user/${userId}`,
         method: 'POST',
         headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -213,7 +213,7 @@ function loadAuditLogs() {
 
     $.ajax({
         // Update the URL to match the backend route
-        url: `http://localhost:8000/api/audit-logs?${params.toString()}`,
+        url: `${apiConfig.apiUrl}/audit-logs?${params.toString()}`,
         headers: { 'Authorization': `Bearer ${token}` },
         method: 'GET',
         success: function(response) {
@@ -355,7 +355,7 @@ function updateAdminSettings() {
     };
 
     $.ajax({
-        url: 'http://localhost:8000/api/admin/settings',
+        url: '${apiConfig.apiUrl}/admin/settings',
         headers: { 'Authorization': `Bearer ${token}` },
         method: 'PUT',
         contentType: 'application/json',
@@ -389,7 +389,7 @@ function setupTwoFactorAuth() {
     const token = localStorage.getItem('token');
     
     $.ajax({
-        url: 'http://localhost:8000/api/admin/setup-2fa',
+        url: '${apiConfig.apiUrl}/admin/setup-2fa',
         headers: { 'Authorization': `Bearer ${token}` },
         method: 'POST',
         success: function(response) {
@@ -423,7 +423,7 @@ function inviteUser() {
     };
 
     $.ajax({
-        url: 'http://localhost:8000/api/admin/invite/',
+        url: '${apiConfig.apiUrl}/admin/invite/',
         headers: { 
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
@@ -510,7 +510,7 @@ function deleteUser(userId) {
 
     const token = localStorage.getItem('token');
     $.ajax({
-        url: `http://localhost:8000/api/admin/users/${userId}`,  
+        url: `${apiConfig.apiUrl}/admin/users/${userId}`,  
         headers: { 'Authorization': `Bearer ${token}` },
         method: 'DELETE',
         success: function() {
@@ -530,7 +530,7 @@ function editUser(userId) {
     const token = localStorage.getItem('token');
           
     $.ajax({
-        url: `http://localhost:8000/api/admin/users/${userId}`,
+        url: `${apiConfig.apiUrl}/admin/users/${userId}`,
         headers: { 'Authorization': `Bearer ${token}` },
         method: 'GET',
         success: function(user) {

@@ -57,7 +57,7 @@ function loadRegistrationTrends(days = 30) {
     console.log('Loading registration trends...');
     
     $.ajax({
-        url: `http://localhost:8000/api/analytics/registration-trends?days=${days}`,
+        url: `${apiConfig.apiUrl}/analytics/registration-trends?days=${days}`,
         headers: { 'Authorization': `Bearer ${token}` },
         method: 'GET',
         success: function(response) {
@@ -123,7 +123,7 @@ function loadActiveUsers() {
     const token = localStorage.getItem('token');
     
     $.ajax({
-        url: 'http://localhost:8000/api/analytics/active-users',
+        url: '${apiConfig.apiUrl}/analytics/active-users',
         headers: { 'Authorization': `Bearer ${token}` },
         method: 'GET',
         success: function(response) {
@@ -178,7 +178,7 @@ function loadRoleDistribution() {
     const token = localStorage.getItem('token');
     
     $.ajax({
-        url: 'http://localhost:8000/api/analytics/role-distribution',
+        url: '${apiConfig.apiUrl}/analytics/role-distribution',
         headers: { 'Authorization': `Bearer ${token}` },
         method: 'GET',
         success: function(response) {
@@ -233,7 +233,7 @@ function loadLoginActivity() {
     const token = localStorage.getItem('token');
     
     $.ajax({
-        url: 'http://localhost:8000/api/analytics/login-activity',
+        url: '${apiConfig.apiUrl}/analytics/login-activity',
         headers: { 'Authorization': `Bearer ${token}` },
         method: 'GET',
         success: function(response) {

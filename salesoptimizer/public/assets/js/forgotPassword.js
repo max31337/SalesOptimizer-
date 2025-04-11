@@ -7,7 +7,7 @@ $(document).ready(function() {
         const email = $("#email").val();
         messageElement.removeClass("error-message success-message");
         $.ajax({
-            url: 'http://localhost:8000/api/auth/forgot-password/',
+            url: '${apiConfig.apiUrl}/auth/forgot-password/',
             method: 'POST',
             contentType: 'application/json',
             data: JSON.stringify({ email: $('#email').val() }),

@@ -33,7 +33,7 @@ $(document).ready(function() {
         }
 
         $.ajax({
-            url: `http://localhost:8000/api/auth/reset-password/${token}`,
+            url: `${apiConfig.apiUrl}/auth/reset-password/${token}`,
             method: "POST",
             contentType: "application/json",
             data: JSON.stringify({ password: password }),

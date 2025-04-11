@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         try {
-            const response = await fetch('http://localhost:8000/api/auth/complete-registration', {
+            const response = await fetch('${apiConfig.apiUrl}/auth/complete-registration', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
