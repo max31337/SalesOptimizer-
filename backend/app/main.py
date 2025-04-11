@@ -10,7 +10,7 @@ from app.api.crm import interaction_routes
 from app.api.admin.user_management import router as admin_user_router
 from app.core.environment import get_settings
 from app.routes import health
-
+import uvicorn
 
 app = FastAPI()
 
@@ -19,7 +19,8 @@ app.add_middleware(
     allow_origins=[
         "https://salesoptimizer.vercel.app",
         "http://localhost:3000",
-        "http://crossover.proxy.rlwy.net:32542"  # Make sure this matches exactly
+        "http://crossover.proxy.rlwy.net:32542",
+        "https://crossover.proxy.rlwy.net:8080"  
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -38,3 +39,12 @@ app.include_router(admin_user_router, prefix="/api")
 
 #healthcheck nigga fuck you
 app.include_router(health.router)
+
+if __name__ == "__main__":
+    uvicorn.run(
+        "app.main:app",
+        host="0.0.0.0",
+        port=int(os.getenv("PORT", 8080)),
+        ssl_keyfile="/etc/ssl/private/ssl-cert-snakeoil.key",
+        ssl_certfile="/etc/ssl/certs/ssl-cert-snakeoil.pem"
+    )
