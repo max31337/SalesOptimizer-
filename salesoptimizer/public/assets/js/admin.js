@@ -26,27 +26,44 @@ $(document).ready(function() {
     $('.nav-links li:first-child').addClass('active');
     $('.admin-section:not(#users)').removeClass('active').hide();
 
+    // Hide all modals on initial load
+    $('.modal').hide();
+
+    // Improved modal handling
     $('.modal').click(function(event) {
         if ($(event.target).is('.modal')) {
             $(this).hide();
         }
     });
 
-    // Form submission handlers
+    // Prevent modal from closing when clicking inside modal content
+    $('.modal-content').click(function(event) {
+        event.stopPropagation();
+    });
+
+    // Close modal when clicking cancel button
+    $('.btn-secondary[onclick*="hide"]').click(function() {
+        $(this).closest('.modal').hide();
+    });
+
+    // Form submission handlers with proper modal handling
     $('#inviteForm').on('submit', function(e) {
         e.preventDefault();
         inviteUser();
     });
 
-        // Form submission handler for edit form
-        $('#editForm').on('submit', function(e) {
-            e.preventDefault();
-            updateUser();
-        });
-    
-        $('#editUserModal .btn-secondary').click(function() {
-            $('#editUserModal').hide();
-        });
+    $('#editForm').on('submit', function(e) {
+        e.preventDefault();
+        updateUser();
+    });
+
+    // Ensure modals are properly hidden after form submission
+    $('#editUserModal .btn-secondary').click(function() {
+        $('#editUserModal').hide();
+        // Clear any form data or messages
+        $('#editForm')[0].reset();
+        $('#editMessage').empty();
+    });
 
     $('#prevPage').click(() => {
         if (currentPage > 1) {
@@ -424,10 +441,13 @@ function applyTheme(theme) {
 }
 
 function showInviteModal() {
+    // Clear any previous form data and messages
+    $('#inviteForm')[0].reset();
+    $('.success-message').remove();
     $('#inviteModal').show();
 }
 
-// Remove or comment out any duplicate document.ready handlers
+// Update the inviteUser function
 function inviteUser() {
     const token = localStorage.getItem('token');
     const data = {
