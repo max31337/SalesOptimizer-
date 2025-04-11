@@ -293,7 +293,9 @@
                     <option value="admin">Administrator</option>
                 </select>
                 <button type="submit" class="btn-primary">Send Invitation</button>
-                <button type="button" class="btn-secondary" onclick="$('#inviteModal').hide()">Cancel</button>
+                <button type="button" class="btn-secondary" onclick="closeModal('inviteModal')">Cancel</button>
+                
+                <button type="button" class="btn-secondary" onclick="closeModal('editUserModal')">Cancel</button>
             </form>
         </div>
     </div>

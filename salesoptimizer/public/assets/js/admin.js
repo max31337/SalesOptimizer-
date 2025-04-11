@@ -3,6 +3,10 @@ const itemsPerPage = 10;
 let selectedUserId = null;
 
 $(document).ready(function() {
+    // Hide all modals on initial load
+    $('.modal').hide();
+    $('.modal-content').hide();
+
     checkAdminAccess();
     loadUsers();
     loadAuditLogs();
@@ -11,86 +15,48 @@ $(document).ready(function() {
     setupFilterHandlers();
      
     $('.admin-section').removeClass('active').hide();
-    $('.modal').hide();
     $('#overview').addClass('active').show();
-    
-    // Set correct navigation highlight
-    $('.nav-links li').removeClass('active');
-    $('.nav-links li:first-child').addClass('active');
 
-
-    $('#userSearch').on('input', debounce(() => loadUsers(1), 300));
-    $('#roleFilter, #statusFilter').on('change', () => loadUsers(1));
-
-    $('#users').addClass('active').show();
-    $('.nav-links li:first-child').addClass('active');
-    $('.admin-section:not(#users)').removeClass('active').hide();
-
-    // Hide all modals on initial load
-    $('.modal').hide();
-
-    // Improved modal handling
-    $('.modal').click(function(event) {
-        if ($(event.target).is('.modal')) {
-            $(this).hide();
-        }
-    });
-
-    // Prevent modal from closing when clicking inside modal content
-    $('.modal-content').click(function(event) {
-        event.stopPropagation();
-    });
-
-    // Close modal when clicking cancel button
-    $('.btn-secondary[onclick*="hide"]').click(function() {
+    // Modal handling
+    $('.btn-secondary').click(function() {
         $(this).closest('.modal').hide();
+        $(this).closest('.modal-content').hide();
     });
-
-    // Form submission handlers with proper modal handling
-    $('#inviteForm').on('submit', function(e) {
-        e.preventDefault();
-        inviteUser();
-    });
-
-    $('#editForm').on('submit', function(e) {
-        e.preventDefault();
-        updateUser();
-    });
-
-    // Ensure modals are properly hidden after form submission
-    $('#editUserModal .btn-secondary').click(function() {
-        $('#editUserModal').hide();
-        // Clear any form data or messages
-        $('#editForm')[0].reset();
-        $('#editMessage').empty();
-    });
-
-    $('#prevPage').click(() => {
-        if (currentPage > 1) {
-            currentPage--;
-            loadUsers();
-        }
-    });
-
-    $('#nextPage').click(() => {
-        currentPage++;
-        loadUsers();
-    });
-    loadUsers();
-
-    $('#prevPage').click(() => {
-        if (currentPage > 1) {
-            currentPage--;
-            loadAuditLogs();
-        }
-    });
-
-    $('#nextPage').click(() => {
-        currentPage++;
-        loadAuditLogs();
-    });
-    loadAuditLogs();
 });
+
+function showInviteModal() {
+    $('#inviteForm')[0].reset();
+    $('.success-message').remove();
+    $('#inviteModal').show();
+    $('#inviteModal .modal-content').show();
+}
+
+function editUser(userId) {
+    currentEditingUserId = userId;
+    const token = localStorage.getItem('token');
+          
+    $.ajax({
+        url: `http://localhost:8000/api/admin/users/${userId}`,
+        headers: { 'Authorization': `Bearer ${token}` },
+        method: 'GET',
+        success: function(user) {
+            $('#editRole').val(user.role);
+            $('#editActive').prop('checked', user.is_active);
+            $('#editMessage').empty();
+            $('#editUserModal').show();
+            $('#editUserModal .modal-content').show();
+        },
+        error: function(xhr) {
+            showNotification(xhr.responseJSON?.detail || 'Failed to load user data', 'error');
+        }
+    });
+}
+
+// Add this function to handle modal closing
+function closeModal(modalId) {
+    $(`#${modalId}`).hide();
+    $(`#${modalId} .modal-content`).hide();
+}
 
 function checkAdminAccess() {
     const token = localStorage.getItem('token');
