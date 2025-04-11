@@ -569,5 +569,5 @@ function editUser(userId) {
         localStorage.removeItem('userName');
         
         // Redirect to login page
-        window.location.href = '../auth/login.html';
+        window.location.href = '/auth/login.html';
     }

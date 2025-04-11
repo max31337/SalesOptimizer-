@@ -21,9 +21,9 @@ function verifySession() {
             
             // Enforce role-based access
             if (response.role === 'admin' && currentPath.includes('/pages/')) {
-                window.location.href = '/salesoptimizer/admin/dashboard.html';
+                window.location.href = '/admin/dashboard.html';;
             } else if (response.role !== 'admin' && currentPath.includes('/admin/')) {
-                window.location.href = '/salesoptimizer/pages/dashboard.html';
+                window.location.href = '/pages/dashboard.html';
             }
         },
         error: function() {
@@ -34,7 +34,7 @@ function verifySession() {
 
 function handleAuthFailure() {
     localStorage.clear();
-    window.location.href = '/salesoptimizer/auth/login.html';
+    window.location.href = '/auth/login.html';
 }
 
 // Run verification immediately
