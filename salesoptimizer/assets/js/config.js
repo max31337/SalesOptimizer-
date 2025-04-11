@@ -1,3 +1,3 @@
 const apiConfig = {
-  apiUrl: process.env.API_BASE_URL || "http://localhost:8000/api"
+    apiUrl: "https://crossover.proxy.rlwy.net:32542/api"
 };
