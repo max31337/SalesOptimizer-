@@ -13,7 +13,7 @@
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "https://crossover.proxy.rlwy.net:32542/api/$1"
+      "dest": "http://crossover.proxy.rlwy.net:32542/api/$1"
     },
     {
       "src": "/(.*)",
