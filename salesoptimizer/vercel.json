@@ -2,22 +2,22 @@
   "version": 2,
   "builds": [
     {
-      "src": "*.html",
+      "src": "public/**/*.html",
       "use": "@vercel/static"
     },
     {
-      "src": "assets/**/*",
+      "src": "public/assets/**/*",
       "use": "@vercel/static"
     }
   ],
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "../../backend/app/api/$1"
+      "dest": "https://crossover.proxy.rlwy.net:32542/api/$1"
     },
     {
       "src": "/(.*)",
-      "dest": "/$1"
+      "dest": "/public/$1"
     }
   ]
 }
