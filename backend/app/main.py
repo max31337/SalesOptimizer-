@@ -6,7 +6,7 @@ from app.api.auth import password_reset_routes
 from app.api.admin.analytics_routes import router as analytics_router
 from app.core.config import SECRET_KEY
 from app.api.crm import customer_routes
-from app.api.crm import interaction_routes  # Add this import
+from app.api.crm import interaction_routes  
 from app.api.admin.user_management import router as admin_user_router
 from app.core.environment import get_settings
 from app.routes import health
@@ -17,7 +17,7 @@ app = FastAPI()
 # Update CORS configuration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # This already allows all origins
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
