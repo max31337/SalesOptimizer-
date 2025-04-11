@@ -1,6 +1,4 @@
 {
   "scripts": {
-    "build": "robocopy salesoptimizer public /E /NFL /NDL /NJH /NJS /nc /ns /NP",
-    "vercel-build": "npm run build"
   }
 }
