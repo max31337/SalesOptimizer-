@@ -1,5 +1,11 @@
 {
   "scripts": {
-    "vercel-build": "xcopy public\\* .\\ /E /H /C /I"
+    "build": "shx rm -rf dist && copyfiles public/**/* dist",
+    "prebuild": "shx rm -rf dist",
+    "vercel-build": "npm run build && xcopy public\\* .\\ /E /H /C /I"
+  },
+  "devDependencies": {
+    "shx": "^0.3.4",
+    "copyfiles": "^2.4.1"
   }
 }
