@@ -1,0 +1,111 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    min-height: 100vh;
+    background: var(--bg-color, #f5f5f5);
+    color: var(--text-color, #333333);
+}
+
+[data-theme="dark"] {
+    --bg-color: #121212;
+    --text-color: #ffffff;
+    --card-bg: #1e1e1e;
+    --border-color: #404040;
+}
+
+.error-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4rem;
+    padding: 2rem;
+    background: linear-gradient(135deg, rgba(140, 198, 63, 0.05) 0%, rgba(27, 117, 188, 0.05) 100%);
+    transition: all 0.3s ease;
+}
+
+[data-theme="dark"] .error-container {
+    background: linear-gradient(135deg, rgba(140, 198, 63, 0.02) 0%, rgba(27, 117, 188, 0.02) 100%);
+}
+
+.error-logo {
+    width: 45%;
+    max-width: 600px;
+    height: auto;
+    object-fit: contain;
+}
+
+.error-content {
+    max-width: 500px;
+}
+
+.error-title {
+    font-size: 3rem;
+    color: var(--primary-color, #8CC63F);
+    margin-bottom: 1.5rem;
+    font-weight: 700;
+}
+
+.space-message {
+    font-size: 1.25rem;
+    color: var(--text-color, #333333);
+    margin-bottom: 3rem;
+    line-height: 1.6;
+    font-weight: 500;
+}
+
+[data-theme="dark"] .space-message {
+    color: var(--text-color, #ffffff);
+}
+
+.home-button {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--primary-color, #8CC63F) 0%, var(--accent-color, #1B75BC) 100%);
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(140, 198, 63, 0.2);
+}
+
+.home-button:hover {
+    opacity: 0.95;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(140, 198, 63, 0.3);
+}
+
+@media (max-width: 1024px) {
+    .error-container {
+        flex-direction: column;
+        text-align: center;
+        padding: 1rem;
+        overflow-y: auto;
+    }
+    
+    .error-logo {
+        width: 80%;
+        max-width: 400px;
+        margin-bottom: 1rem;
+    }
+
+    .error-title {
+        font-size: 2.5rem;
+    }
+
+    .error-message {
+        font-size: 1.1rem;
+    }
+}

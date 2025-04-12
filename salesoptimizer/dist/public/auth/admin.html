@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard - SalesOptimizer</title>
+    <link rel="stylesheet" href="../assets/css/styles.css">
+</head>
+<body>
+    <main class="admin-dashboard">
+        <h1>Admin Dashboard</h1>
+        
+        <section class="invite-users">
+            <h2>Invite New User</h2>
+            <form id="inviteForm">
+                <input type="email" id="inviteEmail" placeholder="Email" required>
+                <select id="inviteRole" required>
+                    <option value="sales-rep">Sales Representative</option>
+                    <option value="analyst">Analyst</option>
+                    <option value="admin">Administrator</option>
+                </select>
+                <button type="submit">Send Invitation</button>
+            </form>
+        </section>
+
+        <section class="user-list">
+            <h2>User Management</h2>
+            <table id="userTable">
+                <thead>
+                    <tr>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </section>
+    </main>
+
+    <script src="../assets/js/admin.js"></script>
+</body>
+</html>

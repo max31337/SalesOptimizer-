@@ -5,7 +5,7 @@
     "vercel-build": "npm run build && xcopy public\\* .\\ /E /H /C /I"
   },
   "devDependencies": {
-    "shx": "^0.3.4",
-    "copyfiles": "^2.4.1"
+    "copyfiles": "^2.4.1",
+    "shx": "^0.3.4"
   }
 }

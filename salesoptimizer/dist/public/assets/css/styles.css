@@ -1,0 +1,552 @@
+/* Google Material-inspired Theme */
+:root {
+    --primary-color: #8CC63F; /* Updated to match logo's green */
+    --primary-light: #A2D165;
+    --primary-dark: #689F33;
+    --accent-color: #1B75BC; /* Logo's blue color */
+    --white: #FFFFFF;
+    --gray-100: #F8F9FA;
+    --gray-200: #E9ECEF;
+    --gray-800: #343A40;
+    --secondary-color: #03dac6; /* Pastel Teal */
+    --bg-color: #f3f3f3;
+    --text-color: #333;
+    --error-color: #d32f2f;
+    --card-bg: #ffffff;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --border-radius: 12px;
+    --transition-speed: 0.3s;
+    --input-border: #ddd;
+}
+
+/* Reset styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Roboto', sans-serif;
+}
+
+/* Global Styles */
+body {
+    font-family: 'Roboto', sans-serif;
+    line-height: 1.6;
+    color: var(--gray-800);
+    background: linear-gradient(135deg, var(--gray-100) 0%, var(--white) 100%);
+    min-height: 100vh;
+}
+
+/* Navbar (Fixed at the top) */
+.app-bar {
+    background: var(--white);
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+}
+
+.app-bar h1 {
+    display: none;
+}
+
+.app-bar nav {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.btn-text {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.btn-text:hover {
+    background-color: rgba(140, 198, 63, 0.1);
+    color: var(--primary-dark);
+}
+
+/* Logo Styles */
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-decoration: none;
+}
+
+.brand:hover {
+    opacity: 0.9;
+}
+
+.brand img {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+}
+
+.brand h1 {
+    color: var(--primary-color);
+    font-size: 1.5rem;
+    font-weight: 600;
+    display: block;
+}
+
+/* Hero Section */
+.hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    min-height: 100vh;
+    padding: 2rem;
+    background: linear-gradient(135deg, rgba(140, 198, 63, 0.05) 0%, rgba(27, 117, 188, 0.05) 100%);
+}
+
+.hero h2 {
+    font-size: 3rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+    max-width: 800px;
+}
+
+.hero p {
+    font-size: 1.25rem;
+    color: var(--gray-800);
+    margin-bottom: 2rem;
+    max-width: 600px;
+}
+
+.btn {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+    color: var(--white);
+    text-decoration: none;
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(140, 198, 63, 0.2);
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(140, 198, 63, 0.3);
+    opacity: 0.95;
+}
+
+@media (max-width: 768px) {
+    .hero h2 {
+        font-size: 2rem;
+    }
+    
+    .hero p {
+        font-size: 1rem;
+    }
+    
+    .btn {
+        padding: 0.8rem 1.6rem;
+    }
+}
+
+/* Card Design for Login & Register */
+.card {
+    width: 400px;
+    background: var(--card-bg);
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    box-shadow: 0 8px 16px var(--shadow-color);
+    text-align: center;
+    margin-top: 50px;
+    animation: fadeInUp 0.5s ease-in-out;
+}
+
+.card h2 {
+    color: var(--primary-color);
+    font-weight: 500;
+    margin-bottom: 15px;
+}
+
+/* Form Fields */
+.card form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.card input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid var(--input-border);
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+    transition: border-color var(--transition-speed);
+}
+
+.card input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 5px rgba(98, 0, 234, 0.3);
+}
+
+/* Submit Button */
+.card button {
+    width: 100%;
+    padding: 12px;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background var(--transition-speed);
+}
+
+.card button:hover {
+    background: var(--primary-dark);
+    box-shadow: 0 4px 12px rgba(98, 0, 234, 0.2);
+}
+
+/* Error Message */
+.error-message {
+    color: var(--error-color);
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+/* Auth Link (Login/Register) */
+.auth-link {
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+.auth-link a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: bold;
+    transition: color var(--transition-speed);
+}
+
+.auth-link a:hover {
+    text-decoration: underline;
+    color: var(--primary-dark);
+}
+
+/* Animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Auth Pages Container */
+.login-container,
+.register-container {
+    width: 100%;
+    max-width: 400px;
+    background: var(--white);
+    padding: 2.5rem;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(140, 198, 63, 0.15);
+    margin: 120px auto 2rem;
+    animation: fadeInUp 0.5s ease-out;
+}
+
+.login-container h2,
+.register-container h2 {
+    color: var(--primary-color);
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+/* Form Styles */
+.login-container form,
+.register-container form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.login-container input,
+.register-container input {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    border: 2px solid var(--gray-200);
+    border-radius: 8px;
+    font-size: 1rem;
+    color: var(--gray-800);
+    transition: all 0.3s ease;
+    background-color: var(--white);
+}
+
+.login-container input:hover,
+.register-container input:hover {
+    border-color: var(--primary-light);
+}
+
+.login-container input:focus,
+.register-container input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 4px rgba(114, 9, 183, 0.1);
+}
+
+.login-container input::placeholder,
+.register-container input::placeholder {
+    color: #9CA3AF;
+}
+
+/* Submit Button */
+.login-container button,
+.register-container button {
+    width: 100%;
+    padding: 0.875rem;
+    margin-top: 0.5rem;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.login-container button:hover,
+.register-container button:hover {
+    opacity: 0.95;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(140, 198, 63, 0.2);
+}
+
+.login-container button:active,
+.register-container button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(114, 9, 183, 0.2);
+}
+
+/* Error Message */
+.error-message {
+    color: #dc3545;
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 4px;
+    background-color: rgba(220, 53, 69, 0.1);
+    display: none;  /* Hide by default */
+}
+
+.error-message.show {
+    display: block;  /* Show when has 'show' class */
+}
+
+/* Auth Link */
+.auth-link {
+    margin-top: 1.5rem;
+    font-size: 0.875rem;
+    color: var(--gray-800);
+    text-align: center;
+}
+
+.auth-link a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.auth-link a:hover {
+    color: var(--primary-light);
+    text-decoration: underline;
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+    .login-container,
+    .register-container {
+        margin: 100px 1rem 2rem;
+        padding: 1.5rem;
+    }
+
+    .login-container h2,
+    .register-container h2 {
+        font-size: 1.5rem;
+    }
+}
+
+.info-text {
+    text-align: center;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.message {
+    text-align: center;
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+.success-message {
+    color: #28a745; /* Green color for success */
+    font-weight: bold;
+    margin-top: 10px;
+    text-align: center;
+}
+
+.error-message {
+    background-color: #FEE2E2;
+    color: #991B1B;
+    border: 1px solid #F87171;
+}
+
+body.light {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+body.dark {
+    background-color: #000000;
+    color: #ffffff;
+}
+
+/* Dark mode toggle switch */
+.theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    margin-right: 1rem;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 24px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: var(--primary-color);
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
+
+/* Dark mode variables */
+:root {
+    --bg-color: #ffffff;
+    --text-color: #333333;
+    --card-bg: #ffffff;
+    --border-color: #e0e0e0;
+}
+
+[data-theme="dark"] {
+    --bg-color: #121212;
+    --text-color: #ffffff;
+    --card-bg: #1e1e1e;
+    --border-color: #404040;
+    --gray-800: #ffffff;
+    --gray-200: #333333;
+    --gray-100: #1e1e1e;
+    --white: #121212;
+    --shadow-color: rgba(0, 0, 0, 0.3);
+}
+
+/* Dark mode specific styles */
+[data-theme="dark"] body {
+    background: var(--bg-color);
+    color: var(--text-color);
+}
+
+[data-theme="dark"] .app-bar {
+    background: var(--card-bg);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .hero {
+    background: linear-gradient(135deg, rgba(140, 198, 63, 0.1) 0%, rgba(27, 117, 188, 0.1) 100%);
+}
+
+[data-theme="dark"] .hero h2,
+[data-theme="dark"] .hero p {
+    color: var(--text-color);
+}
+
+[data-theme="dark"] .login-container,
+[data-theme="dark"] .register-container {
+    background: var(--card-bg);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .btn-text {
+    color: var(--primary-color);
+}
+
+[data-theme="dark"] .btn-text:hover {
+    background-color: rgba(140, 198, 63, 0.2);
+}
+
+[data-theme="dark"] input,
+[data-theme="dark"] select {
+    background: var(--bg-color);
+    color: var(--text-color);
+    border-color: var(--border-color);
+}
+
+[data-theme="dark"] input::placeholder {
+    color: #666;
+}
+
+[data-theme="dark"] .brand h1 {
+    color: var(--primary-color);
+}
+
+/* Add transition for smooth theme switching */
+body, .app-bar, .hero, input, select, .btn-text, .login-container, .register-container {
+    transition: all 0.3s ease;
+}
