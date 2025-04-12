@@ -740,22 +740,83 @@ th {
 /* Invite User and Edit User Modals */
 .modal-overlay {
     position: fixed;
-    inset: 0;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
     display: flex;
-    align-items: center;
     justify-content: center;
+    align-items: center;
     z-index: 1000;
 }
 
 .modal-content {
-    background-color: #fff;
+    background: white;
     padding: 2rem;
-    border-radius: 6px;
+    border-radius: 8px;
     width: 100%;
-    max-width: 400px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    max-width: 500px;
     position: relative;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+}
+
+.close-btn:hover {
+    color: #d32f2f;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.modal-footer {
+    margin-top: 2rem;
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+}
+
+/* Dark mode support */
+html[data-theme='dark'] .modal-content {
+    background: #2d2d2d;
+    color: #fff;
+}
+
+html[data-theme='dark'] .form-group input,
+html[data-theme='dark'] .form-group select {
+    background: #1a1a1a;
+    border-color: #404040;
+    color: #fff;
+}
+
+[x-cloak] {
+    display: none !important;
 }
 
 .modal-content h3 {

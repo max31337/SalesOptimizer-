@@ -15,9 +15,6 @@ function verifyLocalStorage() {
 }
 
 $(document).ready(function() {
-    $('.modal').hide();
-    $('.modal-content').hide();
-
     checkAdminAccess();
     loadUsers();
     loadAuditLogs();
@@ -28,26 +25,8 @@ $(document).ready(function() {
     
     $('.admin-section').removeClass('active').hide();
     $('#overview').addClass('active').show();
-
-    // Modal handling
-    $('.btn-secondary').click(function() {
-        $(this).closest('.modal').hide();
-        $(this).closest('.modal-content').hide();
-    });
 });
 
-function showInviteModal() {
-    $('#inviteForm')[0].reset();
-    $('.success-message').remove();
-    $('#inviteModal').show();
-    $('#inviteModal .modal-content').show();
-}
-
-// Add this function to handle modal closing
-function closeModal(modalId) {
-    $(`#${modalId}`).hide();
-    $(`#${modalId} .modal-content`).hide();
-}
 
 function checkAdminAccess() {
     const token = localStorage.getItem('token');
@@ -398,56 +377,6 @@ function applyTheme(theme) {
     localStorage.setItem('admin-theme', theme);
 }
 
-
-// Update the inviteUser function
-function inviteUser() {
-    const token = localStorage.getItem('token');
-    const data = {
-        email: $('#inviteEmail').val(),
-        name: $('#inviteName').val(),
-        role: $('#inviteRole').val()
-    };
-
-    $.ajax({
-        url: '${apiConfig.apiUrl}/admin/invite/',
-        headers: { 
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-        },
-        method: 'POST',
-        data: JSON.stringify(data),
-        success: function(response) {
-            // Remove any existing success message
-            $('#inviteModal .modal-content .success-message').remove();
-            
-            // Add new success message
-            $('<p class="success-message">Invitation sent successfully!</p>')
-                .css({
-                    'color': '#28a745',
-                    'font-weight': 'bold',
-                    'margin-top': '10px',
-                    'text-align': 'center'
-                })
-                .appendTo('#inviteModal .modal-content');
-            
-            // Clear the form
-            $('#inviteForm')[0].reset();
-            
-            // Refresh user list
-            loadUsers();
-            
-            // Hide modal after delay
-            setTimeout(() => {
-                $('#inviteModal').hide();
-                $('#inviteModal .modal-content .success-message').remove();
-            }, 2000);
-        },
-        error: function(xhr) {
-            showNotification(xhr.responseJSON?.detail || 'Failed to invite user', 'error');
-        }
-    });
-}
-
 // Keep only one version of each function and remove duplicates
 function showNotification(message, type = 'success') {
     const notification = $('<div>')
@@ -522,30 +451,6 @@ function deleteUser(userId) {
     });
 }
 
-
-function editUser(userId) {
-    currentEditingUserId = userId;
-    const token = localStorage.getItem('token');
-          
-    $.ajax({
-        url: `${apiConfig.apiUrl}/admin/users/${userId}`,
-        headers: { 'Authorization': `Bearer ${token}` },
-        method: 'GET',
-        success: function(user) {
-            $('#editRole').val(user.role);
-            $('#editActive').prop('checked', user.is_active);
-            $('#editMessage').empty();
-            $('#editUserModal').show();
-        },
-        error: function(xhr) {
-            showNotification(xhr.responseJSON?.detail || 'Failed to load user data', 'error');
-        }
-    });
-}
-
-
-
-
     function logout() {
         // Clear local storage
         localStorage.removeItem('token');
@@ -555,3 +460,37 @@ function editUser(userId) {
         // Redirect to login page
         window.location.href = '/auth/login.html';    
     }
+
+
+// Add this function to your admin.js
+function submitInvite(event) {
+    event.preventDefault();
+    const token = localStorage.getItem('token');
+    const data = {
+        email: document.getElementById('inviteEmail').value,
+        name: document.getElementById('inviteName').value,
+        role: document.getElementById('inviteRole').value
+    };
+
+    fetch(`${apiConfig.apiUrl}/admin/invite/`, {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        showNotification('Invitation sent successfully!', 'success');
+        document.querySelector('[x-data]').__x.$data.showModal = false;
+    })
+    .catch(error => {
+        showNotification('Failed to send invitation', 'error');
+    });
+}
+
+// Make sure to call this after any dynamic content is added
+document.addEventListener('DOMContentLoaded', () => {
+    lucide.createIcons();
+});
