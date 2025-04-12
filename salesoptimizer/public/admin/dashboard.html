@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - SalesOptimizer</title>
+    <!-- Add auth-guard.js before other scripts -->
     <script src="../assets/js/auth-guard.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
@@ -39,7 +40,7 @@
             const token = localStorage.getItem('token');
             const userRole = localStorage.getItem('userRole');
             if (!token || userRole !== 'admin') {
-                window.location.href = '/pages/404.html';
+                window.location.href = '../pages/404.html';
             }
         });
     </script>
@@ -293,9 +294,7 @@
                     <option value="admin">Administrator</option>
                 </select>
                 <button type="submit" class="btn-primary">Send Invitation</button>
-                <button type="button" class="btn-secondary" onclick="closeModal('inviteModal')">Cancel</button>
-                
-                <button type="button" class="btn-secondary" onclick="closeModal('editUserModal')">Cancel</button>
+                <button type="button" class="btn-secondary" onclick="$('#inviteModal').hide()">Cancel</button>
             </form>
         </div>
     </div>
@@ -326,8 +325,6 @@
         </div>
     </div>
 
-    <!-- Add this after Chart.js and before admin.js -->
-    <!-- Update script tags -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="../assets/js/config.js" type="module"></script>
     <script src="../assets/js/analytics.js" type="module"></script>

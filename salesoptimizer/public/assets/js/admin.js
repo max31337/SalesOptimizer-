@@ -3,7 +3,6 @@ import { apiConfig } from './config.js';
 
 let currentPage = 1;  
 const itemsPerPage = 10;
-let selectedUserId = null;
 
 // Add this check before any admin.js operations
 function verifyLocalStorage() {
@@ -15,7 +14,6 @@ function verifyLocalStorage() {
 }
 
 $(document).ready(function() {
-    // Hide all modals on initial load
     $('.modal').hide();
     $('.modal-content').hide();
 
