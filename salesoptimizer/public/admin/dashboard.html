@@ -277,27 +277,50 @@
     </div>
 
     <!-- Modals -->
-    <!-- Move modals outside of main content -->
     </main>
     </div>
     
-    <!-- Modals at the end of body -->
-    <div id="inviteModal" class="modal">
-        <div class="modal-content">
-            <h3>Invite New User</h3>
-            <form id="inviteForm">
-                <input type="email" id="inviteEmail" placeholder="Email" required>
-                <input type="text" id="inviteName" placeholder="Name" required>
-                <select id="inviteRole" required>
-                    <option value="sales-rep">Sales Representative</option>
-                    <option value="analyst">Analyst</option>
-                    <option value="admin">Administrator</option>
-                </select>
+<!-- Modals at the end of body -->
+<!-- Invite Modal Component -->
+<div 
+    id="inviteModal"
+    x-data="{ open: false, submitInvite() {
+        const email = document.getElementById('inviteEmail').value;
+        const name = document.getElementById('inviteName').value;
+        const role = document.getElementById('inviteRole').value;
+
+        console.log({ email, name, role });
+
+        document.getElementById('inviteForm').reset();
+        this.open = false;
+    }}"
+    x-show="open"
+    @keydown.escape.window="open = false"
+    @click.away="open = false"
+    class="modal-overlay"
+    x-cloak
+>
+    <div class="modal-content">
+        <h3>Invite New User</h3>
+        <form id="inviteForm" @submit.prevent="submitInvite">
+            <input type="email" id="inviteEmail" placeholder="Email" required>
+            <input type="text" id="inviteName" placeholder="Name" required>
+            <select id="inviteRole" required>
+                <option value="sales-rep">Sales Representative</option>
+                <option value="analyst">Analyst</option>
+                <option value="admin">Administrator</option>
+            </select>
+            <div class="btn-group">
                 <button type="submit" class="btn-primary">Send Invitation</button>
-                <button type="button" class="btn-secondary" onclick="$('#inviteModal').hide()">Cancel</button>
-            </form>
-        </div>
+                <button type="button" class="btn-secondary" @click="open = false">Cancel</button>
+            </div>
+        </form>
     </div>
+</div>
+
+<!-- Trigger -->
+<button onclick="document.querySelector('#inviteModal').__x.$data.open = true">Open Invite Modal</button>
+
 
     <div id="editUserModal" class="modal">
         <div class="modal-content">
