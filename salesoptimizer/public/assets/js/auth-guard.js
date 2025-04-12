@@ -1,5 +1,8 @@
 import { apiConfig } from './config.js';
 
+// Add current path definition
+const currentPath = window.location.pathname;
+
 function verifySession() {
     const token = localStorage.getItem('token');
     const userRole = localStorage.getItem('userRole');
@@ -20,8 +23,8 @@ function verifySession() {
             }
             
             // Enforce role-based access
-            if (response.role === 'admin' && currentPath.includes('/admin/')) {
-                window.location.href = '/admin/dashboard.html';;
+            if (response.role === 'admin' && !currentPath.includes('/admin/')) {
+                window.location.href = '/admin/dashboard.html';
             } else if (response.role !== 'admin' && currentPath.includes('/admin/')) {
                 window.location.href = '/pages/dashboard.html';
             }

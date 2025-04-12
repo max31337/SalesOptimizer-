@@ -18,7 +18,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "https://salesoptimizer.vercel.app",
-        "http://localhost:3000",
+        "http://127.0.0.1:5500",
         "http://crossover.proxy.rlwy.net:32542"  # Use HTTP only
     ],
     allow_credentials=True,

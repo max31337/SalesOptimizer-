@@ -1,10 +1,52 @@
 import { apiConfig } from './config.js';
 
-let userDistributionChart = null;
-let roleDistributionChart = null;
-let loginActivityChart = null;
-let loginSuccessChart = null;
-let registrationChart = null;
+// Add these chart variables at the top
+let userDistributionChart, roleDistributionChart, loginActivityChart, 
+    loginSuccessChart, registrationChart;
+
+export function initializeAllCharts() {
+    destroyAllCharts();
+    loadUserDistribution();
+    loadRoleDistribution();
+    loadLoginActivity();
+    loadLoginSuccessRate();
+    loadFailedLoginAttempts();
+    loadRegistrationTrends();
+}
+
+function loadUserDistribution() {
+    const token = localStorage.getItem('token');
+    
+    $.ajax({
+        url: `${apiConfig.apiUrl}/analytics/user-distribution`,
+        headers: { 'Authorization': `Bearer ${token}` },
+        method: 'GET',
+        success: function(response) {
+            const ctx = document.getElementById('userDistributionChart').getContext('2d');
+            
+            if (userDistributionChart) {
+                userDistributionChart.destroy();
+            }
+
+            userDistributionChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Active', 'Inactive'],
+                    datasets: [{
+                        data: [response.active, response.inactive],
+                        backgroundColor: [
+                            'rgba(75, 192, 192, 0.8)',
+                            'rgba(255, 99, 132, 0.8)'
+                        ]
+                    }]
+                }
+            });
+        },
+        error: function(xhr) {
+            console.error('Failed to load user distribution:', xhr);
+        }
+    });
+}
 
 function destroyAllCharts() {
     const charts = [
@@ -125,7 +167,7 @@ function loadActiveUsers() {
     const token = localStorage.getItem('token');
     
     $.ajax({
-        url: '${apiConfig.apiUrl}/analytics/active-users',
+        url: `${apiConfig.apiUrl}/analytics/active-users`,  // Fixed template literal
         headers: { 'Authorization': `Bearer ${token}` },
         method: 'GET',
         success: function(response) {
@@ -180,7 +222,7 @@ function loadRoleDistribution() {
     const token = localStorage.getItem('token');
     
     $.ajax({
-        url: '${apiConfig.apiUrl}/analytics/role-distribution',
+        url: `${apiConfig.apiUrl}/analytics/role-distribution`,  // Fixed template literal
         headers: { 'Authorization': `Bearer ${token}` },
         method: 'GET',
         success: function(response) {
@@ -235,7 +277,7 @@ function loadLoginActivity() {
     const token = localStorage.getItem('token');
     
     $.ajax({
-        url: '${apiConfig.apiUrl}/analytics/login-activity',
+        url: `${apiConfig.apiUrl}/analytics/login-activity`,  // Fixed template literal
         headers: { 'Authorization': `Bearer ${token}` },
         method: 'GET',
         success: function(response) {
@@ -366,4 +408,6 @@ function loadLoginActivity() {
             $('.failure-list').html('<li>Failed to load data</li>');
             $('.ip-list').html('<li>Failed to load data</li>');
         }
+
+        
     });}

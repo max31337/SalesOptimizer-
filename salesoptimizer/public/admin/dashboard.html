@@ -348,6 +348,7 @@
         </div>
     </div>
 
+    <!-- Keep these script imports -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="../assets/js/config.js" type="module"></script>
     <script src="../assets/js/analytics.js" type="module"></script>
@@ -370,8 +371,37 @@
     </script>
 
 <script>
-    // Initialize Lucide icons
     lucide.createIcons();
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const navLinks = document.querySelectorAll('.nav-links a');
+        
+        navLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href').substring(1);
+                
+                // Hide all sections
+                document.querySelectorAll('.admin-section').forEach(section => {
+                    section.style.display = 'none';
+                    section.classList.remove('active');
+                });
+                
+                // Show target section
+                const targetSection = document.getElementById(targetId);
+                if (targetSection) {
+                    targetSection.style.display = 'block';
+                    targetSection.classList.add('active');
+                }
+                
+                // Update active state in navigation
+                navLinks.forEach(link => link.parentElement.classList.remove('active'));
+                this.parentElement.classList.add('active');
+            });
+        });
+    });
 </script>
+
+
 </body>
 </html>

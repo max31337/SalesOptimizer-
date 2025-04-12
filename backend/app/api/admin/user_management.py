@@ -30,14 +30,6 @@ class UserUpdate(BaseModel):
     role: Optional[str] = None
     is_active: Optional[bool] = None
 
-# Remove this duplicate model since we're using the schema
-# class AuditLog(BaseModel):
-#     user_id: int
-#     action: str
-#     details: str
-#     timestamp: datetime
-#     performed_by: int
-
 def check_admin(current_user: User = Depends(get_current_user)):
     if current_user.role != "admin":
         raise HTTPException(status_code=403, detail="Admin access required")

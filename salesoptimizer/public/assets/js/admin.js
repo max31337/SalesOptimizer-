@@ -1,4 +1,5 @@
 import { apiConfig } from './config.js';
+import { initializeAllCharts } from './analytics.js';
 
 
 let currentPage = 1;  
@@ -40,27 +41,6 @@ function showInviteModal() {
     $('.success-message').remove();
     $('#inviteModal').show();
     $('#inviteModal .modal-content').show();
-}
-
-function editUser(userId) {
-    currentEditingUserId = userId;
-    const token = localStorage.getItem('token');
-          
-    $.ajax({
-        url: `${apiConfig.apiUrl}/admin/users/${userId}`,
-        headers: { 'Authorization': `Bearer ${token}` },
-        method: 'GET',
-        success: function(user) {
-            $('#editRole').val(user.role);
-            $('#editActive').prop('checked', user.is_active);
-            $('#editMessage').empty();
-            $('#editUserModal').show();
-            $('#editUserModal .modal-content').show();
-        },
-        error: function(xhr) {
-            showNotification(xhr.responseJSON?.detail || 'Failed to load user data', 'error');
-        }
-    });
 }
 
 // Add this function to handle modal closing
@@ -334,6 +314,7 @@ function setupEventListeners() {
         if (targetId !== 'overview' && window.destroyAllCharts) {
             destroyAllCharts();
         }
+        
         $('.admin-section').fadeOut(150, function() {
             $('.admin-section').hide();
             $(`#${targetId}`).fadeIn(150);
@@ -342,20 +323,20 @@ function setupEventListeners() {
             if (targetId === 'overview') {
                 setTimeout(loadAllAnalytics, 200);
             }
+            // Load appropriate content based on section
+            if (targetId === 'audit') {
+                loadAuditLogs();
+            } else if (targetId === 'users') {
+                loadUsers();
+            } else if (targetId === 'settings') {
+                loadAdminSettings();
+            }
         });
         
         $('.nav-links li').removeClass('active');
         $(this).parent().addClass('active');
     });
-
-        if (targetId === 'audit') {
-            loadAuditLogs();
-        } else if (targetId === 'users') {
-            loadUsers();
-        } else if (targetId === 'settings') {
-            loadAdminSettings();
-        }
-    }
+}
 
 function updateAdminSettings() {
     const token = localStorage.getItem('token');
@@ -417,12 +398,6 @@ function applyTheme(theme) {
     localStorage.setItem('admin-theme', theme);
 }
 
-function showInviteModal() {
-    // Clear any previous form data and messages
-    $('#inviteForm')[0].reset();
-    $('.success-message').remove();
-    $('#inviteModal').show();
-}
 
 // Update the inviteUser function
 function inviteUser() {
@@ -484,28 +459,40 @@ function showNotification(message, type = 'success') {
 }
 
 function setupNavigationHandlers() {
-    $('.nav-links a').click(function(e) {
-        e.preventDefault();
-        const targetId = $(this).attr('href').substring(1);
-        
-        // Hide all sections
-        $('.admin-section').removeClass('active').hide();
-        
-        // Show target section
-        $(`#${targetId}`).addClass('active').show();
-        
-        // Update active nav link
-        $('.nav-links li').removeClass('active');
-        $(this).parent().addClass('active');
-        
-        // Refresh section data
-        if (targetId === 'overview') {
-            loadAllAnalytics();
-        } else if (targetId === 'users') {
-            loadUsers();
-        } else if (targetId === 'audit') {
-            loadAuditLogs();
-        }
+    const navLinks = document.querySelectorAll('.nav-links a');
+    
+    // Initialize charts if overview is active on page load
+    if (document.getElementById('overview').classList.contains('active')) {
+        initializeAllCharts();
+    }
+    
+    navLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href').substring(1);
+            
+            // Hide all sections
+            document.querySelectorAll('.admin-section').forEach(section => {
+                section.style.display = 'none';
+                section.classList.remove('active');
+            });
+            
+            // Show target section
+            const targetSection = document.getElementById(targetId);
+            if (targetSection) {
+                targetSection.style.display = 'block';
+                targetSection.classList.add('active');
+                
+                // Initialize charts when overview section is shown
+                if (targetId === 'overview') {
+                    initializeAllCharts();
+                }
+            }
+            
+            // Update active state in navigation
+            navLinks.forEach(link => link.parentElement.classList.remove('active'));
+            this.parentElement.classList.add('active');
+        });
     });
 }
 
@@ -566,4 +553,5 @@ function editUser(userId) {
         localStorage.removeItem('userName');
         
         // Redirect to login page
-        window.location.href = '/auth/login.html';    }
+        window.location.href = '/auth/login.html';    
+    }

@@ -112,45 +112,56 @@ def upgrade() -> None:
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_sales_id'), 'sales', ['id'], unique=False)
-    op.create_table('interactions',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('type', sa.Enum('CALL', 'EMAIL', 'MEETING', name='interactiontype'), nullable=False),
-    sa.Column('notes', sa.Text(), nullable=True),
-    sa.Column('interaction_date', sa.DateTime(), nullable=False),
-    sa.Column('follow_up_date', sa.DateTime(), nullable=True),
-    sa.Column('follow_up_task', sa.Text(), nullable=True),
-    sa.Column('follow_up_status', sa.String(), nullable=True),
-    sa.Column('customer_id', sa.Integer(), nullable=True),
-    sa.Column('sales_rep_id', sa.Integer(), nullable=True),
-    sa.Column('created_at', sa.DateTime(), nullable=True),
-    sa.Column('updated_at', sa.DateTime(), nullable=True),
-    sa.ForeignKeyConstraint(['customer_id'], ['customers.id'], ondelete='CASCADE'),
-    sa.ForeignKeyConstraint(['sales_rep_id'], ['users.id'], ),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_index(op.f('ix_interactions_id'), 'interactions', ['id'], unique=False)
-    op.create_table('opportunities',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('title', sa.String(), nullable=False),
-    sa.Column('deal_value', sa.Float(), nullable=False),
-    sa.Column('currency', sa.String(), nullable=True),
-    sa.Column('stage', sa.Enum('LEAD', 'PROSPECT', 'NEGOTIATION', 'CLOSED_WON', 'CLOSED_LOST', name='opportunitystage'), nullable=False),
-    sa.Column('probability', sa.Float(), nullable=True),
-    sa.Column('expected_close_date', sa.DateTime(), nullable=False),
-    sa.Column('predicted_probability', sa.Float(), nullable=True),
-    sa.Column('predicted_close_date', sa.DateTime(), nullable=True),
-    sa.Column('confidence_score', sa.Float(), nullable=True),
-    sa.Column('risk_factors', sa.Text(), nullable=True),
-    sa.Column('customer_id', sa.Integer(), nullable=True),
-    sa.Column('sales_rep_id', sa.Integer(), nullable=True),
-    sa.Column('created_at', sa.DateTime(), nullable=True),
-    sa.Column('updated_at', sa.DateTime(), nullable=True),
-    sa.ForeignKeyConstraint(['customer_id'], ['customers.id'], ondelete='CASCADE'),
-    sa.ForeignKeyConstraint(['sales_rep_id'], ['users.id'], ),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_index(op.f('ix_opportunities_id'), 'opportunities', ['id'], unique=False)
-    # ### end Alembic commands ###
+    def upgrade():
+        # Check for enum existence first
+        conn = op.get_bind()
+        enum_exists = conn.execute(
+            "SELECT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'interactiontype')"
+        ).scalar()
+        
+        if not enum_exists:
+            interactiontype = sa.Enum('CALL', 'EMAIL', 'MEETING', name='interactiontype')
+            interactiontype.create(op.get_bind())
+    
+        # Then proceed with table creation
+        op.create_table('interactions',
+            sa.Column('id', sa.Integer(), nullable=False),
+            sa.Column('type', interactiontype, nullable=True),
+            sa.Column('notes', sa.Text(), nullable=True),
+            sa.Column('interaction_date', sa.DateTime(), nullable=False),
+            sa.Column('follow_up_date', sa.DateTime(), nullable=True),
+            sa.Column('follow_up_task', sa.Text(), nullable=True),
+            sa.Column('follow_up_status', sa.String(), nullable=True),
+            sa.Column('customer_id', sa.Integer(), nullable=True),
+            sa.Column('sales_rep_id', sa.Integer(), nullable=True),
+            sa.Column('created_at', sa.DateTime(), nullable=True),
+            sa.Column('updated_at', sa.DateTime(), nullable=True),
+            sa.ForeignKeyConstraint(['customer_id'], ['customers.id'], ondelete='CASCADE'),
+            sa.ForeignKeyConstraint(['sales_rep_id'], ['users.id'], ),
+            sa.PrimaryKeyConstraint('id'))
+        op.create_index(op.f('ix_interactions_id'), 'interactions', ['id'], unique=False)
+        op.create_table('opportunities',
+            sa.Column('id', sa.Integer(), nullable=False),
+            sa.Column('title', sa.String(), nullable=False),
+            sa.Column('deal_value', sa.Float(), nullable=False),
+            sa.Column('currency', sa.String(), nullable=True),
+            sa.Column('stage', sa.Enum('LEAD', 'PROSPECT', 'NEGOTIATION', 'CLOSED_WON', 'CLOSED_LOST', name='opportunitystage'), nullable=False),
+            sa.Column('probability', sa.Float(), nullable=True),
+            sa.Column('expected_close_date', sa.DateTime(), nullable=False),
+            sa.Column('predicted_probability', sa.Float(), nullable=True),
+            sa.Column('predicted_close_date', sa.DateTime(), nullable=True),
+            sa.Column('confidence_score', sa.Float(), nullable=True),
+            sa.Column('risk_factors', sa.Text(), nullable=True),
+            sa.Column('customer_id', sa.Integer(), nullable=True),
+            sa.Column('sales_rep_id', sa.Integer(), nullable=True),
+            sa.Column('created_at', sa.DateTime(), nullable=True),
+            sa.Column('updated_at', sa.DateTime(), nullable=True),
+            sa.ForeignKeyConstraint(['customer_id'], ['customers.id'], ondelete='CASCADE'),
+            sa.ForeignKeyConstraint(['sales_rep_id'], ['users.id'], ),
+            sa.PrimaryKeyConstraint('id')
+            )
+        op.create_index(op.f('ix_opportunities_id'), 'opportunities', ['id'], unique=False)
+            # ### end Alembic commands ###
 
 
 def downgrade() -> None:

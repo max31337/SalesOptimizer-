@@ -340,11 +340,15 @@ th {
 /* Update section visibility styles */
 .admin-section {
     display: none;
+    width: 100%;
 }
 
-.admin-section.active,
-.admin-section:not(.hidden) {
+.admin-section.active {
     display: block;
+}
+
+#overview {
+    display: block; /* Make overview visible by default */
 }
 
 .settings-status {
