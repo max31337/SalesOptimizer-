@@ -1,9 +1,7 @@
-import smtplib
+from mailersend import MailerSend
+from mailersend.emails import NewEmail
 import os
 from dotenv import load_dotenv
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart  # Add this import at the top
-
 
 load_dotenv()
 
@@ -14,12 +12,12 @@ SMTP_PASSWORD = os.getenv("SMTP_PASSWORD")
 SYSTEM_EMAIL = "system@salesoptimizer.com"
 
 def send_invite_email(email: str, token: str):
-    """Send an invite email with a pre-filled token link."""
+    """Send an invite email with token link."""
     
     if not SMTP_SERVER or not SMTP_USERNAME or not SMTP_PASSWORD:
         raise ValueError("SMTP credentials are missing. Check .env file.")
 
-    invite_link = f"http://127.0.0.1:5500/salesoptimizer/auth/register.html?token={token}"
+    invite_link = f"https://salesoptimizer.vercel.app/auth/register.html?token={token}"
     
     html_content = f"""
     <html>
@@ -54,7 +52,7 @@ def send_invite_email(email: str, token: str):
         with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
             server.starttls()
             server.login(SMTP_USERNAME, SMTP_PASSWORD)
-            server.sendmail(SMTP_USERNAME, email, msg.as_string())
+            server.sendmail(SYSTEM_EMAIL, email, msg.as_string())
             print(f"✅ Invitation email sent to {email}")
     except Exception as e:
         print(f"❌ Error sending email: {e}")
@@ -66,7 +64,7 @@ def send_verification_email(email: str, token: str):
     if not SMTP_SERVER or not SMTP_USERNAME or not SMTP_PASSWORD:
         raise ValueError("SMTP credentials are missing. Check .env file.")
 
-    verify_link = f"http://127.0.0.1:5500/salesoptimizer/auth/verify.html?token={token}"
+    verify_link = f"http://https://salesoptimizer.vercel.app/auth/verify.html?token={token}"
     
     html_content = f"""
     <html>
