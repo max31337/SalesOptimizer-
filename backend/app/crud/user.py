@@ -1,12 +1,10 @@
+from typing import Optional, List
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
 from datetime import datetime
-from typing import Optional, List  # Added List import
-from sqlalchemy.exc import IntegrityError  # Added for database error handling
-
-from app.models import User  # Updated import
-from app.schemas.user import UserCreate, UserUpdate  # Added User   Update import
-from app.api.auth.auth import hash_password, verify_password
+from app.models import User
+from app.schemas.user import UserCreate, UserUpdate
+from app.api.auth.auth import hash_password
 from app.utils.token import generate_verification_token
 from app.services.email import send_verification_email
 
