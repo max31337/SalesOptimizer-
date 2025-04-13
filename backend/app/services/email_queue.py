@@ -6,7 +6,8 @@ import smtplib
 import asyncio
 from app.core.config import SMTP_SERVER, SMTP_PORT, SMTP_USERNAME, SMTP_PASSWORD
 
-SYSTEM_EMAIL = "system@salesoptimizer.com"
+# Update the SYSTEM_EMAIL at the top
+SYSTEM_EMAIL = "MS_Sqy4cV@test-q3enl6kjp5842vwr.mlsender.net"
 
 class EmailQueue:
     def __init__(self):
