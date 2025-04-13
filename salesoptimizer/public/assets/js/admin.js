@@ -463,32 +463,57 @@ function deleteUser(userId) {
 
 
 // Add this function to your admin.js
-function submitInvite(event) {
-    event.preventDefault();
-    const token = localStorage.getItem('token');
-    const data = {
-        email: document.getElementById('inviteEmail').value,
-        name: document.getElementById('inviteName').value,
-        role: document.getElementById('inviteRole').value
-    };
+$(document).ready(function() {
+    $('#inviteUserForm').on('submit', function(e) {
+        e.preventDefault();
+        
+        const submitButton = $(this).find('button[type="submit"]');
+        // Change button to loading state
+        submitButton.prop('disabled', true).html('<i class="spinner-loading"></i> Sending...');
+        
+        const token = localStorage.getItem('token');
+        const formData = {
+            email: $('#inviteEmail').val(),
+            name: $('#inviteName').val(),
+            role: $('#inviteRole').val()
+        };
 
-    fetch(`${apiConfig.apiUrl}/admin/invite/`, {
-        method: 'POST',
-        headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-    })
-    .then(response => response.json())
-    .then(data => {
-        showNotification('Invitation sent successfully!', 'success');
-        document.querySelector('[x-data]').__x.$data.showModal = false;
-    })
-    .catch(error => {
-        showNotification('Failed to send invitation', 'error');
+        $.ajax({
+            url: `${apiConfig.apiUrl}/admin/invite/`,
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            data: JSON.stringify(formData),
+            success: function(response) {
+                // Reset button state
+                submitButton.prop('disabled', false).html('Send Invitation');
+                // Close invite modal
+                document.querySelector('[x-data]').__x.$data.showModal = false;
+                
+                // Show success modal
+                const successModal = document.querySelector('#successModal').__x;
+                $('#successMessage').text(`Invitation email sent successfully to ${formData.email}!`);
+                successModal.$data.show = true;
+                
+                // Clear the form
+                $('#inviteUserForm')[0].reset();
+                // Refresh user list
+                loadUsers();
+                
+                // Auto close success modal after 3 seconds
+                setTimeout(() => {
+                    successModal.$data.show = false;
+                }, 3000);
+            },
+            error: function(xhr) {
+                showNotification(xhr.responseJSON?.detail || 'Failed to send invitation email', 'error');
+                submitButton.prop('disabled', false).html('Send Invitation');
+            }
+        });
     });
-}
+});
 
 // Make sure to call this after any dynamic content is added
 document.addEventListener('DOMContentLoaded', () => {

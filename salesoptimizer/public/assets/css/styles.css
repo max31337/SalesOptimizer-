@@ -550,3 +550,40 @@ input:checked + .slider:before {
 body, .app-bar, .hero, input, select, .btn-text, .login-container, .register-container {
     transition: all 0.3s ease;
 }
+
+.spinner-loading {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 1s ease-in-out infinite;
+    margin-right: 8px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.success-modal {
+    max-width: 400px;
+}
+
+.success-modal .success-icon {
+    width: 64px;
+    height: 64px;
+    color: #4CAF50;
+    margin: 20px 0;
+}
+
+.success-modal .modal-body {
+    padding: 20px;
+    text-align: center;
+}
+
+.success-modal p {
+    font-size: 1.1rem;
+    margin: 15px 0;
+    color: var(--text-color);
+}
