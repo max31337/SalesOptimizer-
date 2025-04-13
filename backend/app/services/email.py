@@ -64,9 +64,9 @@ def send_verification_email(email: str, token: str):
     if not SMTP_SERVER or not SMTP_USERNAME or not SMTP_PASSWORD:
         raise ValueError("SMTP credentials are missing. Check .env file.")
 
-    verify_link = f"http://https://salesoptimizer.vercel.app/auth/verify.html?token={token}"
-    
-    html_content = f"""
+# Change this line
+verify_link = f"https://salesoptimizer.vercel.app/auth/verify.html?token={token}"    
+html_content = f"""
     <html>
         <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
             <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
@@ -88,21 +88,22 @@ def send_verification_email(email: str, token: str):
     </html>
     """
     
-    msg = MIMEMultipart('alternative')
-    msg["Subject"] = "Verify Your SalesOptimizer Account"
-    msg["From"] = f"SalesOptimizer <{SYSTEM_EMAIL}>"
-    msg["To"] = email
-    msg["Reply-To"] = SYSTEM_EMAIL
-    
-    msg.attach(MIMEText(html_content, 'html'))
+msg = MIMEMultipart('alternative')
+msg["Subject"] = "Verify Your SalesOptimizer Account"
+msg["From"] = f"SalesOptimizer <{SYSTEM_EMAIL}>"
+msg["To"] = email
+msg["Reply-To"] = SYSTEM_EMAIL
 
-    try:
-        with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
+msg.attach(MIMEText(html_content, 'html'))
+
+try:
+    with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
             server.starttls()
             server.login(SMTP_USERNAME, SMTP_PASSWORD)
-            server.sendmail(SMTP_USERNAME, email, msg.as_string())
+            # Change this line
+            SYSTEM_EMAIL = "MS_Sqy4cV@test-q3enl6kjp5842vwr.mlsender.net"
             print(f"✅ Verification email sent to {email}")
-    except Exception as e:
+except Exception as e:
         print(f"❌ Error sending verification email: {e}")
         raise
 
