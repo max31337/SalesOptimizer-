@@ -1,135 +1,20 @@
-from typing import Optional, List
 from sqlalchemy.orm import Session
-from fastapi import HTTPException
-from datetime import datetime
 from app.models import User
-from app.schemas.user import UserCreate, UserUpdate
-from app.api.auth.auth import hash_password
-from app.utils.token import generate_verification_token
-from app.services.email import send_verification_email
 
-def get_user(db: Session, user_id: int) -> Optional[User]:
-    """Get user by ID."""
-    return db.query(User).filter(User.id == user_id).first()
+class UserRepository:
+    def __init__(self, db: Session):
+        self.db = db
 
-def get_user_by_email(db: Session, email: str) -> Optional[User]:
-    """Get user by email."""
-    return db.query(User).filter(User.email == email).first()
-
-def get_users(db: Session, skip: int = 0, limit: int = 100) -> List[User]:
-    """Get list of users with pagination."""
-    return db.query(User).offset(skip).limit(limit).all()
-
-def create_user(db: Session, user: UserCreate) -> User:
-    """Create a new unverified user and send verification email."""
-    try:
-        hashed_password = hash_password(user.password)
-        verification_token = generate_verification_token()
-        
-        db_user = User(
-            name=user.name,
-            email=user.email,
-            password=hashed_password,
-            role=user.role,
-            is_verified=False,
-            verification_token=verification_token
-        )
-        
-        db.add(db_user)
-        db.commit()
-        db.refresh(db_user)
-        
-        send_verification_email(user.email, verification_token)
-        
-        return db_user
-    except IntegrityError:
-        db.rollback()
-        raise HTTPException(
-            status_code=400,
-            detail="Email already registered"
-        )
-
-def verify_user_email(db: Session, token: str) -> User:
-    """Verify user email using token."""
-    user = db.query(User).filter(User.verification_token == token).first()
+    def get_by_email(self, email: str) -> User:
+        return self.db.query(User).filter(User.email == email).first()
     
-    if not user:
-        raise HTTPException(
-            status_code=404,
-            detail="Invalid verification token"
-        )
+    def get_by_reset_token(self, token: str) -> User:
+        return self.db.query(User).filter(
+            User.reset_token == token,
+            User.reset_token_expires > datetime.utcnow()
+        ).first()
     
-    if user.is_verified:
-        raise HTTPException(
-            status_code=400,
-            detail="Email already verified"
-        )
-    
-    user.is_verified = True
-    user.verification_token = None 
-    db.commit()
-    db.refresh(user)
-    return user
-
-def update_user(db: Session, user_id: int, user_data: UserUpdate) -> User:
-    """Update user details."""
-    db_user = get_user(db, user_id)
-    if not db_user:
-        raise HTTPException(status_code=404, detail="User not found")
-    
-    # Convert Pydantic model to dict excluding unset values
-    update_data = user_data.model_dump(exclude_unset=True)
-    
-    for key, value in update_data.items():
-        if key == "password" and value:
-            value = hash_password(value)
-        setattr(db_user, key, value)
-    
-    try:
-        db.commit()
-        db.refresh(db_user)
-        return db_user
-    except Exception as e:
-        db.rollback()
-        raise HTTPException(status_code=400, detail=str(e))
-
-def delete_user(db: Session, user_id: int) -> bool:
-    """Delete a user."""
-    db_user = get_user(db, user_id)
-    if not db_user:
-        raise HTTPException(status_code=404, detail="User not found")
-    
-    db.delete(db_user)
-    db.commit()
-    return True
-
-def authenticate_user(db: Session, email: str, password: str) -> Optional[User]:
-    """Authenticate a user."""
-    user = get_user_by_email(db, email)
-    if not user:
-        return None
-    if not verify_password(password, user.password):
-        return None
-    return user
-
-def deactivate_user(db: Session, user_id: int) -> User:
-    """Deactivate a user account."""
-    db_user = get_user(db, user_id)
-    if not db_user:
-        raise HTTPException(status_code=404, detail="User not found")
-    
-    db_user.is_active = False
-    db.commit()
-    db.refresh(db_user)
-    return db_user
-
-def activate_user(db: Session, user_id: int) -> User:
-    """Activate a user account."""
-    db_user = get_user(db, user_id)
-    if not db_user:
-        raise HTTPException(status_code=404, detail="User not found")
-    
-    db_user.is_active = True
-    db.commit()
-    db.refresh(db_user)
-    return db_user
+    def update(self, user: User) -> User:
+        self.db.commit()
+        self.db.refresh(user)
+        return user

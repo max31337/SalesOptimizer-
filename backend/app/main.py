@@ -1,48 +1,54 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api.auth import auth_routes
-from app.api.admin import admin_routes, audit_routes, user_management
-from app.api.auth import password_reset_routes  
-from app.api.admin.analytics_routes import router as analytics_router
-from app.core.config import SECRET_KEY
-from app.api.crm import customer_routes
-from app.api.crm import interaction_routes  
-from app.api.admin.user_management import router as admin_user_router
-from app.core.environment import get_settings
-from app.routes import health
-import uvicorn
-
-app = FastAPI()
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[
-        "https://salesoptimizer.vercel.app",
-        "http://127.0.0.1:5500",
-        "http://crossover.proxy.rlwy.net:32542"  # Use HTTP only
-    ],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"]
+from app.core.config import settings
+from app.middleware.error_handler import error_handler
+from app.api.routes import router as api_router
+# Change this import line
+from app.api.routes.auth.auth_routes import router as auth_router
+from app.api.routes.auth.user_check_routes import router as check_router
+from app.api.routes.auth.user_check_routes import router as check_router
+from app.api.routes import (
+    user_management_routes,
+    audit_routes,
+    analytics_routes
 )
 
-app.include_router(auth_routes.router, prefix="/api")
-app.include_router(admin_routes.router, prefix="/api")
-app.include_router(audit_routes.router, prefix="/api")
-app.include_router(user_management.router, prefix="/api")
-app.include_router(password_reset_routes.router, prefix="/api")
-app.include_router(analytics_router, prefix="/api", tags=["analytics"])
-app.include_router(customer_routes.router, prefix="/api/crm", tags=["crm"])
-app.include_router(interaction_routes.router, prefix="/api/crm")
-app.include_router(admin_user_router, prefix="/api")
+app = FastAPI(title=settings.PROJECT_NAME)
 
-#healthcheck nigga fuck you
-app.include_router(health.router)
+# Add error handler middleware
+app.middleware("http")(error_handler)
 
-if __name__ == "__main__":
-    uvicorn.run(
-        "app.main:app",
-        host="0.0.0.0",
-        port=int(os.getenv("PORT", 8080))
-        # Remove SSL configuration
-    )
+# Configure CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.CORS_ORIGINS,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Simplified route inclusion
+app.include_router(api_router, prefix="/api")
+app.include_router(auth_router, prefix="/api/auth", tags=["authentication"])
+app.include_router(check_router, prefix="/api/auth", tags=["authentication"]) 
+
+app.include_router(
+    user_management_routes.router,
+    prefix="/api/admin",
+    tags=["admin"]
+)
+app.include_router(
+    audit_routes.router,
+    prefix="/api/admin",
+    tags=["admin"]
+)
+app.include_router(
+    analytics_routes.router,
+    prefix="/api/admin",
+    tags=["admin"]
+)
+app.include_router(
+    analytics_routes.router,
+    prefix="/api/analytics",
+    tags=["analytics"]
+)

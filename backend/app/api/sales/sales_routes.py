@@ -1,1 +1,0 @@
-from app.models import Sale, Product, User  # Updated import

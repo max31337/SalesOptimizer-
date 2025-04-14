@@ -1,39 +1,39 @@
 
-from pydantic import BaseModel, EmailStr
-from typing import Literal, Optional
+from typing import Optional
+from pydantic import BaseModel, EmailStr, Field
 
 class UserBase(BaseModel):
-    username: str
-    name: str
     email: EmailStr
-    role: Literal["admin", "sales-rep", "analyst"] = "sales-rep"
+    name: str
+    username: str
 
 class UserCreate(UserBase):
-    password: str
-    invitation_token: Optional[str] = None
+    password: str = Field(..., min_length=8)
+    role: str = "sales-rep"
 
 class UserUpdate(BaseModel):
-    username: Optional[str] = None
-    name: Optional[str] = None
     email: Optional[EmailStr] = None
+    name: Optional[str] = None
+    username: Optional[str] = None
     password: Optional[str] = None
-    role: Optional[Literal["admin", "sales-rep", "analyst"]] = None
+    role: Optional[str] = None
     is_active: Optional[bool] = None
-    is_verified: Optional[bool] = None
 
-class UserLogin(BaseModel):
-    email: str
-    password: str
+class UserResponse(UserBase):
+    id: int
+    role: str
+    is_active: bool
 
 class PasswordReset(BaseModel):
     email: EmailStr
 
 class PasswordUpdate(BaseModel):
-    password: str
+    password: str = Field(..., min_length=8)
+    confirm_password: str = Field(..., min_length=8)
 
-# Add this new schema class
-class InviteUser(BaseModel):
-    email: EmailStr
-    name: str
-    role: Literal["admin", "sales-rep", "analyst"]
-    username: str  # Added username field
+# Add this to your user schemas:
+from pydantic import BaseModel
+
+class UserLogin(BaseModel):
+    email: str
+    password: str

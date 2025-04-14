@@ -14,29 +14,17 @@ class Environment(str, Enum):
     TESTING = "testing"
 
 class Settings(BaseSettings):
-    CORS_ORIGINS: list = [
+    DATABASE_URL: str = Field(..., env="DATABASE_URL")
+    SECRET_KEY: str
+    CORS_ORIGINS: List[str] = [
         "https://salesoptimizer.vercel.app",
         "http://localhost:3000",
-        "http://crossover.proxy.rlwy.net:32542"
+        "http://localhost:8000"
     ]
-    DATABASE_URL: str = Field(..., env="DATABASE_URL")
     
-    @validator("DATABASE_URL")
-    def fix_db_url(cls, v):
-        if v.startswith("postgres://"):
-            return v.replace("postgres://", "postgresql+psycopg2://", 1) + "?sslmode=require"
-        return v
-    ENV: Environment = Environment.DEVELOPMENT if not os.getenv("RAILWAY_ENVIRONMENT") else Environment.PRODUCTION
-    DATABASE_URL: str
-    SECRET_KEY: str
-    FRONTEND_URL: str = os.getenv("FRONTEND_URL", "https://salesoptimizer.vercel.app")  # Changed from hardcoded value
-    # Remove this duplicate CORS_ORIGINS definition
-    # CORS_ORIGINS: list = [
-    #     os.getenv("FRONTEND_URL", "http://localhost:3000"),
-    #     "https://noble-warmth-production.up.railway.app"
-    # ]
+    # Remove duplicate declarations
     SMTP_SERVER: str
-    SMTP_PORT: str
+    SMTP_PORT: int  # Changed to int type
     SMTP_USERNAME: str
     SMTP_PASSWORD: str
 

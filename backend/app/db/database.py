@@ -2,9 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 import os
 from dotenv import load_dotenv
-from app.core.environment import get_settings
-
-settings = get_settings()
+from app.core.config import settings
 
 # Load the appropriate .env file based on environment
 if settings.ENV == "production":
@@ -23,7 +21,8 @@ if DATABASE_URL.startswith("postgres://"):
 
 # Create engine with proper error handling
 try:
-    engine = create_engine(DATABASE_URL, echo=True, pool_pre_ping=True)
+    SQLALCHEMY_DATABASE_URL = settings.DATABASE_URL
+    engine = create_engine(SQLALCHEMY_DATABASE_URL)
 except Exception as e:
     print(f"Error connecting to database: {e}")
     raise
