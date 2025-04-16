@@ -8,7 +8,6 @@ from .templates import EmailTemplate
 
 class SMTPEmailService(EmailServiceInterface):
     def __init__(self):
-        self.is_development = True
         
         # Set base URL based on environment
         self.base_url = (
