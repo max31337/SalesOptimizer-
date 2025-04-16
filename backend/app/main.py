@@ -3,10 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.middleware.error_handler import error_handler
 from app.api.routes import router as api_router
-# Update this line:
 from app.api.routes.admin.admin_routes import router as admin_router
-
-
 from app.api.routes.auth.auth_routes import router as auth_router
 from app.api.routes.auth.user_check_routes import router as check_router
 from app.api.routes.auth.user_check_routes import router as check_router
@@ -35,6 +32,4 @@ app.add_middleware(
 # Remove duplicate route inclusions and update the admin router prefix
 app.include_router(api_router, prefix="/api")
 app.include_router(auth_router, prefix="/api/auth", tags=["authentication"])
-app.include_router(check_router, prefix="/api/auth", tags=["authentication"])
-
 app.include_router(admin_router, prefix="/api/admin", tags=["Admin"])

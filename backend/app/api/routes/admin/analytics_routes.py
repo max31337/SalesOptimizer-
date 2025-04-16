@@ -175,3 +175,21 @@ async def get_login_activity(
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/analytics/user-distribution/")
+async def get_user_distribution(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(admin_required)
+):
+    """Get active/inactive user distribution"""
+    try:
+        active_users = db.query(User).filter(User.is_active == True).count()
+        inactive_users = db.query(User).filter(User.is_active == False).count()
+        
+        return {
+            "active": active_users,
+            "inactive": inactive_users
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

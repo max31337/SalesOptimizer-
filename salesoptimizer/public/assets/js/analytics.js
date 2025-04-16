@@ -19,7 +19,7 @@ function loadUserDistribution() {
     
     $.ajax({
         // Add /admin prefix
-        url: `${apiConfig.apiUrl}/admin/analytics/user-distribution`,
+        url: `${apiConfig.apiUrl}/admin/analytics/user-distribution/`,
         headers: { 'Authorization': `Bearer ${token}` },
         method: 'GET',
         success: function(response) {
