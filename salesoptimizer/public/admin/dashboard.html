@@ -308,7 +308,7 @@
     </div>
     </main>
     
-<div id="successModal" class="modal" x-data="{ show: false }" x-show="show" style="display: none;">
+<div id="successModal" class="modal" x-data="{ show: false }" x-show="show" style="display: none;" x-cloak>
     <div class="modal-content success-modal">
         <div class="modal-header">
             <h3>Success!</h3>
@@ -318,7 +318,7 @@
         </div>
         <div class="modal-body text-center">
             <i data-lucide="check-circle" class="success-icon"></i>
-            <p id="successMessage"></p>
+            <p id="successMessage"></p> <!-- Ensure this ID exists -->
         </div>
         <div class="modal-footer">
             <button @click="show = false" class="btn-primary">Close</button>

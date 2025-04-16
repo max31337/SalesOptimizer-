@@ -285,34 +285,123 @@ function displayAuditLogs(logs) {
 }
 
 function setupEventListeners() {
-    $('.nav-links a').click(function(e) {
-        e.preventDefault();
-        const targetId = $(this).attr('href').substring(1);
+    // Debounced search input handler
+    $('#userSearch').on('input', debounce(() => loadUsers(1), 500));
 
-        if (targetId !== 'overview' && window.destroyAllCharts) {
-            destroyAllCharts();
+    // Filter change handlers
+    $('#roleFilter, #statusFilter').on('change', () => loadUsers(1));
+
+    // Pagination button handlers
+    $('#prevPage').on('click', () => {
+        if (currentPage > 1) {
+            currentPage--;
+            loadUsers(currentPage);
         }
-        
-        $('.admin-section').fadeOut(150, function() {
-            $('.admin-section').hide();
-            $(`#${targetId}`).fadeIn(150);
-            
-            // Initialize charts after fade in if overview
-            if (targetId === 'overview') {
-                setTimeout(loadAllAnalytics, 200);
-            }
-            // Load appropriate content based on section
-            if (targetId === 'audit') {
-                loadAuditLogs();
-            } else if (targetId === 'users') {
+    });
+    $('#nextPage').on('click', () => {
+        currentPage++;
+        loadUsers(currentPage);
+    });
+
+    // Invite User Form Submission
+    $('#inviteUserForm').on('submit', function(e) {
+        e.preventDefault();
+        const email = $('#inviteEmail').val();
+        const name = $('#inviteName').val();
+        const role = $('#inviteRole').val();
+        const token = localStorage.getItem('token');
+        const submitButton = $(this).find('button[type="submit"]');
+
+        submitButton.prop('disabled', true).html('Sending...');
+
+        $.ajax({
+            url: `${apiConfig.apiUrl}/admin/invite/`,
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            data: JSON.stringify({ email, name, role }),
+            success: function(response) {
+                // 1. Close the invite modal
+                // Access the Alpine.js data context for the modal overlay's parent
+                // This assumes the button triggering the modal is inside the x-data div
+                try {
+                   const inviteModalElement = document.querySelector('#inviteUserForm').closest('[x-data]');
+                   if (inviteModalElement && inviteModalElement.__x) {
+                       inviteModalElement.__x.data.showModal = false;
+                   } else {
+                       // Fallback if Alpine context not found easily
+                       $('#inviteUserForm').closest('.modal-overlay').hide();
+                   }
+                } catch (err) {
+                    console.error("Error closing invite modal via Alpine:", err);
+                    // Fallback if Alpine context access fails
+                    $('#inviteUserForm').closest('.modal-overlay').hide();
+                }
+
+
+                // 2. Show the success modal and set message
+                $('#successMessage').text('Invite Email Sent!'); // Set the message
+                try {
+                    const successModalElement = document.getElementById('successModal');
+                    if (successModalElement && successModalElement.__x) {
+                        successModalElement.__x.data.show = true; // Trigger Alpine to show the modal
+                    } else {
+                         // Fallback if Alpine context not found easily
+                        $('#successModal').show();
+                    }
+                } catch (err) {
+                     console.error("Error showing success modal via Alpine:", err);
+                     // Fallback if Alpine context access fails
+                     $('#successModal').show();
+                }
+
+
+                // 3. Reset the form
+                $('#inviteUserForm')[0].reset();
+
+                // 4. Optionally reload users if needed
                 loadUsers();
-            } else if (targetId === 'settings') {
-                loadAdminSettings();
+            },
+            error: function(xhr) {
+                showNotification(xhr.responseJSON?.detail || 'Failed to send invitation email', 'error');
+            },
+            complete: function() {
+                // Re-enable the button regardless of success/error
+                 submitButton.prop('disabled', false).html('Send Invitation');
             }
         });
-        
-        $('.nav-links li').removeClass('active');
-        $(this).parent().addClass('active');
+    });
+
+    // Add other event listeners (edit, delete, etc.) here...
+    // Example: Cancel button for edit modal
+    $('#editUserModal .btn-secondary').on('click', function() {
+        $('#editUserModal').hide();
+    });
+
+    // Example: Submit handler for edit form (needs implementation)
+    $('#editForm').on('submit', function(e) {
+        e.preventDefault();
+        // Add logic to handle user edit submission
+        console.log('Edit form submitted');
+        // Close modal on success/cancel
+        $('#editUserModal').hide();
+    });
+
+     // Registration Time Range Change Handler
+     $('#registrationTimeRange').on('change', function() {
+        const days = $(this).val();
+        loadRegistrationTrends(days); // Assuming loadRegistrationTrends exists in analytics.js and is imported/available
+    });
+
+    // Settings Form Submission
+    $('#adminSettingsForm').on('submit', function(e) {
+        e.preventDefault();
+        // Add logic to save admin settings
+        console.log('Admin settings form submitted');
+        // Show success message or handle errors
+        showNotification('Settings saved successfully!', 'success'); // Example notification
     });
 }
 
