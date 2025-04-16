@@ -11,7 +11,7 @@ from app.utils.security import get_password_hash
 from app.core.auth import create_access_token
 from app.core.config import settings
 
-router = APIRouter()
+router = APIRouter(prefix="/api/auth", tags=["auth"])
 # Update the logging configuration
 logging.basicConfig(
     level=logging.DEBUG,

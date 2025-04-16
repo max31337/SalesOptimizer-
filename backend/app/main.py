@@ -52,3 +52,7 @@ app.include_router(
     prefix="/api/analytics",
     tags=["analytics"]
 )
+
+# Should include something like:
+from app.api.routes.auth.invited_user_routes import router as invited_users_router
+app.include_router(invited_users_router)

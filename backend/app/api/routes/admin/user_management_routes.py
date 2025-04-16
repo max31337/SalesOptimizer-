@@ -174,3 +174,5 @@ async def invite_user(
         # db.rollback() # Rollback might be needed if an error occurs after re-fetch but before return
         logger.error(f"❌ Unexpected Error in invite_user for email {user_data.email}: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"An unexpected error occurred: {str(e)}")
+# Add to existing imports
+from fastapi.responses import JSONResponse
