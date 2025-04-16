@@ -5,14 +5,13 @@ import ssl
 from app.core.config import settings
 from .interface import EmailServiceInterface
 from .templates import EmailTemplate
+from urllib.parse import urljoin
 
 class SMTPEmailService(EmailServiceInterface):
     def __init__(self):
-        
-        # Set base URL based on environment
-        self.base_url = (
-            "http://127.0.0.1:5500" if self.is_development 
-            else "https://salesoptimizer.vercel.app"
+        self.env = settings.ENV or "production"
+        self.base_url = settings.BASE_URL or (
+            "http://127.0.0.1:5500" if self.env == "development" else "https://salesoptimizer.vercel.app"
         )
         
         # Use SMTP settings from config
