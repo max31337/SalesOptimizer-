@@ -4,7 +4,8 @@ from fastapi.middleware.cors import CORSMiddleware
 
 # Import your routers
 from app.api.routes.auth import auth_routes, invited_user_routes, password_reset_routes, user_check_routes # Add invited_user_routes
-from app.api.routes.admin import user_management_routes, audit_routes # Example admin routes
+# Import analytics_routes along with other admin routes
+from app.api.routes.admin import user_management_routes, audit_routes, analytics_routes
 
 app = FastAPI(title="SalesOptimizer API")
 
@@ -30,9 +31,12 @@ app.include_router(invited_user_routes.router, prefix="/api/auth", tags=["Invite
 app.include_router(password_reset_routes.router, prefix="/api/auth", tags=["Password Reset"]) # Example
 app.include_router(user_check_routes.router, prefix="/api/auth", tags=["User Check"]) # Example
 
-# Include Admin Routers 
+# Include Admin Routers
 app.include_router(user_management_routes.router, prefix="/api/admin", tags=["Admin - User Management"])
 app.include_router(audit_routes.router, prefix="/api/admin", tags=["Admin - Audit Logs"])
+# Add the analytics router under the /api/admin prefix
+app.include_router(analytics_routes.router, prefix="/api/admin", tags=["Admin - Analytics"])
+
 
 @app.get("/")
 def read_root():

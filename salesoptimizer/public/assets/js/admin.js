@@ -21,8 +21,7 @@ $(document).ready(function() {
     setupEventListeners();
     setupNavigationHandlers();
     setupFilterHandlers();
-    verifyLocalStorage
-    
+    verifyLocalStorage(); // <-- Add parentheses here
     $('.admin-section').removeClass('active').hide();
     $('#overview').addClass('active').show();
 });
@@ -451,15 +450,18 @@ function deleteUser(userId) {
     });
 }
 
-    function logout() {
+function logout() {
         // Clear local storage
         localStorage.removeItem('token');
         localStorage.removeItem('userRole');
         localStorage.removeItem('userName');
-        
+
         // Redirect to login page
-        window.location.href = '/auth/login.html';    
+        window.location.href = '/auth/login.html';
     }
+
+// Explicitly attach logout to the window object
+window.logout = logout;
 
 
 // Add this function to your admin.js

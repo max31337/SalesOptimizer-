@@ -18,7 +18,8 @@ function loadUserDistribution() {
     const token = localStorage.getItem('token');
     
     $.ajax({
-        url: `${apiConfig.apiUrl}/analytics/user-distribution`,
+        // Add /admin prefix
+        url: `${apiConfig.apiUrl}/admin/analytics/user-distribution`,
         headers: { 'Authorization': `Bearer ${token}` },
         method: 'GET',
         success: function(response) {
@@ -101,7 +102,8 @@ function loadRegistrationTrends(days = 30) {
     console.log('Loading registration trends...');
     
     $.ajax({
-        url: `${apiConfig.apiUrl}/analytics/registration-trends?days=${days}`,  // Fixed template literal
+        // Add /admin prefix
+        url: `${apiConfig.apiUrl}/admin/analytics/registration-trends?days=${days}`,  // Fixed template literal
         headers: { 'Authorization': `Bearer ${token}` },
         method: 'GET',
         success: function(response) {
@@ -167,7 +169,8 @@ function loadActiveUsers() {
     const token = localStorage.getItem('token');
     
     $.ajax({
-        url: `${apiConfig.apiUrl}/analytics/active-users`,  // Fixed template literal
+        // Add /admin prefix
+        url: `${apiConfig.apiUrl}/admin/analytics/active-users`,  // Fixed template literal
         headers: { 'Authorization': `Bearer ${token}` },
         method: 'GET',
         success: function(response) {
@@ -222,7 +225,8 @@ function loadRoleDistribution() {
     const token = localStorage.getItem('token');
     
     $.ajax({
-        url: `${apiConfig.apiUrl}/analytics/role-distribution`,  // Fixed template literal
+        // Add /admin prefix
+        url: `${apiConfig.apiUrl}/admin/analytics/role-distribution`,  // Fixed template literal
         headers: { 'Authorization': `Bearer ${token}` },
         method: 'GET',
         success: function(response) {
@@ -277,7 +281,8 @@ function loadLoginActivity() {
     const token = localStorage.getItem('token');
     
     $.ajax({
-        url: `${apiConfig.apiUrl}/analytics/login-activity`,  // Fixed template literal
+        // Add /admin prefix
+        url: `${apiConfig.apiUrl}/admin/analytics/login-activity`,  // Fixed template literal
         headers: { 'Authorization': `Bearer ${token}` },
         method: 'GET',
         success: function(response) {
@@ -403,11 +408,11 @@ function loadLoginActivity() {
         error: function(xhr) {
             console.error('Failed to load login activity:', xhr);
             showNotification('Failed to load login activity', 'error');
-            
+
             // Show error state in the lists
             $('.failure-list').html('<li>Failed to load data</li>');
             $('.ip-list').html('<li>Failed to load data</li>');
         }
 
-        
+
     });}
