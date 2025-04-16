@@ -17,7 +17,7 @@ RUN pip install --no-cache-dir -r requirements.txt || (sleep 5 && pip install --
 
 
 # Remove hardcoded PORT
-ENV PYTHONPATH=/app/backend
+ENV PYTHONPATH=/app
 
 # Add database connection check before migrations
 CMD sh -c "alembic upgrade head && python scripts/create_admin.py && uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8080} --timeout-keep-alive 60"
