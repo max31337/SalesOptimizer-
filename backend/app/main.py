@@ -13,7 +13,7 @@ from app.api.routes import (
     analytics_routes
 )
 
-app = FastAPI(title=settings.PROJECT_NAME)
+app = FastAPI()
 
 # Add error handler middleware
 app.middleware("http")(error_handler)
