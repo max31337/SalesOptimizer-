@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from app.db.database import get_db
 from app.models import User, LoginActivity
 from app.schemas.user import UserCreate, UserLogin
+from app.schemas.responses.auth import UserResponse  # Add this import
 from app.utils.token import generate_verification_token
 from app.core.auth import create_access_token, get_current_user
 from app.utils.security import get_password_hash as hash_password, verify_password
@@ -10,8 +11,8 @@ from app.services.email import send_verification_email
 
 router = APIRouter()
 
-@router.post("/register/")
-def register_user(user_data: UserCreate, db: Session = Depends(get_db)):
+@router.post("/register", response_model=UserResponse)
+async def register(user_data: UserCreate, db: Session = Depends(get_db)):
     try:
         # Check if user already exists
         existing_user = db.query(User).filter(
@@ -42,7 +43,8 @@ def register_user(user_data: UserCreate, db: Session = Depends(get_db)):
         db.refresh(new_user)
 
         # Send verification email
-        send_verification_email(new_user.email, verification_token)
+        verification_token = create_verification_token()
+        await send_verification_email(user_data.email, verification_token)
 
         return {
             "msg": "User created successfully. Please check your email to verify your account.",

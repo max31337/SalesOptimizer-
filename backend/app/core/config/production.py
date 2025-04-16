@@ -1,3 +1,4 @@
+import os
 from typing import List
 from .base import BaseConfig, Environment
 
@@ -7,10 +8,13 @@ class ProductionConfig(BaseConfig):
     # Production-specific settings
     FRONTEND_URL: str = "https://salesoptimizer.vercel.app"
     
-    # MailerSend settings
-    SMTP_SERVER: str = "smtp.mailersend.net"
+    # Use Gmail SMTP in production
+    MAIL_PROVIDER: str = "gmail"
+    SMTP_SERVER: str = "smtp.gmail.com"
     SMTP_PORT: int = 587
-    SYSTEM_EMAIL: str = "noreply@salesoptimizer.com"
+    SMTP_USERNAME: str = os.getenv("SMTP_USERNAME", "")
+    SMTP_PASSWORD: str = os.getenv("SMTP_PASSWORD", "")
+    SYSTEM_EMAIL: str = os.getenv("SYSTEM_EMAIL", "")
     
     CORS_ORIGINS: List[str] = [
         "https://salesoptimizer.vercel.app"

@@ -6,11 +6,13 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-SMTP_SERVER = os.getenv("SMTP_SERVER")
-SMTP_PORT = int(os.getenv("SMTP_PORT", 587))
-SMTP_USERNAME = os.getenv("SMTP_USERNAME")
-SMTP_PASSWORD = os.getenv("SMTP_PASSWORD")
-SYSTEM_EMAIL = "MS_Sqy4cV@test-q3enl6kjp5842vwr.mlsender.net"
+from app.core.config import settings
+
+SMTP_SERVER = settings.MAILTRAP_SMTP_SERVER
+SMTP_PORT = settings.MAILTRAP_SMTP_PORT
+SMTP_USERNAME = settings.MAILTRAP_SMTP_USERNAME
+SMTP_PASSWORD = settings.MAILTRAP_SMTP_PASSWORD
+SYSTEM_EMAIL = settings.SYSTEM_EMAIL
 
 class EmailService:
     def send_password_reset(self, email: str, token: str):

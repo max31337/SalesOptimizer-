@@ -1,6 +1,7 @@
 from enum import Enum
 from functools import lru_cache
 import os
+from typing import List  # Add this import
 
 try:
     from pydantic_settings import BaseSettings
@@ -16,9 +17,9 @@ class Environment(str, Enum):
 class Settings(BaseSettings):
     DATABASE_URL: str = Field(..., env="DATABASE_URL")
     SECRET_KEY: str
-    CORS_ORIGINS: List[str] = [
+    CORS_ORIGINS: List[str] = [ 
         "https://salesoptimizer.vercel.app",
-        "http://localhost:3000",
+        "http://localhost:3000", 
         "http://localhost:8000"
     ]
     

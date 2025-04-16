@@ -13,7 +13,8 @@ psycopg2-binary>=2.9.6
 joblib
 numpy
 scikit-learn
-pydantic[email]
+pydantic>=2.0
+pydantic[email]>=2.0
 mailersend
 pydantic-settings>=2.0.0
 alembic

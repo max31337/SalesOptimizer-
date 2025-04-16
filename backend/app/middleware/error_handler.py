@@ -1,7 +1,14 @@
 from fastapi import Request, status
 from fastapi.responses import JSONResponse
 from sqlalchemy.exc import SQLAlchemyError
-from app.core.exceptions import BaseAppException
+# Update the existing import line
+from app.core.exceptions import (
+    BaseAppException, 
+    ValidationError,
+    AuthenticationError,  # Add missing import
+    AuthorizationError,
+    DatabaseError
+)
 from typing import Union, Dict, Any
 import traceback
 import logging

@@ -1,3 +1,5 @@
+import secrets
+import string
 from passlib.context import CryptContext
 from .token import generate_verification_token  
 
@@ -18,3 +20,9 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 def create_verification_token() -> str:
     """Backwards-compatibility alias for token generation"""
     return generate_verification_token()
+
+# Add to existing security.py functions
+def generate_temp_password(length: int = 12) -> str:
+    """Generate a secure temporary password"""
+    alphabet = string.ascii_letters + string.digits + "!@#$%^&*"
+    return ''.join(secrets.choice(alphabet) for _ in range(length))

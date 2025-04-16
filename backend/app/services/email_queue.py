@@ -4,15 +4,20 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import smtplib
 import asyncio
-from app.core.config import SMTP_SERVER, SMTP_PORT, SMTP_USERNAME, SMTP_PASSWORD
-
-# Update the SYSTEM_EMAIL at the top
-SYSTEM_EMAIL = "MS_Sqy4cV@test-q3enl6kjp5842vwr.mlsender.net"
+import os
+from app.core.config import settings
 
 class EmailQueue:
     def __init__(self):
         self.queue = asyncio.Queue()
         self.is_processing = False
+
+        # Use Mailtrap settings from config
+        self.smtp_server = settings.MAILTRAP_SMTP_SERVER
+        self.smtp_port = settings.MAILTRAP_SMTP_PORT
+        self.smtp_username = settings.MAILTRAP_SMTP_USERNAME
+        self.smtp_password = settings.MAILTRAP_SMTP_PASSWORD
+        self.system_email = settings.SYSTEM_EMAIL
 
     async def add_email(self, to_email: str, subject: str, html_content: str):
         await self.queue.put({
@@ -38,17 +43,18 @@ class EmailQueue:
     async def send_email(self, to_email: str, subject: str, html_content: str):
         msg = MIMEMultipart('alternative')
         msg["Subject"] = subject
-        msg["From"] = f"SalesOptimizer <{SYSTEM_EMAIL}>"
+        msg["From"] = f"SalesOptimizer <{self.system_email}>"
         msg["To"] = to_email
-        msg["Reply-To"] = SYSTEM_EMAIL
+        msg["Reply-To"] = self.system_email
         msg.attach(MIMEText(html_content, 'html'))
 
         try:
             async with asyncio.Lock():
-                with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
+                with smtplib.SMTP(self.smtp_server, self.smtp_port) as server:
                     server.starttls()
-                    server.login(SMTP_USERNAME, SMTP_PASSWORD)
-                    server.sendmail(SYSTEM_EMAIL, to_email, msg.as_string())
+                    server.login(self.smtp_username, self.smtp_password)
+                    server.sendmail(self.system_email, to_email, msg.as_string())
+                    print(f"✅ Email sent to {to_email} using {settings.ENV} configuration")
         except Exception as e:
             print(f"❌ Error sending email: {e}")
             raise

@@ -472,12 +472,14 @@ $(document).ready(function() {
         submitButton.prop('disabled', true).html('<i class="spinner-loading"></i> Sending...');
         
         const token = localStorage.getItem('token');
+        // In the invite form submission handler
         const formData = {
             email: $('#inviteEmail').val(),
-            name: $('#inviteName').val(),
-            role: $('#inviteRole').val()
+            name: $('#inviteName').val(),  // This field exists in your HTML
+            role: $('#inviteRole').val(),
         };
-
+        
+        // Better long-term solution: Create separate InviteRequest schema
         $.ajax({
             url: `${apiConfig.apiUrl}/admin/invite/`,
             method: 'POST',

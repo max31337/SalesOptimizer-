@@ -15,5 +15,5 @@ class EmailServiceInterface(ABC):
         pass
 
     @abstractmethod
-    async def send_invite_email(self, email: str, token: str) -> None:
+    async def send_invite_email(self, email: str, token: str, temp_password: str) -> None:  # Fixed signature
         pass

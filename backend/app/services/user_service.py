@@ -1,14 +1,54 @@
 from app.core.exceptions import NotFoundError, ValidationError, DatabaseError
 from app.db.unit_of_work import UnitOfWork
-# Update the import path
-from app.crud.user_repository import UserRepository  # Corrected import path
+from sqlalchemy.orm import Session
+from app.crud.user_repository import UserRepository 
 from app.db.database import get_db
+from app.utils.security import get_password_hash  # Add this import
 from app.models import User
 from typing import Optional, Dict, List
+from abc import ABC, abstractmethod
+from app.schemas import UserCreate, UserUpdate
+
+class IUserService(ABC):
+    @abstractmethod
+    def create_user(self, user_data: UserCreate):
+        pass
+    
+    @abstractmethod 
+    def update_user(self, user_id: int, user_data: UserUpdate):
+        pass
 
 class UserService(IUserService):
-    def __init__(self):
-        self.uow = UnitOfWork(SessionLocal)
+    def __init__(self, db: Session):
+        self.db = db
+        # Fix: Pass a lambda function that returns the db session
+        self.uow = UnitOfWork(lambda: db)  # Changed from self.db to lambda: db
+
+    def create_user(self, user_data: UserCreate) -> User:
+        with self.uow.start() as session:
+            repo = UserRepository(session)
+            
+            if repo.get_by_email(user_data.email):
+                raise ValidationError("Email already registered")
+            
+            try:
+                # Create user with hashed password
+                user = User(
+                    email=user_data.email,
+                    name=user_data.name,
+                    username=user_data.email,  # Set username to email by default
+                    password=get_password_hash(user_data.password),
+                    role=user_data.role,
+                    is_active=False
+                )
+                
+                session.add(user)
+                session.commit()
+                session.refresh(user)
+                
+                return user
+            except Exception as e:
+                raise DatabaseError(f"Failed to create user: {str(e)}")
 
     async def get(self, id: int) -> Optional[User]:
         with self.uow.start() as session:
@@ -27,18 +67,6 @@ class UserService(IUserService):
         with self.uow.start() as session:
             repo = UserRepository(session)
             return repo.get_by_email(email)
-
-    async def create_user(self, user_data: UserCreate) -> User:
-        with self.uow.start() as session:
-            repo = UserRepository(session)
-            
-            if repo.get_by_email(user_data.email):
-                raise ValidationError("Email already registered")
-            
-            try:
-                return repo.create_with_hash(user_data)
-            except Exception as e:
-                raise DatabaseError(f"Failed to create user: {str(e)}")
 
     async def update_user(self, user_id: int, user_data: UserUpdate) -> User:
         with self.uow.start() as session:

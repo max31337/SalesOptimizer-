@@ -10,7 +10,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 
 from app.db.database import Base, get_db
 from app.main import app
-from app.api.auth.auth import hash_password
+from app.utils.security import get_password_hash as hash_password  # Updated import path
 from app.models import User
 
 # Use SQLite for testing

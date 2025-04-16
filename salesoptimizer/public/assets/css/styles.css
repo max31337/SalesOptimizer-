@@ -396,25 +396,23 @@ body {
 }
 
 .message {
+    margin-top: 1rem;
+    padding: 0.5rem;
     text-align: center;
-    margin: 10px 0;
-    padding: 10px;
     border-radius: 4px;
 }
 
-.success-message {
-    color: #28a745; /* Green color for success */
-    font-weight: bold;
-    margin-top: 10px;
-    text-align: center;
+.message.success {
+    color: #155724;
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
 }
 
-.error-message {
-    background-color: #FEE2E2;
-    color: #991B1B;
-    border: 1px solid #F87171;
+.message.error {
+    color: #721c24;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
 }
-
 body.light {
     background-color: #ffffff;
     color: #000000;
