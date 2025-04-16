@@ -32,7 +32,9 @@ app.add_middleware(
 )
 
 # Simplified route inclusion
+# Remove duplicate route inclusions and update the admin router prefix
 app.include_router(api_router, prefix="/api")
 app.include_router(auth_router, prefix="/api/auth", tags=["authentication"])
-app.include_router(check_router, prefix="/api/auth", tags=["authentication"]) 
-app.include_router(admin_router, prefix="/admin") 
+app.include_router(check_router, prefix="/api/auth", tags=["authentication"])
+
+app.include_router(admin_router, prefix="/api/admin")  # Changed from "/admin"
