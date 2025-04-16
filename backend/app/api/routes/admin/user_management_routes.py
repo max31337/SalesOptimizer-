@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 # Remove /admin prefix from individual routes since it's handled by the parent router
-@router.get("/list/", response_model=Dict[str, Any])
+@router.get("users/list/", response_model=Dict[str, Any])
 async def list_users(
     skip: int = Query(0, ge=0),
     limit: int = Query(10, ge=1, le=100),
@@ -38,7 +38,7 @@ async def list_users(
     admin_service = AdminService(db)
     return admin_service.list_users(skip, limit, search, role, is_active)
 
-@router.get("/details/{user_id}", response_model=Dict[str, Any])
+@router.get("/users/details/{user_id}", response_model=Dict[str, Any])
 async def get_user_details(
     user_id: int,
     db: Session = Depends(get_db),
@@ -48,7 +48,7 @@ async def get_user_details(
     admin_service = AdminService(db)
     return admin_service.get_user_details(user_id)
 
-@router.put("/update/{user_id}", response_model=Dict[str, str])
+@router.put("/users/update/{user_id}", response_model=Dict[str, str])
 async def update_user(
     user_id: int,
     user_update: UserUpdate,
@@ -59,7 +59,7 @@ async def update_user(
     admin_service = AdminService(db)
     return admin_service.update_user(user_id, user_update, current_user.id)
 
-@router.delete("/deactivate/{user_id}")
+@router.delete("/users/deactivate/{user_id}")
 async def deactivate_user(
     user_id: int,
     db: Session = Depends(get_db),
@@ -69,7 +69,7 @@ async def deactivate_user(
     admin_service = AdminService(db)
     return admin_service.deactivate_user(user_id, current_user.id)
 
-@router.post("/verify-user/{user_id}")
+@router.post("/users/verify-user/{user_id}")
 async def verify_user(
     user_id: int,
     db: Session = Depends(get_db),
@@ -80,7 +80,7 @@ async def verify_user(
     return admin_service.verify_user(user_id)
 
 
-@router.post("/invite/", tags=["admin"])
+@router.post("/users/invite/", tags=["admin"])
 async def invite_user(
     user_data: AdminInviteCreate,
     db: Session = Depends(get_db),
