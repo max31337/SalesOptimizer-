@@ -8,7 +8,7 @@ from app.middleware.admin import admin_required
 
 router = APIRouter()
 
-@router.get("/analytics/registration-trends")
+@router.get("/registration-trends")
 async def get_registration_trends(
     days: int = 30,
     db: Session = Depends(get_db),
@@ -53,7 +53,7 @@ async def get_registration_trends(
         )
 
 
-@router.get("/analytics/active-users")
+@router.get("/active-users")
 async def get_active_users(
     db: Session = Depends(get_db),
     current_user: User = Depends(admin_required)
@@ -74,7 +74,7 @@ async def get_active_users(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/analytics/role-distribution")
+@router.get("/role-distribution")
 async def get_role_distribution(
     db: Session = Depends(get_db),
     current_user: User = Depends(admin_required)
@@ -90,7 +90,7 @@ async def get_role_distribution(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/analytics/login-activity")
+@router.get("/login-activity")
 async def get_login_activity(
     days: int = 7,
     db: Session = Depends(get_db),

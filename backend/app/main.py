@@ -37,4 +37,4 @@ app.include_router(api_router, prefix="/api")
 app.include_router(auth_router, prefix="/api/auth", tags=["authentication"])
 app.include_router(check_router, prefix="/api/auth", tags=["authentication"])
 
-app.include_router(admin_router, prefix="/api/admin")  # Changed from "/admin"
+app.include_router(admin_router, prefix="/api/admin", tags=["Admin"])
