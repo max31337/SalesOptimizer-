@@ -15,6 +15,7 @@ class Environment(str, Enum):
     TESTING = "testing"
 
 class Settings(BaseSettings):
+    ENV: Environment = Environment.DEVELOPMENT
     DATABASE_URL: str = Field(..., env="DATABASE_URL")
     SECRET_KEY: str
     CORS_ORIGINS: List[str] = [ 
