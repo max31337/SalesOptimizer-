@@ -5,7 +5,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from sqlalchemy.orm import Session
 from app.db.database import SessionLocal, engine
 from app.models import User
-from app.api.auth.auth import hash_password
+from app.utils.security import get_password_hash as hash_password, verify_password
 
 def create_admin_user():
     db = SessionLocal()
