@@ -11,9 +11,9 @@ class SMTPEmailService(EmailServiceInterface):
     def __init__(self):
         self.env = settings.ENV or "production"
         self.base_url = (
-            "http://127.0.0.1:5500" 
+            "http://127.0.0.1:5500"  # Local development
             if self.env == "development" 
-            else "https://salesoptimizer.vercel.app"
+            else "https://salesoptimizer.vercel.app"  # Production
         )
         
         # Use SMTP settings from config

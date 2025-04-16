@@ -82,10 +82,21 @@ async def verify_user(
 
 @router.post("/invite/", tags=["admin"])
 async def invite_user(
-    user_data: AdminInviteCreate, # Now defined due to corrected import
+    user_data: AdminInviteCreate,
     db: Session = Depends(get_db),
     current_user: User = Depends(admin_required)
 ):
+    # Add duplicate check first
+    existing_user = db.query(User).filter(
+        User.email == user_data.email
+    ).first()
+    
+    if existing_user:
+        return JSONResponse(
+            status_code=409,
+            content={"detail": "Email already registered"}
+        )
+
     logger.debug(f"--- Starting invite_user for email: {user_data.email} ---")
     logger.debug(f"Route handler session ID: {id(db)}")
     try:
