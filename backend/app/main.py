@@ -33,6 +33,11 @@ app.include_router(auth_router, prefix="/api/auth", tags=["authentication"])
 app.include_router(check_router, prefix="/api/auth", tags=["authentication"]) 
 
 app.include_router(
+    admin_router, 
+    prefix="/admin"
+    ) 
+
+app.include_router(
     user_management_routes.router,
     prefix="/api/admin",
     tags=["admin"]

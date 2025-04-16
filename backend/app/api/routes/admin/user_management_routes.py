@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 # Remove /admin prefix from individual routes since it's handled by the parent router
-@router.get("/users/list", response_model=Dict[str, Any])
+@router.get("/users/list/", response_model=Dict[str, Any])
 async def list_users(
     skip: int = Query(0, ge=0),
     limit: int = Query(10, ge=1, le=100),
