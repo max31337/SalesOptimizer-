@@ -1,134 +1,97 @@
-    document.addEventListener("DOMContentLoaded", () => {
-        const pages = document.querySelectorAll('.page');
-        const navLinks = document.querySelectorAll('.sidebar nav a');
-        
-        function showPage(pageId) {
-            pages.forEach(page => page.style.display = 'none');
-            navLinks.forEach(link => link.classList.remove('active'));
-            document.getElementById(pageId).style.display = 'block';
-            document.querySelector(`a[href="#${pageId}"]`).classList.add('active');
+document.addEventListener("DOMContentLoaded", () => {
+    const pages = document.querySelectorAll('.page');
+    const navLinks = document.querySelectorAll('.sidebar nav a');
+    const logoutButton = document.getElementById('logoutButton'); // Assuming your logout button has id="logoutButton"
+
+    function showPage(pageId) {
+        pages.forEach(page => page.style.display = 'none');
+        navLinks.forEach(link => link.classList.remove('active'));
+        document.getElementById(pageId).style.display = 'block';
+        // Ensure the query selector is correct for your navigation structure
+        const activeLink = document.querySelector(`.sidebar nav a[href="#${pageId}"]`);
+        if (activeLink) {
+            activeLink.classList.add('active');
         }
-    
-        navLinks.forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const pageId = link.getAttribute('href').substring(1);
-                showPage(pageId);
-            });
+    }
+
+    navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const pageId = link.getAttribute('href').substring(1);
+            showPage(pageId);
         });
-        showPage('dashboard');
-    
-        // Charts Initialization
-        const chartConfig = {
-            borderColor: 'rgba(98, 0, 234, 0.8)',
-            backgroundColor: 'rgba(98, 0, 234, 0.2)',
-            tension: 0.4
-        };
-    
-        // Sales Chart
-        new Chart(document.getElementById('salesChart'), {
+    });
+
+    // --- Logout Functionality ---
+    function logout() {
+        // Clear user-specific data from local storage
+        localStorage.removeItem('token');
+        localStorage.removeItem('userRole'); // Add any other relevant keys
+        localStorage.removeItem('userName');
+        localStorage.removeItem('darkMode'); // Clear theme preference if desired
+
+        // Redirect to the login page
+        window.location.href = '/auth/login.html'; // Ensure this path is correct
+    }
+
+    // Add event listener to the logout button
+    if (logoutButton) {
+        logoutButton.addEventListener('click', logout);
+    } else {
+        console.warn('Logout button not found. Ensure it has the ID "logoutButton".');
+    }
+    // --- End Logout Functionality ---
+
+
+    // Activate the default page (e.g., 'dashboard')
+    // Check if a hash exists, otherwise default to 'dashboard'
+    const initialPage = window.location.hash ? window.location.hash.substring(1) : 'dashboard';
+    showPage(initialPage);
+
+
+    // Charts Initialization (if applicable to user dashboard)
+    const chartConfig = {
+        borderColor: 'rgba(98, 0, 234, 0.8)',
+        backgroundColor: 'rgba(98, 0, 234, 0.2)',
+        tension: 0.4
+    };
+
+    // Example: Sales Chart (Only if relevant for the user dashboard)
+    const salesChartCtx = document.getElementById('salesChart');
+    if (salesChartCtx) {
+        new Chart(salesChartCtx, {
             type: 'line',
             data: {
                 labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
                 datasets: [{
                     label: 'Monthly Sales',
-                    data: [6500, 5900, 8000, 8100, 5600, 5500],
+                    data: [6500, 5900, 8000, 8100, 5600, 5500], // Replace with actual user data fetching
                     ...chartConfig
                 }]
             }
         });
-    
-        // Revenue Chart
-        new Chart(document.getElementById('revenueChart'), {
+    }
+
+    // Example: Revenue Chart (Only if relevant for the user dashboard)
+    const revenueChartCtx = document.getElementById('revenueChart');
+    if (revenueChartCtx) {
+        new Chart(revenueChartCtx, {
             type: 'doughnut',
             data: {
                 labels: ['Product A', 'Product B', 'Product C'],
+                // Replace with actual user data fetching
                 datasets: [{
-                    data: [45, 30, 25],
-                    backgroundColor: ['#4CAF50', '#2196F3', '#FF9800']
+                    data: [300, 150, 100],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.7)',
+                        'rgba(54, 162, 235, 0.7)',
+                        'rgba(255, 206, 86, 0.7)'
+                    ]
                 }]
             }
         });
-    
-        // Traffic Chart
-        new Chart(document.getElementById('trafficChart'), {
-            type: 'bar',
-            data: {
-                labels: ['Mobile', 'Desktop', 'Tablet'],
-                datasets: [{
-                    label: 'Visitors',
-                    data: [65, 30, 15],
-                    backgroundColor: ['#4CAF50', '#2196F3', '#FF9800']
-                }]
-            }
-        });
-    
-        // Product Chart
-        new Chart(document.getElementById('productChart'), {
-            type: 'radar',
-            data: {
-                labels: ['Price', 'Quality', 'Design', 'Features', 'Support'],
-                datasets: [{
-                    label: 'Product Rating',
-                    data: [8, 7, 9, 8, 7],
-                    ...chartConfig
-                }]
-            }
-        });
-    
-        // Demographics Chart
-        new Chart(document.getElementById('demographicsChart'), {
-            type: 'pie',
-            data: {
-                labels: ['18-25', '26-35', '36-45', '46+'],
-                datasets: [{
-                    data: [25, 40, 20, 15],
-                    backgroundColor: ['#FF9800', '#4CAF50', '#2196F3', '#9C27B0']
-                }]
-            }
-        });
-    
-        // Monthly Sales Chart
-        new Chart(document.getElementById('monthlySalesChart'), {
-            type: 'line',
-            data: {
-                labels: Array.from({length: 30}, (_, i) => i+1),
-                datasets: [{
-                    label: 'Daily Sales',
-                    data: Array.from({length: 30}, () => Math.floor(Math.random() * 1000)),
-                    ...chartConfig
-                }]
-            }
-        });
-    
-        // Acquisition Chart
-        new Chart(document.getElementById('acquisitionChart'), {
-            type: 'bar',
-            data: {
-                labels: ['Direct', 'Social', 'Email', 'Ads'],
-                datasets: [{
-                    label: 'Customer Acquisition',
-                    data: [40, 30, 20, 50],
-                    backgroundColor: '#4CAF50'
-                }]
-            }
-        });
-    
-    // --- User and Logout ---
-    const logoutButton = document.getElementById("logoutButton");
-    const userNameDisplay = document.getElementById("userNameDisplay");
-    const userName = localStorage.getItem("userName");
-    console.log("Retrieved userName from localStorage:", userName);
-
-    if (userName && userName !== "undefined") {
-    userNameDisplay.textContent = `Hello, ${userName}!`;
-    } else {
-    userNameDisplay.textContent = "Hello, Guest!";
     }
 
-    logoutButton.addEventListener("click", () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("userName");
-    window.location.href = "index.html";
-    });   
- });
+    // Add other dashboard-specific initializations here...
+
+}); // End DOMContentLoaded
