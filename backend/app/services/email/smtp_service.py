@@ -9,8 +9,7 @@ from urllib.parse import urljoin
 
 class SMTPEmailService(EmailServiceInterface):
     def __init__(self):
-        self.env = settings.ENV or "production"
-        self.base_url = settings.BASE_URL or (
+        self.env = settings.ENV or "production" (
             "http://127.0.0.1:5500" if self.env == "development" else "https://salesoptimizer.vercel.app"
         )
         

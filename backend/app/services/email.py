@@ -21,11 +21,8 @@ class EmailService:
 
 def send_verification_email(email: str, token: str):
     """Send a verification email with token link."""
-    
-    if not SMTP_SERVER or not SMTP_USERNAME or not SMTP_PASSWORD:
-        raise ValueError("SMTP credentials are missing. Check .env file.")
-
-    verify_link = f"https://salesoptimizer.vercel.app/auth/verify.html?token={token}"    
+    # Remove BASE_URL reference and use direct frontend URL
+    verify_link = f"https://salesoptimizer.vercel.app/auth/verify.html?token={token}"
     
     html_content = f"""
     <html>
