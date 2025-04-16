@@ -304,6 +304,21 @@ function setupEventListeners() {
     });
 
     // Invite User Form Submission
+    // Add these functions at the top of the file
+    function showInviteStatus(message, isSuccess) {
+        const modal = $('#inviteStatusModal');
+        const messageEl = $('#inviteStatusMessage');
+        messageEl.text(message)
+                .removeClass('error success')
+                .addClass(isSuccess ? 'success' : 'error');
+        modal.fadeIn();
+    }
+    
+    function closeInviteStatusModal() {
+        $('#inviteStatusModal').fadeOut();
+    }
+    
+    // Modify the existing invite form submission handler
     $('#inviteUserForm').on('submit', function(e) {
         e.preventDefault();
         const email = $('#inviteEmail').val();
@@ -311,9 +326,9 @@ function setupEventListeners() {
         const role = $('#inviteRole').val();
         const token = localStorage.getItem('token');
         const submitButton = $(this).find('button[type="submit"]');
-
+    
         submitButton.prop('disabled', true).html('Sending...');
-
+    
         $.ajax({
             url: `${apiConfig.apiUrl}/admin/invite/`,
             method: 'POST',
@@ -323,53 +338,21 @@ function setupEventListeners() {
             },
             data: JSON.stringify({ email, name, role }),
             success: function(response) {
-                // 1. Close the invite modal
-                // Access the Alpine.js data context for the modal overlay's parent
-                // This assumes the button triggering the modal is inside the x-data div
-                try {
-                   const inviteModalElement = document.querySelector('#inviteUserForm').closest('[x-data]');
-                   if (inviteModalElement && inviteModalElement.__x) {
-                       inviteModalElement.__x.data.showModal = false;
-                   } else {
-                       // Fallback if Alpine context not found easily
-                       $('#inviteUserForm').closest('.modal-overlay').hide();
-                   }
-                } catch (err) {
-                    console.error("Error closing invite modal via Alpine:", err);
-                    // Fallback if Alpine context access fails
-                    $('#inviteUserForm').closest('.modal-overlay').hide();
-                }
-
-
-                // 2. Show the success modal and set message
-                $('#successMessage').text('Invite Email Sent!'); // Set the message
-                try {
-                    const successModalElement = document.getElementById('successModal');
-                    if (successModalElement && successModalElement.__x) {
-                        successModalElement.__x.data.show = true; // Trigger Alpine to show the modal
-                    } else {
-                         // Fallback if Alpine context not found easily
-                        $('#successModal').show();
-                    }
-                } catch (err) {
-                     console.error("Error showing success modal via Alpine:", err);
-                     // Fallback if Alpine context access fails
-                     $('#successModal').show();
-                }
-
-
-                // 3. Reset the form
+                // Close invite modal
+                $('#inviteUserForm').closest('.modal-overlay').hide();
+                // Show status modal
+                showInviteStatus('Invite sent successfully! ✅', true);
+                // Reset form
                 $('#inviteUserForm')[0].reset();
-
-                // 4. Optionally reload users if needed
+                // Refresh user list
                 loadUsers();
             },
             error: function(xhr) {
-                showNotification(xhr.responseJSON?.detail || 'Failed to send invitation email', 'error');
+                const errorMsg = xhr.responseJSON?.detail || 'Failed to send invitation';
+                showInviteStatus(`Error: ${errorMsg} ❌`, false);
             },
             complete: function() {
-                // Re-enable the button regardless of success/error
-                 submitButton.prop('disabled', false).html('Send Invitation');
+                submitButton.prop('disabled', false).html('Send Invitation');
             }
         });
     });

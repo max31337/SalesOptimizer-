@@ -856,3 +856,57 @@ html[data-theme='dark'] .form-group select {
     background-color: #ccc;
     color: #333;
 }
+
+#inviteStatusModal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.2);
+    z-index: 1000;
+}
+
+#inviteStatusModal .success {
+    color: #2ecc71;
+}
+
+#inviteStatusModal .error {
+    color: #e74c3c;
+}
+
+#inviteStatusMessage {
+    font-size: 1.1rem;
+    margin: 1rem 0;
+    text-align: center;
+}
+
+/* Add/update these styles */
+#inviteStatusModal.modal-overlay {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+#inviteStatusModal .modal-content {
+    max-width: 400px;
+    width: 90%;
+    padding: 20px;
+    border-radius: 8px;
+    background: white;
+    position: relative;
+}
+
+#inviteStatusModal .close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
