@@ -330,7 +330,7 @@ function setupEventListeners() {
         submitButton.prop('disabled', true).html('Sending...');
     
         $.ajax({
-            url: `${apiConfig.apiUrl}/admin/invite/`,
+            url: `${apiConfig.apiUrl}/admin/users/invite/`,
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`,
