@@ -56,21 +56,6 @@ class SMTPEmailService(EmailServiceInterface):
         await self.send_email(email, "Password Reset Request - SalesOptimizer", html_content)
 
     async def send_invite_email(self, email: str, token: str, temp_password: str) -> None:
-        # Update the invite link to point to register.html
         invite_link = f"{self.base_url}/auth/register.html?token={token}"
-        html_content = f"""
-        <html>
-            <body>
-                <h2>You've been invited to SalesOptimizer!</h2>
-                <p>Your temporary password: <strong>{temp_password}</strong></p>
-                <p>Click here to complete your registration: 
-                    <a href="{invite_link}">Complete Registration</a>
-                </p>
-            </body>
-        </html>
-        """
-        await self.send_email(
-            to_email=email,
-            subject="SalesOptimizer Invitation",
-            html_content=html_content
-        )
+        html_content = EmailTemplate.invite_email(invite_link, temp_password)  # Use template
+        await self.send_email(email, "SalesOptimizer Invitation", html_content)
