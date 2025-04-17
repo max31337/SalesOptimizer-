@@ -57,5 +57,5 @@ class SMTPEmailService(EmailServiceInterface):
 
     async def send_invite_email(self, email: str, token: str, temp_password: str) -> None:
         invite_link = f"{self.base_url}/auth/register.html?token={token}"
-        html_content = EmailTemplate.invite_email(invite_link, temp_password)  # Use template
+        html_content = EmailTemplate.invite_email(invite_link)  # Single argument now
         await self.send_email(email, "SalesOptimizer Invitation", html_content)

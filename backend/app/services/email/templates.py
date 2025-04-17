@@ -53,7 +53,7 @@ class EmailTemplate:
         return EmailTemplate.get_base_template(content)
 
     @staticmethod
-    def invite_email(invite_link: str) -> str:
+    def invite_email(invite_link: str) -> str:  # Remove temp_password parameter
         content = f"""
             <!DOCTYPE html>
             <html>
