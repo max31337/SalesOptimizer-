@@ -3,7 +3,7 @@ from app.db.unit_of_work import UnitOfWork
 from sqlalchemy.orm import Session
 from app.crud.user_repository import UserRepository 
 from app.db.database import get_db
-from app.utils.security import get_password_hash  # Add this import
+from app.utils.security import get_password_hash
 from app.models import User
 from typing import Optional, Dict, List
 from abc import ABC, abstractmethod
