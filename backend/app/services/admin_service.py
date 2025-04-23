@@ -109,20 +109,24 @@ class AdminService:
         self.db.commit()
         return {"message": "User successfully deactivated"}
 
-    def verify_user(self, user_id: int) -> Dict[str, str]:
-        user = self.db.query(User).filter(User.id == user_id).first()
-        if not user:
-            raise HTTPException(status_code=404, detail="User not found")
-        
-        user.is_verified = True
-        user.verification_token = None
-        
+    def verify_user(self, user_id: int, admin_id: int) -> bool:
         try:
+            user = self.db.query(User).filter(User.id == user_id).first()
+            if not user:
+                raise HTTPException(status_code=404, detail="User not found")
+            
+            if user.is_verified:
+                raise HTTPException(status_code=400, detail="User is already verified")
+            
+            user.is_verified = True
+            user.verification_token = None  # Clear the verification token
             self.db.commit()
-            return {"message": "User verified successfully"}
+            return True
+            
         except Exception as e:
             self.db.rollback()
-            raise HTTPException(status_code=500, detail=str(e))
+            logger.error(f"Error verifying user {user_id}: {str(e)}")
+            raise HTTPException(status_code=400, detail=str(e))
 
     @staticmethod
     def _format_user(user: User) -> Dict[str, Any]:
