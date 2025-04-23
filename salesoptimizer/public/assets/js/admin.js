@@ -20,6 +20,7 @@ $(document).ready(function() {
     setupEventListeners();
     setupNavigationHandlers();
     setupFilterHandlers();
+    loadAuditLogs();
     loadUsers(); 
     $('.admin-section').removeClass('active').hide();
     $('#overview').addClass('active').show();
@@ -334,8 +335,11 @@ function setupEventListeners() {
             success: function(response) {
                 closeEditModal();
                 $('#updateSuccessModal').css('display', 'flex').hide().fadeIn();
+                setTimeout(() => {
+                    $('#updateSuccessModal').fadeOut();
+                }, 2000);
                 lucide.createIcons();
-                loadUsers(); // Refresh the user list
+                loadUsers();
             },
             error: function(xhr) {
                 showNotification(xhr.responseJSON?.detail || 'Failed to update user', 'error');
