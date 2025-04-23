@@ -27,8 +27,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Simplified route inclusion
-# Remove duplicate route inclusions and update the admin router prefix
+# Include all routes under /api prefix
 app.include_router(api_router, prefix="/api")
 app.include_router(auth_router, prefix="/api/auth", tags=["authentication"])
 app.include_router(check_router, prefix="/api/auth", tags=["authentication"])
