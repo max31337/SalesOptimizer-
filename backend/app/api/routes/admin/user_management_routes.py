@@ -80,7 +80,7 @@ async def verify_user(
     return admin_service.verify_user(user_id)
 
 
-@router.post("/users/invite/", tags=["admin"])
+@router.post("/users/invite/")
 async def invite_user(
     user_data: AdminInviteCreate,
     db: Session = Depends(get_db),

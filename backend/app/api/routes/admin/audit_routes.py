@@ -7,6 +7,7 @@ from app.crud.audit_log import get_audit_logs
 from app.api.routes.auth.user_check_routes import get_current_user
 from app.schemas.audit_log import AuditLogResponse
 from app.middleware.admin import admin_required
+
 router = APIRouter()
 
 def check_admin(current_user: User = Depends(get_current_user)):

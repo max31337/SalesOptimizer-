@@ -535,62 +535,6 @@ function logout() {
 // Explicitly attach logout to the window object
 window.logout = logout;
 
-
-// Add this function to your admin.js
-$(document).ready(function() {
-    $('#inviteUserForm').on('submit', function(e) {
-        e.preventDefault();
-        
-        const submitButton = $(this).find('button[type="submit"]');
-        // Change button to loading state
-        submitButton.prop('disabled', true).html('<i class="spinner-loading"></i> Sending...');
-        
-        const token = localStorage.getItem('token');
-        // In the invite form submission handler
-        const formData = {
-            email: $('#inviteEmail').val(),
-            name: $('#inviteName').val(),  // This field exists in your HTML
-            role: $('#inviteRole').val(),
-        };
-        
-        // Better long-term solution: Create separate InviteRequest schema
-        $.ajax({
-            url: `${apiConfig.apiUrl}/admin/invite/`,
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            },
-            data: JSON.stringify(formData),
-            success: function(response) {
-                // Reset button state
-                submitButton.prop('disabled', false).html('Send Invitation');
-                // Close invite modal
-                document.querySelector('[x-data]').__x.$data.showModal = false;
-                
-                // Show success modal
-                const successModal = document.querySelector('#successModal').__x;
-                $('#successMessage').text(`Invitation email sent successfully to ${formData.email}!`);
-                successModal.$data.show = true;
-                
-                // Clear the form
-                $('#inviteUserForm')[0].reset();
-                // Refresh user list
-                loadUsers();
-                
-                // Auto close success modal after 3 seconds
-                setTimeout(() => {
-                    successModal.$data.show = false;
-                }, 3000);
-            },
-            error: function(xhr) {
-                showNotification(xhr.responseJSON?.detail || 'Failed to send invitation email', 'error');
-                submitButton.prop('disabled', false).html('Send Invitation');
-            }
-        });
-    });
-});
-
 // Make sure to call this after any dynamic content is added
 document.addEventListener('DOMContentLoaded', () => {
     lucide.createIcons();
