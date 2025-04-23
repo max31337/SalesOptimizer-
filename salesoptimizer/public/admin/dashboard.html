@@ -309,20 +309,20 @@
     </div>
     </main>
     
-<div id="successModal" class="modal" x-data="{ show: false }" x-show="show" style="display: none;" x-cloak>
+<div id="updateSuccessModal" class="modal-overlay" style="display: none;">
     <div class="modal-content success-modal">
         <div class="modal-header">
             <h3>Success!</h3>
-            <button @click="show = false" class="close-btn">
+            <button onclick="closeSuccessModal()" class="close-btn">
                 <i data-lucide="x"></i>
             </button>
         </div>
         <div class="modal-body text-center">
             <i data-lucide="check-circle" class="success-icon"></i>
-            <p id="successMessage"></p> <!-- Ensure this ID exists -->
+            <p>User updated successfully!</p>
         </div>
         <div class="modal-footer">
-            <button @click="show = false" class="btn-primary">Close</button>
+            <button onclick="closeSuccessModal()" class="btn-primary">Close</button>
         </div>
     </div>
 </div>

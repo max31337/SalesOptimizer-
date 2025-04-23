@@ -325,8 +325,9 @@ function setupEventListeners() {
             },
             data: JSON.stringify(userData),
             success: function(response) {
-                showNotification('User updated successfully', 'success');
                 closeEditModal();
+                $('#updateSuccessModal').css('display', 'flex').hide().fadeIn();
+                lucide.createIcons();
                 loadUsers(); // Refresh the user list
             },
             error: function(xhr) {
@@ -580,3 +581,11 @@ function closeEditModal() {
     $('#editUserModal').fadeOut();
     $('#editUserForm')[0].reset();
 }
+
+// Add this new function
+function closeSuccessModal() {
+    $('#updateSuccessModal').fadeOut();
+}
+
+// Add to window object
+window.closeSuccessModal = closeSuccessModal;
