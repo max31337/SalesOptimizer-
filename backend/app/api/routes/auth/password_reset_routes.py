@@ -30,7 +30,7 @@ def request_password_reset(email_data: PasswordReset, db: Session = Depends(get_
         db.rollback()
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.post("/auth/reset-password/{token}")
+@router.post("/reset-password/{token}")
 async def reset_password(token: str, password_data: PasswordUpdate, db: Session = Depends(get_db)):
     user_repo = UserRepository(db)
     
