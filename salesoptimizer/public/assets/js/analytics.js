@@ -12,6 +12,12 @@ export function initializeAllCharts() {
     loadLoginSuccessRate();
     loadFailedLoginAttempts();
     loadRegistrationTrends();
+
+    $('#registrationTimeRange').on('change', function() {
+        const selectedDays = parseInt($(this).val());
+        console.log('Selected days:', selectedDays);
+        loadRegistrationTrends(selectedDays);
+    });
 }
 
 function loadUserDistribution() {
@@ -68,6 +74,8 @@ function destroyAllCharts() {
 function loadAllAnalytics() {
     destroyAllCharts();
     
+    const selectedDays = $('#registrationTimeRange').val() || 30;
+
     // Add a small delay before recreating charts
     setTimeout(() => {
         loadRegistrationTrends();
@@ -82,6 +90,12 @@ $(document).ready(function() {
     // Only load analytics if we're on the overview section
     if ($('#overview').is(':visible')) {
         loadAllAnalytics();
+
+        $('#registrationTimeRange').on('change', function() {
+            const selectedDays = parseInt($(this).val());
+            console.log('Selected days:', selectedDays);
+            loadRegistrationTrends(selectedDays);
+        });
         
         // Refresh data every 30 seconds only if overview section is visible
         const refreshInterval = setInterval(() => {
@@ -99,7 +113,6 @@ window.destroyAllCharts = destroyAllCharts;
 
 function loadRegistrationTrends(days = 30) {
     const token = localStorage.getItem('token');
-    console.log('Loading registration trends...');
     
     $.ajax({
         // Add /admin prefix

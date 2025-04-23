@@ -412,12 +412,6 @@ $('#inviteUserForm').on('submit', function(e) {
     });
 });
 
-    // Registration Time Range Change Handler
-    $('#registrationTimeRange').on('change', function() {
-        const days = $(this).val();
-        loadRegistrationTrends(days);
-    });
-
     // Settings Form Submission
     $('#adminSettingsForm').on('submit', function(e) {
         e.preventDefault();
