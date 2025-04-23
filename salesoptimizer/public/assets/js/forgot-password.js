@@ -8,12 +8,14 @@ $(document).ready(function() {
         
         const email = $("#email").val();
         messageElement.removeClass("error-message success-message");
+        
         $.ajax({
             url: `${apiConfig.apiUrl}/auth/forgot-password/`,
             method: 'POST',
             contentType: 'application/json',
-            data: JSON.stringify({ email: $('#email').val() }),
+            data: JSON.stringify({ email: email }),
             success: function(response) {
+                console.log('Password reset response:', response);
                 messageElement
                     .text("If the email exists, password reset instructions have been sent.")
                     .addClass("success-message");
@@ -25,6 +27,7 @@ $(document).ready(function() {
                 }, 3000);
             },
             error: function(xhr) {
+                console.error('Password reset error:', xhr);
                 messageElement
                     .text(xhr.responseJSON?.detail || "An error occurred. Please try again.")
                     .addClass("error-message");

@@ -7,7 +7,7 @@ from sqlalchemy import or_
 from app.db.database import get_db
 from app.models import User, Customer, Interaction  # Updated import
 from app.schemas.customer import CustomerCreate, CustomerUpdate, Customer as CustomerSchema
-from app.api.auth.auth import get_current_user
+from app.api.routes.auth import get_current_user
 
 router = APIRouter()
 

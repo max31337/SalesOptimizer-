@@ -10,7 +10,7 @@ from app.services.email import email_queue
 
 router = APIRouter()
 
-@router.post("/auth/forgot-password/")
+@router.post("/forgot-password/")
 def request_password_reset(email_data: PasswordReset, db: Session = Depends(get_db)):
     """Initiate password reset process"""
     user = db.query(User).filter(User.email == email_data.email).first()
