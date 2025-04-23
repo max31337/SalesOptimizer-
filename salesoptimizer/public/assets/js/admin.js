@@ -348,38 +348,69 @@ function setupEventListeners() {
     });
 
     // Invite User Form Submission
-    $('#inviteUserForm').on('submit', function(e) {
-        e.preventDefault();
-        const email = $('#inviteEmail').val();
-        const name = $('#inviteName').val();
-        const role = $('#inviteRole').val();
-        const token = localStorage.getItem('token');
-        const submitButton = $(this).find('button[type="submit"]');
+// ... existing code ...
+
+$('#inviteUserForm').on('submit', function(e) {
+    e.preventDefault();
+
+    const submitButton = $(this).find('button[type="submit"]');
+    submitButton.prop('disabled', true).html('<i data-lucide="loader"></i> Sending...');
     
-        submitButton.prop('disabled', true).html('Sending...');
+    const userData = {
+        email: $('#inviteEmail').val(),
+        name: $('#inviteName').val(),
+        role: $('#inviteRole').val()
+    };
+
+    const token = localStorage.getItem('token');
     
-        $.ajax({
-            url: `${apiConfig.apiUrl}/admin/users/invite/`,
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            },
-            data: JSON.stringify({ email, name, role }),
-            success: function(response) {
-                $('#inviteUserForm').closest('.modal-overlay').hide();
-                showNotification('Invite sent successfully! ✅', 'success');
-                $('#inviteUserForm')[0].reset();
-                loadUsers();
-            },
-            error: function(xhr) {
-                showNotification(xhr.responseJSON?.detail || 'Failed to send invitation', 'error');
-            },
-            complete: function() {
-                submitButton.prop('disabled', false).html('Send Invitation');
-            }
-        });
+    $.ajax({
+        url: `${apiConfig.apiUrl}/admin/users/invite/`,
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        },
+        data: JSON.stringify(userData),
+        success: function(response) {
+            closeInviteModal();
+            // Show success modal with the correct data
+            const message = $('#inviteStatusMessage');
+            message.removeClass('error').addClass('success')
+                .html(`
+                    <div class="success-icon">
+                        <i data-lucide="check-circle"></i>
+                    </div>
+                    Successfully invited <strong>${userData.name}</strong> (${userData.email})
+                `);
+            $('#inviteStatusModal').css('display', 'flex');
+            lucide.createIcons();
+            
+            // Auto-hide after 3 seconds
+            setTimeout(() => {
+                $('#inviteStatusModal').fadeOut();
+            }, 3000);
+            
+            loadUsers(); // Refresh the user list
+        },
+        error: function(xhr) {
+            const message = $('#inviteStatusMessage');
+            message.removeClass('success').addClass('error')
+                .html(`
+                    <div class="error-icon">
+                        <i data-lucide="x-circle"></i>
+                    </div>
+                    ${xhr.responseJSON?.detail || 'Failed to send invitation'}
+                `);
+            $('#inviteStatusModal').css('display', 'flex');
+            lucide.createIcons();
+        },
+        complete: function() {
+            submitButton.prop('disabled', false).html('Send Invitation');
+            lucide.createIcons();
+        }
     });
+});
 
     // Registration Time Range Change Handler
     $('#registrationTimeRange').on('change', function() {

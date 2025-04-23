@@ -865,26 +865,6 @@ html[data-theme='dark'] .form-group select {
     color: #333;
 }
 
-#inviteStatusModal {
-    display: none;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: white;
-    padding: 2rem;
-    border-radius: 8px;
-    box-shadow: 0 0 20px rgba(0,0,0,0.2);
-    z-index: 1000;
-}
-
-#inviteStatusModal .success {
-    color: #2ecc71;
-}
-
-#inviteStatusModal .error {
-    color: #e74c3c;
-}
 
 #inviteStatusMessage {
     font-size: 1.1rem;
@@ -917,6 +897,24 @@ html[data-theme='dark'] .form-group select {
     background: none;
     border: none;
     cursor: pointer;
+}
+
+#inviteStatusMessage .success-icon {
+    color: #4CAF50;
+    font-size: 2rem;
+}
+
+#inviteStatusMessage .error-icon {
+    color: #f44336;
+    font-size: 2rem;
+}
+
+#inviteStatusMessage.success {
+    color: #2e7d32;
+}
+
+#inviteStatusMessage.error {
+    color: #c62828;
 }
 
 .success-modal {
