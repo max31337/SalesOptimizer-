@@ -189,7 +189,7 @@ function loadAuditLogs() {
 
     $.ajax({
         // Update the URL to match the backend route
-        url: `${apiConfig.apiUrl}/audit-logs?${params.toString()}`,
+        url: `${apiConfig.apiUrl}/admin/audit-logs?${params.toString()}`,
         headers: { 'Authorization': `Bearer ${token}` },
         method: 'GET',
         success: function(response) {
