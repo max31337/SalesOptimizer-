@@ -16,12 +16,11 @@ function verifyLocalStorage() {
 
 $(document).ready(function() {
     checkAdminAccess();
-    loadUsers();
-    loadAuditLogs();
+    verifyLocalStorage();
     setupEventListeners();
     setupNavigationHandlers();
     setupFilterHandlers();
-    verifyLocalStorage(); // <-- Add parentheses here
+    loadUsers(); 
     $('.admin-section').removeClass('active').hide();
     $('#overview').addClass('active').show();
 });
@@ -125,7 +124,7 @@ function displayUsers(users) {
         row.append(`<td><span class="status-badge ${user.is_active ? 'active' : 'inactive'}">${user.is_active ? 'Active' : 'Inactive'}</span></td>`);
         row.append(`<td><span class="verification-badge ${user.is_verified ? 'verified' : 'unverified'}">${user.is_verified ? 'Verified' : 'Unverified'}</span></td>`);
         row.append(`
-<td>
+            <td>
                 <button class="btn-edit" onclick="editUser(${user.id})">
                     <i data-lucide="edit"></i>
                     Edit
@@ -284,6 +283,7 @@ function displayAuditLogs(logs) {
     });
 }
 
+// Remove the duplicate setupEventListeners function and merge its content into the existing one
 function setupEventListeners() {
     // Debounced search input handler
     $('#userSearch').on('input', debounce(() => loadUsers(1), 500));
@@ -303,22 +303,39 @@ function setupEventListeners() {
         loadUsers(currentPage);
     });
 
+    // Edit User Form Submission
+    $('#editUserForm').on('submit', function(e) {
+        e.preventDefault();
+        const userId = $('#editUserId').val();
+        const userData = {
+            name: $('#editName').val(),
+            email: $('#editEmail').val(),
+            role: $('#editRole').val(),
+            is_active: $('#editStatus').val() === 'true'
+        };
+
+        const token = localStorage.getItem('token');
+        
+        $.ajax({
+            url: `${apiConfig.apiUrl}/admin/users/update/${userId}`,
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            data: JSON.stringify(userData),
+            success: function(response) {
+                showNotification('User updated successfully', 'success');
+                closeEditModal();
+                loadUsers(); // Refresh the user list
+            },
+            error: function(xhr) {
+                showNotification(xhr.responseJSON?.detail || 'Failed to update user', 'error');
+            }
+        });
+    });
+
     // Invite User Form Submission
-    // Add these functions at the top of the file
-    function showInviteStatus(message, isSuccess) {
-        const modal = $('#inviteStatusModal');
-        const messageEl = $('#inviteStatusMessage');
-        messageEl.text(message)
-                .removeClass('error success')
-                .addClass(isSuccess ? 'success' : 'error');
-        modal.fadeIn();
-    }
-    
-    function closeInviteStatusModal() {
-        $('#inviteStatusModal').fadeOut();
-    }
-    
-    // Modify the existing invite form submission handler
     $('#inviteUserForm').on('submit', function(e) {
         e.preventDefault();
         const email = $('#inviteEmail').val();
@@ -338,18 +355,13 @@ function setupEventListeners() {
             },
             data: JSON.stringify({ email, name, role }),
             success: function(response) {
-                // Close invite modal
                 $('#inviteUserForm').closest('.modal-overlay').hide();
-                // Show status modal
-                showInviteStatus('Invite sent successfully! ✅', true);
-                // Reset form
+                showNotification('Invite sent successfully! ✅', 'success');
                 $('#inviteUserForm')[0].reset();
-                // Refresh user list
                 loadUsers();
             },
             error: function(xhr) {
-                const errorMsg = xhr.responseJSON?.detail || 'Failed to send invitation';
-                showInviteStatus(`Error: ${errorMsg} ❌`, false);
+                showNotification(xhr.responseJSON?.detail || 'Failed to send invitation', 'error');
             },
             complete: function() {
                 submitButton.prop('disabled', false).html('Send Invitation');
@@ -357,34 +369,16 @@ function setupEventListeners() {
         });
     });
 
-    // Add other event listeners (edit, delete, etc.) here...
-    // Example: Cancel button for edit modal
-    $('#editUserModal .btn-secondary').on('click', function() {
-        $('#editUserModal').hide();
-    });
-
-    // Example: Submit handler for edit form (needs implementation)
-    $('#editForm').on('submit', function(e) {
-        e.preventDefault();
-        // Add logic to handle user edit submission
-        console.log('Edit form submitted');
-        // Close modal on success/cancel
-        $('#editUserModal').hide();
-    });
-
-     // Registration Time Range Change Handler
-     $('#registrationTimeRange').on('change', function() {
+    // Registration Time Range Change Handler
+    $('#registrationTimeRange').on('change', function() {
         const days = $(this).val();
-        loadRegistrationTrends(days); // Assuming loadRegistrationTrends exists in analytics.js and is imported/available
+        loadRegistrationTrends(days);
     });
 
     // Settings Form Submission
     $('#adminSettingsForm').on('submit', function(e) {
         e.preventDefault();
-        // Add logic to save admin settings
-        console.log('Admin settings form submitted');
-        // Show success message or handle errors
-        showNotification('Settings saved successfully!', 'success'); // Example notification
+        updateAdminSettings();
     });
 }
 
@@ -539,3 +533,50 @@ window.logout = logout;
 document.addEventListener('DOMContentLoaded', () => {
     lucide.createIcons();
 });
+
+
+// Expose necessary functions to window object
+window.editUser = editUser;
+window.closeEditModal = closeEditModal;
+window.deleteUser = deleteUser;
+window.verifyUser = verifyUser;
+
+function editUser(userId) {
+    const token = localStorage.getItem('token');
+    
+    $.ajax({
+        url: `${apiConfig.apiUrl}/admin/users/details/${userId}`,
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        },
+        method: 'GET',
+        success: function(user) {
+            if (user) {
+                // Populate the edit form
+                $('#editUserId').val(user.id);
+                $('#editName').val(user.name);
+                $('#editEmail').val(user.email);
+                $('#editRole').val(user.role);
+                $('#editStatus').val(user.is_active.toString());
+                
+                // Show the modal using jQuery
+                $('#editUserModal').css('display', 'flex').hide().fadeIn();
+                
+                // Refresh Lucide icons
+                lucide.createIcons();
+            } else {
+                showNotification('User not found', 'error');
+            }
+        },
+        error: function(xhr) {
+            console.error('Error:', xhr);
+            showNotification(xhr.responseJSON?.detail || 'Failed to fetch user details', 'error');
+        }
+    });
+}
+
+function closeEditModal() {
+    $('#editUserModal').fadeOut();
+    $('#editUserForm')[0].reset();
+}
