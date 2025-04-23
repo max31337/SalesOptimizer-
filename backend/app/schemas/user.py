@@ -52,13 +52,23 @@ class AdminInviteCreate(BaseModel):
 
 # Add this new schema specifically for invited user registration completion
 class InvitedUserCompleteRegistration(BaseModel):
-    username: str = Field(..., min_length=3, max_length=50)
+    username: str
     password: str = Field(..., min_length=8)
     confirm_password: str = Field(..., min_length=8)
-    invitation_token: str # Token is required for this step
+    invitation_token: str
 
-    @validator('confirm_password')
-    def passwords_match(cls, v, values, **kwargs):
-        if 'password' in values and v != values['password']:
+    @model_validator(mode='after')
+    def passwords_match(self) -> 'InvitedUserCompleteRegistration':
+        if self.password != self.confirm_password:
             raise ValueError('Passwords do not match')
-        return v
+        return self
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "username": "newuser",
+                "password": "securepassword",
+                "confirm_password": "securepassword",
+                "invitation_token": "jwt.token.here"
+            }
+        }

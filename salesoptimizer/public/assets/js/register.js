@@ -26,49 +26,46 @@ $(document).ready(function() {
             const password = $('#password').val();
             const confirmPassword = $('#confirmPassword').val();
 
-            console.log('Form data:', { // Debug form data
-                email,
-                username,
-                hasPassword: !!password,
-                hasConfirmPassword: !!confirmPassword
-            });
+            // Add password validation
+            if (password !== confirmPassword) {
+                $("#registerErrorMessage")
+                    .text("Passwords do not match")
+                    .addClass('show');
+                return;
+            }
+
+            // Add password length validation
+            if (password.length < 8) {
+                $("#registerErrorMessage")
+                    .text("Password must be at least 8 characters long")
+                    .addClass('show');
+                return;
+            }
+
+            const registrationData = {
+                username: username,
+                password: password,
+                confirm_password: confirmPassword,  // Added this field
+                invitation_token: token
+            };
 
             $.ajax({
                 url: `${apiConfig.apiUrl}/auth/register-invited/`,
                 method: 'POST',
                 contentType: 'application/json',
-                data: JSON.stringify({
-                    email: email,
-                    username: username,
-                    password: password,
-                    confirm_password: confirmPassword,
-                    invitation_token: token
-                }),
-                beforeSend: function(xhr) {
-                    console.log('Sending request to:', this.url); // Debug request URL
-                    console.log('Request payload:', this.data); // Debug request data
-                },
+                data: JSON.stringify(registrationData),
                 success: function(response) {
                     console.log('Registration successful:', response);
                     localStorage.setItem('token', response.access_token);
-                    localStorage.setItem('userName', response.name);
+                    localStorage.setItem('userName', username);
                     localStorage.setItem('userRole', response.role);
-
-                    if (response.role === 'admin') {
-                        window.location.href = '/admin/dashboard.html';
-                    } else {
-                        window.location.href = '/pages/dashboard.html';
-                    }
+                    window.location.href = response.role === 'admin' ? '/admin/dashboard.html' : '/pages/dashboard.html';
                 },
                 error: function(xhr) {
-                    console.error('Registration error details:', {
-                        status: xhr.status,
-                        statusText: xhr.statusText,
-                        response: xhr.responseJSON,
-                        responseText: xhr.responseText
-                    });
-                    const error = xhr.responseJSON?.detail || 'Registration failed';
-                    $('#registerErrorMessage').text(error).addClass('error');
+                    console.error('Registration error:', xhr);
+                    $("#registerErrorMessage")
+                        .text(xhr.responseJSON?.detail || "Registration failed")
+                        .addClass('show');
                 }
             });
         });
