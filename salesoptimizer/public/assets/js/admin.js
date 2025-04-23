@@ -589,3 +589,23 @@ function closeSuccessModal() {
 
 // Add to window object
 window.closeSuccessModal = closeSuccessModal;
+
+// Add invite modal handlers
+$('#inviteUserBtn').on('click', function() {
+    $('#inviteUserModal').css('display', 'flex').hide().fadeIn();
+});
+
+// Close modal when clicking outside
+$('#inviteUserModal').on('click', function(e) {
+    if (e.target === this) {
+        closeInviteModal();
+    }
+});
+
+function closeInviteModal() {
+    $('#inviteUserModal').fadeOut();
+    $('#inviteUserForm')[0].reset();
+}
+
+// Add to window object for HTML onclick access
+window.closeInviteModal = closeInviteModal;
