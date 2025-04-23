@@ -919,6 +919,36 @@ html[data-theme='dark'] .form-group select {
     cursor: pointer;
 }
 
+.success-modal {
+    max-width: 400px;
+    text-align: center;
+}
+
+.success-modal .modal-body {
+    padding: 2rem;
+}
+
+.success-modal .success-icon {
+    color: var(--primary-color);
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.success-modal .success-icon svg {
+    width: 48px;
+    height: 48px;
+}
+
+#verificationSuccessMessage {
+    font-size: 1.1rem;
+    color: var(--text-primary);
+    margin: 1rem 0;
+}
+
+#verificationSuccessMessage strong {
+    color: var(--primary-color);
+}
+
 .success-modal .success-icon {
     color: #4CAF50;
     width: 48px;

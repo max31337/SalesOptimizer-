@@ -154,8 +154,15 @@ function verifyUser(userId) {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
         },
         success: function(response) {
-            showNotification('User verified successfully', 'success');
-            loadUsers(); // Refresh the user list
+            const userName = $(`tr:has(button[onclick="verifyUser(${userId})]")`).find('td:first').text();
+            $('#verificationSuccessMessage').html(
+                `<strong>${userName}</strong> has been successfully verified!`
+            );
+            $('#verificationSuccessModal').css('display', 'flex').hide().fadeIn();
+            
+            // Refresh icons and user list
+            lucide.createIcons();
+            loadUsers();
         },
         error: function(xhr) {
             showNotification(xhr.responseJSON?.detail || 'Failed to verify user', 'error');
@@ -607,5 +614,9 @@ function closeInviteModal() {
     $('#inviteUserForm')[0].reset();
 }
 
-// Add to window object for HTML onclick access
+function closeVerificationModal() {
+    $('#verificationSuccessModal').fadeOut();
+}
+
 window.closeInviteModal = closeInviteModal;
+window.closeVerificationModal = closeVerificationModal;
