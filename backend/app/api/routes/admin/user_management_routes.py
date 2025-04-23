@@ -3,7 +3,6 @@ from typing import Dict, Any, Optional
 from sqlalchemy.orm import Session
 from app.db.database import get_db
 from app.models import User
-# Corrected import to include AdminInviteCreate and UserCreate
 from app.schemas.user import AdminInviteCreate, UserCreate, UserUpdate
 from app.middleware.admin import admin_required
 from app.services.user_service import UserService # Added missing import for UserService
@@ -11,7 +10,8 @@ from app.services.admin_service import AdminService
 from app.services.email import email_service # Ensure email_service is imported correctly
 from app.utils.security import generate_temp_password # Added missing import
 from app.utils.token import create_verification_token # Added missing import
-from sqlalchemy.exc import IntegrityError # Import IntegrityError
+from sqlalchemy.exc import IntegrityError
+from app.crud.audit_log import log_user_action 
 # Remove unused debugging imports if desired
 # from sqlalchemy.orm.session import object_session
 # from sqlalchemy import inspect
@@ -69,16 +69,27 @@ async def deactivate_user(
     admin_service = AdminService(db)
     return admin_service.deactivate_user(user_id, current_user.id)
 
-@router.post("/users/verify-user/{user_id}")
+@router.post("/verify-user/{user_id}")
 async def verify_user(
     user_id: int,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(admin_required)
+    current_user: User = Depends(admin_required),
+    db: Session = Depends(get_db)
 ):
-    """Verify a user account"""
+    """Manually verify a user by admin"""
     admin_service = AdminService(db)
-    return admin_service.verify_user(user_id)
-
+    result = admin_service.verify_user(user_id, current_user.id)
+    
+    if result:
+        log_user_action(
+            db=db,
+            user_id=user_id,
+            action="VERIFY_USER",
+            details="User verified by admin",
+            performed_by=current_user.id
+        )
+        return {"message": "User verified successfully"}
+    else:
+        raise HTTPException(status_code=400, detail="Failed to verify user")
 
 @router.post("/users/invite/")
 async def invite_user(
