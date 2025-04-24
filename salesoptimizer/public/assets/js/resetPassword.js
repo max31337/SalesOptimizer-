@@ -22,23 +22,19 @@ $(document).ready(function() {
 
         if (password !== confirmPassword) {
             messageElement
-                .text("Passwords do not match!")
+                .text("Passwords do not match")
                 .addClass("error-message");
             return;
         }
-
-        if (password.length < 8) {
-            messageElement
-                .text("Password must be at least 8 characters long!")
-                .addClass("error-message");
-            return;
-        }
-
+        
         $.ajax({
             url: `${apiConfig.apiUrl}/auth/reset-password/${token}`,
-            method: "POST",
-            contentType: "application/json",
-            data: JSON.stringify({ password: password }),
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                password: password,
+                confirm_password: confirmPassword
+            }),
             success: function(response) {
                 messageElement
                     .text("Password reset successful! Redirecting to login...")
