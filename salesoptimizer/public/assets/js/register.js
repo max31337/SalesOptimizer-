@@ -59,7 +59,15 @@ $(document).ready(function() {
                     localStorage.setItem('token', response.access_token);
                     localStorage.setItem('userName', username);
                     localStorage.setItem('userRole', response.role);
-                    window.location.href = response.role === 'admin' ? '/admin/dashboard.html' : '/pages/dashboard.html';
+                    
+                    // Update redirect logic based on role
+                    if (response.role === 'admin') {
+                        window.location.href = '/admin/dashboard.html';
+                    } else if (response.role === 'sales') {
+                        window.location.href = '/salesrep/dashboard.html';
+                    } else {
+                        window.location.href = '/pages/dashboard.html';
+                    }
                 },
                 error: function(xhr) {
                     console.error('Registration error:', xhr);

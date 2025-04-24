@@ -1,6 +1,7 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, computed_field
 from typing import Optional
 from datetime import datetime
+from enum import Enum
 from app.models.enums import OpportunityStage
 
 class OpportunityBase(BaseModel):
@@ -24,6 +25,13 @@ class OpportunityUpdate(OpportunityBase):
     expected_close_date: Optional[datetime] = None
     customer_id: Optional[int] = None
 
+class OpportunityStage(str, Enum):
+    LEAD = "lead"
+    PROSPECT = "prospect"
+    NEGOTIATION = "negotiation"
+    CLOSED_WON = "closed_won"
+    CLOSED_LOST = "closed_lost"
+
 class Opportunity(OpportunityBase):
     id: int
     sales_rep_id: int
@@ -33,6 +41,34 @@ class Opportunity(OpportunityBase):
     risk_factors: Optional[str] = None
     created_at: datetime
     updated_at: datetime
+    
+    @computed_field
+    @property
+    def is_active(self) -> bool:
+        return self.stage in {
+            OpportunityStage.LEAD,
+            OpportunityStage.PROSPECT,
+            OpportunityStage.NEGOTIATION
+        }
 
     class Config:
         from_attributes = True
+
+
+# Schema for the Opportunity Summary endpoint
+class OpportunitySummary(BaseModel):
+    active_count: int
+    total_value: float
+    win_rate: float # Represented as a float between 0 and 1
+
+# Schema for individual data points in the sales performance chart
+class SalesPerformancePoint(BaseModel):
+    label: str # e.g., 'Jan', 'Feb'
+    sales_value: float
+    opportunities_won: int
+
+# Schema for the Sales Performance endpoint response
+class SalesPerformanceData(BaseModel):
+    labels: list[str]
+    salesValue: list[float] # Match frontend JS naming
+    opportunitiesWon: list[int] # Match frontend JS naming

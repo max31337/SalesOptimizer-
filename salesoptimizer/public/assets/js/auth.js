@@ -27,8 +27,12 @@ $(document).ready(function () {
                 
                 if (response.role === 'admin') {
                     window.location.href = '/admin/dashboard.html';
+                } else if (response.role === 'sales-rep') {
+                    window.location.href = '/salesrep/dashboard.html';
+                } else if (response.role === 'analyst'){
+                    window.location.href = '/analyst/dashboard.html';
                 } else {
-                    window.location.href = '/pages/dashboard.html';
+                    windows.location.href = '/pages/404.html';
                 }
             },
             error: function(xhr) {

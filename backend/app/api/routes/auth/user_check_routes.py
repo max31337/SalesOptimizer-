@@ -7,7 +7,7 @@ router = APIRouter()
 
 def get_sales_rep(current_user: User = Depends(get_current_user)):
     """Check if user is admin or sales rep"""
-    if current_user.role not in ["admin", "sales_rep"]:
+    if current_user.role not in ["admin", "sales-rep"]:
         raise HTTPException(
             status_code=403,
             detail="Access denied. Only admins and sales representatives are allowed."
@@ -28,5 +28,5 @@ async def check_session(current_user: User = Depends(get_current_user)):
     return {
         "valid": True, 
         "is_active": current_user.is_active,
-        "role": current_user.role  # Add role to response
+        "role": current_user.role
     }

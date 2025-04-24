@@ -536,8 +536,8 @@ function setupFilterHandlers() {
 
 function deleteUser(userId) {
     if (!confirm('Are you sure you want to deactivate this user?')) return;
-
     const token = localStorage.getItem('token');
+
     $.ajax({
         url: `${apiConfig.apiUrl}/admin/users/${userId}`,  
         headers: { 'Authorization': `Bearer ${token}` },
