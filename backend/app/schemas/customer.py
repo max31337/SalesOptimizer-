@@ -1,5 +1,5 @@
-from pydantic import BaseModel, EmailStr
-from typing import Optional
+from pydantic import BaseModel, EmailStr, Field
+from typing import Optional, List
 from datetime import datetime
 
 class CustomerBase(BaseModel):
@@ -12,13 +12,16 @@ class CustomerBase(BaseModel):
     industry: Optional[str] = None
     status: Optional[str] = "lead"
     notes: Optional[str] = None
-    annual_revenue: Optional[int] = None
-    employee_count: Optional[int] = None
+    annual_revenue: Optional[int] = Field(None, ge=0)
+    employee_count: Optional[int] = Field(None, ge=0)
 
 class CustomerCreate(CustomerBase):
     assigned_to: Optional[int] = None
 
 class CustomerUpdate(CustomerBase):
+    name: Optional[str] = None
+    company: Optional[str] = None
+    email: Optional[EmailStr] = None
     is_active: Optional[bool] = None
     assigned_to: Optional[int] = None
 
@@ -26,6 +29,8 @@ class Customer(CustomerBase):
     id: int
     created_at: datetime
     updated_at: datetime
+    is_active: bool
+    assigned_to: Optional[int]
 
     class Config:
         from_attributes = True  # Changed from orm_mode

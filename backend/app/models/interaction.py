@@ -9,6 +9,8 @@ class Interaction(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     type = Column(Enum(InteractionType), nullable=False)
+    subject = Column(String, nullable=False) 
+    description = Column(Text, nullable=False)  # Main content of the interaction
     notes = Column(Text)
     interaction_date = Column(DateTime, nullable=False, default=datetime.utcnow)
     follow_up_date = Column(DateTime, nullable=True)

@@ -1,9 +1,18 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from app.db.database import get_db
 from app.models import User
-from app.core.auth import get_current_user
+from app.core.auth import get_current_user  # Import from core.auth instead
 
 router = APIRouter()
+
+def get_sales_rep(current_user: User = Depends(get_current_user)):
+    """Check if user is admin or sales rep"""
+    if current_user.role not in ["admin", "sales_rep"]:
+        raise HTTPException(
+            status_code=403,
+            detail="Access denied. Only admins and sales representatives are allowed."
+        )
+    return current_user
 
 @router.get("/me")
 async def get_current_user_details(current_user: User = Depends(get_current_user)):
