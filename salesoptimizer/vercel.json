@@ -13,7 +13,7 @@
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "http://crossover.proxy.rlwy.net:32542/api/$1",
+      "dest": "https://noble-warmth-production.up.railway.app/api/$1",
       "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
       "headers": {
         "Access-Control-Allow-Origin": "*",
