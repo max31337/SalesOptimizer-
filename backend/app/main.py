@@ -29,6 +29,6 @@ app.add_middleware(
 
 # Include all routes under /api prefix
 app.include_router(api_router, prefix="/api")
-app.include_router(auth_router, prefix="/api/auth", tags=["authentication"])
-app.include_router(check_router, prefix="/api/auth", tags=["authentication"])
+app.include_router(auth_router, prefix="/api/auth", tags=["Authentication"])
+app.include_router(check_router, prefix="/api/auth", tags=["Authentication"])
 app.include_router(admin_router, prefix="/api/admin", tags=["Admin"])
