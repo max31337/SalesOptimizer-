@@ -10,9 +10,7 @@ class UserRepository:
     def get_by_reset_token(self, token: str) -> User:
         return self.db.query(User).filter(User.reset_token == token).first()
 
-    def update(self, user: User, update_data: dict = None) -> User:
-        if update_data:
-            for field, value in update_data.items():
-                setattr(user, field, value)
+    def update(self, user: User) -> User:
         self.db.commit()
+        self.db.refresh(user)
         return user

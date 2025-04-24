@@ -34,7 +34,13 @@ class PasswordReset(BaseModel):
 
 class PasswordUpdate(BaseModel):
     password: str = Field(..., min_length=8)
-    confirm_password: str = Field(..., min_length=8)
+    confirm_password: str
+
+    @model_validator(mode='after')
+    def passwords_match(self) -> 'PasswordUpdate':
+        if self.password != self.confirm_password:
+            raise ValueError('Passwords do not match')
+        return self
 
 class UserLogin(BaseModel):
     email: str
