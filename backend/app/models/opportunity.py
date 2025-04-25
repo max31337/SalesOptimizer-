@@ -26,3 +26,4 @@ class Opportunity(Base):
     # Relationships
     customer = relationship("Customer", back_populates="opportunities")
     sales_rep = relationship("User", back_populates="opportunities")
+

@@ -138,13 +138,21 @@ function loadOverviewData() {
 
     // Fetch summary metrics
     $.ajax({
-        url: `${apiConfig.apiUrl}/crm/opportunities/summary`, // Assuming this endpoint exists
+        url: `${apiConfig.apiUrl}/crm/opportunities/summary/`, // Assuming this endpoint exists
         headers: headers,
         method: 'GET',
         success: function(summary) {
             $('#activeOpportunities').text(summary.active_count || '-');
             $('#pipelineValue').text(summary.total_value ? `$${summary.total_value.toLocaleString()}` : '-');
             $('#winRate').text(summary.win_rate ? `${(summary.win_rate * 100).toFixed(1)}%` : '-');
+
+            console.log('Received summary data:', summary); // Add this line to debug
+            
+            // Make sure the summary object has the expected properties
+            if (!summary) {
+                console.error('Summary data is empty or undefined');
+                return;
+            }
         },
         error: function(xhr) {
             console.error('Error loading overview metrics:', xhr.status, xhr.responseJSON?.detail);
@@ -161,7 +169,7 @@ function loadOverviewData() {
 
 function loadSalesOverviewChart() {
     const headers = getAuthHeaders();
-    if (!headers) return; // Stop if no token
+    if (!headers) return;
 
     const ctx = document.getElementById('salesOverviewChart')?.getContext('2d');
     if (!ctx) {
@@ -532,96 +540,6 @@ function renderWinLossRatioChart() {
             cutout: '65%'
         }
     });
-}
-
-
-function loadOverviewData_OLD() { // Renamed original function just in case
-    // Placeholder for fetching actual overview metrics
-    $('#activeOpportunities').text('15'); // Dummy data
-    $('#pipelineValue').text('$125,000'); // Dummy data - kept in old func
-    $('#winRate').text('25%'); // Dummy data - kept in old func
-
-    // Load or reload the chart
-    loadSalesOverviewChart_OLD(); // Renamed original chart func
-}
-
-function loadSalesOverviewChart_OLD() { // Renamed original function
-    const ctx = document.getElementById('salesOverviewChart')?.getContext('2d');
-    if (!ctx) {
-        console.error('Sales Overview Chart canvas element not found.');
-        return;
-    }
-
-    // Destroy existing chart instance if it exists
-    if (salesChartInstance) {
-        salesChartInstance.destroy();
-        salesChartInstance = null; // Clear reference
-    }
-
-    // Dummy data for the chart (replace with actual API call)
-    const chartData = {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-        datasets: [{
-            label: 'Sales Value ($)',
-            data: [12000, 19000, 15000, 21000, 18000, 25000],
-            borderColor: 'rgb(75, 192, 192)',
-            backgroundColor: 'rgba(75, 192, 192, 0.2)',
-            tension: 0.1,
-            fill: true,
-        }, {
-            label: 'Opportunities Won',
-            data: [5, 8, 6, 9, 7, 11],
-            borderColor: 'rgb(255, 99, 132)',
-            backgroundColor: 'rgba(255, 99, 132, 0.2)',
-            tension: 0.1,
-            fill: true,
-            yAxisID: 'y1', // Assign to the second y-axis
-        }]
-    };
-
-    // Chart configuration
-    const config = {
-        type: 'line',
-        data: chartData,
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: { // Primary Y-axis (Sales Value)
-                    beginAtZero: true,
-                    position: 'left',
-                    title: {
-                        display: true,
-                        text: 'Sales Value ($)'
-                    }
-                },
-                y1: { // Secondary Y-axis (Opportunities Won)
-                    beginAtZero: true,
-                    position: 'right',
-                    title: {
-                        display: true,
-                        text: 'Opportunities Won'
-                    },
-                    // Ensure grid lines from this axis don't clash visually
-                    grid: {
-                        drawOnChartArea: false, // Only draw grid lines for the primary axis
-                    },
-                }
-            },
-            plugins: {
-                legend: {
-                    position: 'top',
-                },
-                title: {
-                    display: true,
-                    text: 'Monthly Sales Performance'
-                }
-            }
-        },
-    };
-
-    // Create the new chart instance
-    salesChartInstance = new Chart(ctx, config);
 }
 
 

@@ -2,6 +2,7 @@ from typing import List, Optional, Dict, Any
 from sqlalchemy.orm import Session
 from app.repositories.opportunity_repository import OpportunityRepository
 from app.models import Opportunity
+from app.models import User
 # Import the new schemas
 from app.schemas.opportunity import (
     OpportunityCreate, OpportunityUpdate, OpportunitySummary, SalesPerformanceData
@@ -51,19 +52,13 @@ class OpportunityService:
             raise NotFoundError("Opportunity", id)
         return self.repository.update_stage(opportunity, stage)
 
-    async def get_all_for_sales_rep(self, sales_rep_id: int, skip: int = 0, limit: int = 100) -> List[Opportunity]:
-        """Gets all opportunities for a specific sales representative."""
-        # Note: The repository method is synchronous, but we keep the service async for consistency
-        return self.repository.get_all_for_sales_rep(sales_rep_id=sales_rep_id, skip=skip, limit=limit)
-
-    async def get_summary_for_sales_rep(self, sales_rep_id: int) -> OpportunitySummary:
-        """Gets the opportunity summary metrics for a specific sales representative."""
-        summary_data = self.repository.get_summary_for_sales_rep(sales_rep_id=sales_rep_id)
-        # Wrap the dictionary result in the Pydantic model
-        return OpportunitySummary(**summary_data)
-
     async def get_performance_data_for_sales_rep(self, sales_rep_id: int, months: int = 6) -> SalesPerformanceData:
         """Gets the sales performance data for the chart for a specific sales representative."""
         performance_data = self.repository.get_performance_data_for_sales_rep(sales_rep_id=sales_rep_id, months=months)
         # Wrap the dictionary result in the Pydantic model
         return SalesPerformanceData(**performance_data)
+
+
+    def get_summary_for_sales_rep(self, current_user: User) -> Dict[str, Any]:
+        """Gets the summary (active count, total value, win rate) for a specific sales representative."""
+        return self.repository.get_summary_for_user(current_user.id)

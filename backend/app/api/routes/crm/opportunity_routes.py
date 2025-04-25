@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from typing import List, Optional
 from app.db.database import get_db
 from app.models import User, Opportunity
-from app.schemas.opportunity import OpportunityCreate, OpportunityUpdate, Opportunity as OpportunitySchema
+from app.schemas.opportunity import OpportunityCreate, OpportunityUpdate, OpportunitySummary, Opportunity as OpportunitySchema
 from app.api.routes.auth.user_check_routes import get_sales_rep
 from app.services.opportunity_service import OpportunityService
 
@@ -63,3 +63,13 @@ async def delete_opportunity(
     """Delete an opportunity"""
     opportunity_service = OpportunityService(db)
     return await opportunity_service.delete(opportunity_id)
+
+
+@router.get("/summary/", response_model=OpportunitySummary)
+async def get_opportunity_summary(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_sales_rep)
+):
+    service = OpportunityService(db)
+    summary = service.get_summary_for_sales_rep(current_user)
+    return OpportunitySummary(**summary)
