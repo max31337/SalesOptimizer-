@@ -31,6 +31,7 @@ def create_admin_user():
         db.commit()
         print("✅ Admin user created successfully!")
         print("Username: admin")
+        print("Email: admin@salesoptimizer.com")
         print("Password: admin123")
         print("\n⚠️ Please change the password after first login!")
         
