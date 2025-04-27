@@ -10,7 +10,7 @@ Make sure you have installed:
 
 📦 pip
 
-🐘 PostgreSQL 14+ (must be installed and running)
+🐘 PostgreSQL 17+ (must be installed and running)
 
 💀 Git (optional, for cloning)
 
