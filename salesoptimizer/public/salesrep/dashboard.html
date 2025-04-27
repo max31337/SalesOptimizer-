@@ -10,8 +10,13 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script> <!-- Added Alpine.js -->
 </head>
-<body>
+<body x-data="{ 
+    opportunityModal: false,
+    customerModal: false,
+    interactionModal: false
+}">
     <div class="salesrep-layout">
         <nav class="sidebar">
             <div class="brand">
@@ -88,9 +93,11 @@
 
             <!-- Opportunities Section -->
             <section id="opportunities" class="content-section hidden">
+                <!-- Removed x-data from section header -->
                 <div class="section-header">
                     <h2>Opportunities</h2>
-                    <button id="createOpportunityBtn" class="btn-primary">
+                    <!-- Removed @click from button -->
+                    <button @click="opportunityModal = true" class="btn-primary">
                         <i data-lucide="plus"></i>
                         New Opportunity
                     </button>
@@ -117,7 +124,7 @@
             <section id="customers" class="content-section hidden">
                 <div class="section-header">
                     <h2>Customers</h2>
-                    <button id="createCustomerBtn" class="btn-primary">
+                    <button @click="customerModal = true" class="btn-primary">
                         <i data-lucide="plus"></i>
                         New Customer
                     </button>
@@ -143,7 +150,7 @@
             <section id="interactions" class="content-section hidden">
                 <div class="section-header">
                     <h2>Interactions</h2>
-                    <button id="createInteractionBtn" class="btn-primary">
+                    <button @click="interactionModal = true" class="btn-primary">
                         <i data-lucide="plus"></i>
                         New Interaction
                     </button>
@@ -167,10 +174,165 @@
     </div>
 
     <script src="../assets/js/config.js" type="module"></script> 
-    <script src="../assets/js/salsesrep.js" type="module"></script> 
-    <script>
-        // Initialize Lucide icons
-        lucide.createIcons();
-    </script>
+    <script src="../assets/js/salsesrep.js" type="module"></script>
+
+    <!-- Opportunity Creation Modal -->
+    <div id="opportunityModalDiv" 
+         x-show="opportunityModal" 
+         x-transition:enter="modal-enter"
+         x-transition:enter-start="modal-enter-start"
+         x-transition:enter-end="modal-enter-end"
+         x-transition:leave="modal-leave"
+         x-transition:leave-start="modal-leave-start"
+         x-transition:leave-end="modal-leave-end"
+         @click.self="opportunityModal = false"
+         class="modal">
+        <div class="modal-content" @click.outside="opportunityModal = false">
+            <div class="modal-header">
+                <h3>Create New Opportunity</h3>
+                <button class="close-btn" @click="opportunityModal = false">×</button>
+            </div>
+            <form id="opportunityForm">
+                <div class="form-group">
+                    <label for="opp-title">Title</label>
+                    <input type="text" id="opp-title" name="title" required>
+                </div>
+                <div class="form-group">
+                    <label for="opp-customer-id">Customer ID</label>
+                    <input type="number" id="opp-customer-id" name="customer_id" required>
+                </div>
+                <div class="form-group">
+                    <label for="opp-value">Deal Value ($)</label>
+                    <input type="number" step="0.01" id="opp-value" name="deal_value" required>
+                </div>
+                <div class="form-group">
+                    <label for="opp-stage">Stage</label>
+                    <select id="opp-stage" name="stage" required>
+                        <option value="PROSPECTING">Prospecting</option>
+                        <option value="QUALIFICATION">Qualification</option>
+                        <option value="PROPOSAL">Proposal</option>
+                        <option value="NEGOTIATION">Negotiation</option>
+                        <option value="CLOSED_WON">Closed Won</option>
+                        <option value="CLOSED_LOST">Closed Lost</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="opp-close-date">Expected Close Date</label>
+                    <input type="date" id="opp-close-date" name="expected_close_date" required>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="cancelOpportunityBtn" class="btn-secondary">Cancel</button>
+                    <button type="submit" id="submitOpportunityBtn" class="btn-primary">Create</button>
+                </div>
+                <p id="opportunityError" class="error-message"></p>
+                <p id="opportunitySuccess" class="success-message"></p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Customer Creation Modal -->
+    <div id="customerModalDiv" 
+         x-show="customerModal"
+         x-transition:enter="modal-enter"
+         x-transition:enter-start="modal-enter-start"
+         x-transition:enter-end="modal-enter-end"
+         x-transition:leave="modal-leave"
+         x-transition:leave-start="modal-leave-start"
+         x-transition:leave-end="modal-leave-end"
+         @click.self="customerModal = false"
+         class="modal">
+        <div class="modal-content" @click.outside="customerModal = false">
+            <div class="modal-header">
+                <h3>Create New Customer</h3>
+                <button class="close-btn" @click="customerModal = false">×</button>
+            </div>
+            <form id="customerForm">
+                <div class="form-group">
+                    <label for="cust-name">Name</label>
+                    <input type="text" id="cust-name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="cust-company">Company Name</label>
+                    <input type="text" id="cust-company" name="company_name">
+                </div>
+                <div class="form-group">
+                    <label for="cust-email">Email</label>
+                    <input type="email" id="cust-email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="cust-phone">Phone Number</label>
+                    <input type="tel" id="cust-phone" name="phone_number">
+                </div>
+                <div class="form-group">
+                    <label for="cust-status">Status</label>
+                    <select id="cust-status" name="status" required>
+                        <option value="LEAD">Lead</option>
+                        <option value="CONTACTED">Contacted</option>
+                        <option value="PROSPECT">Prospect</option>
+                        <option value="CUSTOMER">Customer</option>
+                        <option value="ARCHIVED">Archived</option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="cancelCustomerBtn" class="btn-secondary">Cancel</button>
+                    <button type="submit" id="submitCustomerBtn" class="btn-primary">Create</button>
+                </div>
+                <p id="customerError" class="error-message"></p>
+                <p id="customerSuccess" class="success-message"></p>
+            </form>
+        </div>
+    </div>
+
+    <!-- New Interaction Modal -->
+    <div id="interactionModalDiv" 
+         x-show="interactionModal"
+         x-transition:enter="modal-enter"
+         x-transition:enter-start="modal-enter-start"
+         x-transition:enter-end="modal-enter-end"
+         x-transition:leave="modal-leave"
+         x-transition:leave-start="modal-leave-start"
+         x-transition:leave-end="modal-leave-end"
+         @click.self="interactionModal = false"
+         class="modal">
+        <div class="modal-content" @click.outside="interactionModal = false">
+            <div class="modal-header">
+                <h3>Create New Interaction</h3>
+                <button class="close-btn" @click="interactionModal = false">×</button>
+            </div>
+            <form id="interactionForm">
+                <div class="form-group">
+                    <label for="int-customer-id">Customer</label>
+                    <select id="int-customer-id" name="customer_id" required>
+                        <!-- Will be populated dynamically -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="int-type">Interaction Type</label>
+                    <select id="int-type" name="type" required>
+                        <option value="CALL">Call</option>
+                        <option value="EMAIL">Email</option>
+                        <option value="MEETING">Meeting</option>
+                        <option value="DEMO">Demo</option>
+                        <option value="OTHER">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="int-date">Date</label>
+                    <input type="datetime-local" id="int-date" name="interaction_date" required>
+                </div>
+                <div class="form-group">
+                    <label for="int-summary">Summary</label>
+                    <textarea id="int-summary" name="summary" required rows="4"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="cancelInteractionBtn" class="btn-secondary">Cancel</button>
+                    <button type="submit" id="submitInteractionBtn" class="btn-primary">Create</button>
+                </div>
+                <p id="interactionError" class="error-message"></p>
+                <p id="interactionSuccess" class="success-message"></p>
+            </form>
+        </div>
+    </div>
+
 </body>
 </html>

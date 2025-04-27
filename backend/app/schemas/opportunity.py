@@ -41,16 +41,7 @@ class Opportunity(OpportunityBase):
     risk_factors: Optional[str] = None
     created_at: datetime
     updated_at: datetime
-    
-    @computed_field
-    @property
-    def is_active(self) -> bool:
-        return self.stage in {
-            OpportunityStage.LEAD,
-            OpportunityStage.PROSPECT,
-            OpportunityStage.NEGOTIATION
-        }
-
+  
     class Config:
         from_attributes = True
 

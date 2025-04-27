@@ -8,13 +8,13 @@ class ProductionConfig(BaseConfig):
     # Production-specific settings
     FRONTEND_URL: str = "https://salesoptimizer.vercel.app"
     
-    # Use Gmail SMTP in production
+    # Gmail SMTP settings
     MAIL_PROVIDER: str = "gmail"
     SMTP_SERVER: str = "smtp.gmail.com"
     SMTP_PORT: int = 587
-    SMTP_USERNAME: str = os.getenv("SMTP_USERNAME", "")
+    SMTP_USERNAME: str = os.getenv("SMTP_USERNAME", "navarro.markanthony.tud@gmail.com")
     SMTP_PASSWORD: str = os.getenv("SMTP_PASSWORD", "")
-    SYSTEM_EMAIL: str = os.getenv("SYSTEM_EMAIL", "")
+    SYSTEM_EMAIL: str = os.getenv("SYSTEM_EMAIL", "navarro.markanthony.tud@gmail.com")
     
     CORS_ORIGINS: List[str] = [
         "https://salesoptimizer.vercel.app"

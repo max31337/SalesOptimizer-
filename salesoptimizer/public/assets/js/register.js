@@ -66,7 +66,7 @@ $(document).ready(function() {
                     } else if (response.role === 'sales') {
                         window.location.href = '/salesrep/dashboard.html';
                     } else {
-                        window.location.href = '/pages/dashboard.html';
+                        window.location.href = '/analyst/dashboard.html';
                     }
                 },
                 error: function(xhr) {

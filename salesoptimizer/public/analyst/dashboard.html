@@ -3,10 +3,383 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Analyst</title>
+    <title>Analyst Dashboard - SalesOptimizer</title>
+    <!-- Link Sales Rep CSS for consistency -->
+    <link rel="stylesheet" href="../assets/css/salesrep.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <!-- Auth Guard and Config -->
+    <script src="../assets/js/auth-guard.js" type="module"></script>
+    <script src="../assets/js/config.js" type="module"></script>
+    <!-- Auth script for logout functionality -->
+    <script src="../assets/js/auth.js" type="module"></script>
+    <style>
+        /* Analyst-specific adjustments if needed, or keep in salesrep.css */
+        .kpi-container {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+            gap: 1rem; /* Added gap */
+        }
+        .kpi-card {
+            background-color: #e9f5f9;
+            border-left: 5px solid #0a9396;
+            padding: 1rem;
+            border-radius: 8px; /* Slightly more rounded */
+            text-align: center;
+            flex-basis: 200px; /* Base width */
+            flex-grow: 1; /* Allow growing */
+            margin: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .kpi-card h5 {
+            margin: 0 0 0.5rem 0;
+            color: #005f73;
+            font-size: 0.9rem; /* Adjusted size */
+            font-weight: 500;
+        }
+        .kpi-card p {
+            font-size: 1.8rem; /* Larger KPI value */
+            font-weight: bold;
+            margin: 0;
+            color: #0a9396;
+        }
+         .chart-wrapper { /* Re-adding chart wrapper from salesrep for consistency */
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        .chart-container { /* Style from salesrep.css might override, ensure consistency */
+            background-color: #fff;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .table-container { /* Style from salesrep.css */
+             overflow-x: auto;
+             background-color: #fff;
+             padding: 1.5rem;
+             border-radius: 8px;
+             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+             margin-top: 1.5rem;
+        }
+        .data-table { /* Style from salesrep.css */
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .data-table th, .data-table td {
+            border: 1px solid #e2e8f0;
+            padding: 0.75rem 1rem;
+            text-align: left;
+            font-size: 0.9rem;
+        }
+        .data-table th {
+            background-color: #f8fafc;
+            font-weight: 600;
+            color: #4a5568;
+        }
+        .data-table tbody tr:nth-child(even) {
+            background-color: #fdfdfe; /* Lighter alternating row */
+        }
+        .data-table tbody tr:hover {
+            background-color: #f1f5f9;
+        }
+        /* Ensure main content padding matches salesrep */
+        .main-content {
+            padding: 2rem;
+        }
+        .content-section h2, .content-section h4 { /* Consistent heading styles */
+             color: #1e40af; /* Example color from potential theme */
+             margin-bottom: 1.5rem;
+             font-weight: 600;
+        }
+    </style>
 </head>
 <body>
-    <h3>Analyst</h3>
-    
+    <div class="salesrep-layout"> <!-- Using the same layout class -->
+        <nav class="sidebar">
+            <div class="brand">
+                <img src="../assets/images/logo.png" alt="SalesOptimizer Logo" width="32" height="32">
+                <h1>Analyst Dashboard</h1> <!-- Changed Title -->
+            </div>
+
+            <div class="nav-group">
+                <ul class="nav-links">
+                    <!-- Analyst Specific Navigation -->
+                    <li class="active">
+                        <a href="#overview" class="nav-link" data-section="overview">
+                            <i data-lucide="layout-dashboard"></i>
+                            <span>Overview</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#forecast" class="nav-link" data-section="forecast">
+                            <i data-lucide="trending-up"></i>
+                            <span>Forecast</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#analysis" class="nav-link" data-section="analysis">
+                            <i data-lucide="pie-chart"></i>
+                            <span>Analysis</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#data-view" class="nav-link" data-section="data-view">
+                            <i data-lucide="table"></i>
+                            <span>Data View</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="user-info">
+                <!-- Placeholder for user name - needs dynamic update -->
+                <div id="analystName" class="salesrep-name">Analyst User</div>
+                <!-- Logout Button -->
+                <button onclick="logout()" class="btn-secondary">Logout</button>
+            </div>
+        </nav>
+
+        <main class="main-content">
+            <!-- Overview Section (KPIs) -->
+            <section id="overview" class="content-section">
+                <h2>Dashboard Overview</h2>
+                 <div class="kpi-container">
+                    <div class="kpi-card">
+                        <h5>Total Leads</h5>
+                        <p>1,234</p> <!-- Placeholder -->
+                    </div>
+                    <div class="kpi-card">
+                        <h5>Conversion Rate</h5>
+                        <p>15.6%</p> <!-- Placeholder -->
+                    </div>
+                    <div class="kpi-card">
+                        <h5>Forecast Accuracy</h5>
+                        <p>88.2%</p> <!-- Placeholder -->
+                    </div>
+                    <div class="kpi-card">
+                        <h5>Average Deal Size</h5>
+                        <p>$5,400</p> <!-- Placeholder -->
+                    </div>
+                </div>
+                 <!-- Maybe add a summary chart here later -->
+            </section>
+
+            <!-- Forecast Section -->
+            <section id="forecast" class="content-section hidden">
+                <h2>CRM Widescope Forecast</h2>
+                 <div class="chart-wrapper">
+                    <div class="chart-container">
+                        <canvas id="forecastChart"></canvas>
+                    </div>
+                 </div>
+                <p>Visual representation of the overall sales forecast trends.</p>
+            </section>
+
+            <!-- Analysis Section -->
+            <section id="analysis" class="content-section hidden">
+                <h2>Predictive Analysis Insights</h2>
+                 <div class="chart-wrapper">
+                     <div class="chart-container">
+                        <canvas id="analysisChart"></canvas>
+                    </div>
+                 </div>
+                <p>Analysis based on historical data and predictive models.</p>
+            </section>
+
+            <!-- Data View Section -->
+            <section id="data-view" class="content-section hidden">
+                 <h2>Detailed Data View</h2>
+                 <p>Detailed data table, e.g., top opportunities or recent activities.</p>
+                 <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Opportunity ID</th>
+                                <th>Account Name</th>
+                                <th>Stage</th>
+                                <th>Predicted Close Date</th>
+                                <th>Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>OPP-001</td>
+                                <td>Acme Corp</td>
+                                <td>Negotiation</td>
+                                <td>2025-05-15</td>
+                                <td>$15,000</td>
+                            </tr>
+                             <tr>
+                                <td>OPP-002</td>
+                                <td>Beta Industries</td>
+                                <td>Proposal</td>
+                                <td>2025-06-01</td>
+                                <td>$8,500</td>
+                            </tr>
+                             <tr>
+                                <td>OPP-003</td>
+                                <td>Gamma Solutions</td>
+                                <td>Qualification</td>
+                                <td>2025-05-20</td>
+                                <td>$22,000</td>
+                            </tr>
+                            <!-- More rows would be loaded dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Basic Section Navigation
+        document.addEventListener('DOMContentLoaded', () => {
+            const navLinks = document.querySelectorAll('.nav-link');
+            const contentSections = document.querySelectorAll('.content-section');
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', (event) => {
+                    event.preventDefault(); // Prevent default anchor behavior
+
+                    // Update active link
+                    navLinks.forEach(l => l.parentElement.classList.remove('active'));
+                    link.parentElement.classList.add('active');
+
+                    // Show target section, hide others
+                    const targetSectionId = link.getAttribute('data-section');
+                    contentSections.forEach(section => {
+                        if (section.id === targetSectionId) {
+                            section.classList.remove('hidden');
+                        } else {
+                            section.classList.add('hidden');
+                        }
+                    });
+
+                    // Update URL hash without page jump
+                    if (history.pushState) {
+                        history.pushState(null, null, `#${targetSectionId}`);
+                    } else {
+                        location.hash = `#${targetSectionId}`;
+                    }
+                });
+            });
+
+             // Handle initial section based on URL hash
+            const currentHash = window.location.hash.substring(1);
+            const targetLink = document.querySelector(`.nav-link[data-section="${currentHash}"]`);
+            if (targetLink) {
+                targetLink.click(); // Simulate click to show the correct section
+            } else {
+                 // Default to overview if no hash or invalid hash
+                document.querySelector('.nav-link[data-section="overview"]').click();
+            }
+
+            // --- Display User Name ---
+            const userName = localStorage.getItem('userName'); // Get name directly from 'userName' key
+            const analystNameElement = document.getElementById('analystName');
+            if (userName && analystNameElement) {
+                analystNameElement.textContent = userName; // Display the retrieved name
+            } else if (analystNameElement) {
+                // Keep placeholder or set a default if user name not found
+                analystNameElement.textContent = 'Analyst';
+                console.warn('User name not found in localStorage under key "userName".');
+            }
+
+
+            // --- Chart Initialization ---
+            // Sample data for Forecast Chart
+            const forecastCtx = document.getElementById('forecastChart')?.getContext('2d');
+            if (forecastCtx) {
+                const forecastChart = new Chart(forecastCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                        datasets: [{
+                            label: 'Sales Forecast',
+                            data: [120, 190, 300, 500, 200, 350], // Dummy data
+                            borderColor: 'rgb(75, 192, 192)',
+                            backgroundColor: 'rgba(75, 192, 192, 0.1)', // Added fill
+                            tension: 0.1,
+                            fill: true // Added fill
+                        }]
+                    },
+                    options: {
+                         responsive: true, // Make chart responsive
+                         maintainAspectRatio: false, // Allow custom aspect ratio
+                         plugins: {
+                            title: { display: true, text: 'Monthly Sales Forecast' }
+                         },
+                        scales: {
+                            y: { beginAtZero: true }
+                        }
+                    }
+                });
+            }
+
+            // Sample data for Predictive Analysis Chart
+            const analysisCtx = document.getElementById('analysisChart')?.getContext('2d');
+             if (analysisCtx) {
+                const analysisChart = new Chart(analysisCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Region A', 'Region B', 'Region C', 'Region D'],
+                        datasets: [{
+                            label: 'Predicted Growth Rate (%)',
+                            data: [5, 12, 8, 15], // Dummy data
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 0.6)', // Increased opacity
+                                'rgba(54, 162, 235, 0.6)',
+                                'rgba(255, 206, 86, 0.6)',
+                                'rgba(75, 192, 192, 0.6)'
+                            ],
+                            borderColor: [
+                                'rgba(255, 99, 132, 1)',
+                                'rgba(54, 162, 235, 1)',
+                                'rgba(255, 206, 86, 1)',
+                                'rgba(75, 192, 192, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                         plugins: {
+                            title: { display: true, text: 'Predicted Growth Rate by Region' }
+                         },
+                        scales: {
+                            y: { beginAtZero: true }
+                        }
+                    }
+                });
+             }
+        });
+
+
+
+function logout() {
+        // Clear local storage
+        localStorage.removeItem('token');
+        localStorage.removeItem('userRole');
+        localStorage.removeItem('userName');
+
+        // Redirect to login page
+        window.location.href = '/auth/login.html';
+    }
+
+// Explicitly attach logout to the window object
+window.logout = logout;
+
+    </script>
 </body>
 </html>

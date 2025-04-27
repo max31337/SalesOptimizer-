@@ -27,10 +27,10 @@ class DevelopmentConfig(BaseConfig):
     FRONTEND_URL: str = "http://127.0.0.1:5050"
     MAIL_PROVIDER: str = "mailtrap"
     # Mailtrap SMTP settings
-    SMTP_SERVER: str = "sandbox.smtp.mailtrap.io"
-    SMTP_PORT: int = 2525
-    SMTP_USER: str = "your_mailtrap_user"
-    SMTP_PASS: str = "your_mailtrap_pass"
+    SMTP_SERVER: str = os.getenv("SMTP_SERVER", "sandbox.smtp.mailtrap.io") # Or specific Mailtrap server env var
+    SMTP_PORT: int = int(os.getenv("SMTP_PORT", 2525)) # Or specific Mailtrap port env var
+    SMTP_USER: str = os.getenv("SMTP_USERNAME", "") # Or specific Mailtrap user env var
+    SMTP_PASS: str = os.getenv("SMTP_PASSWORD", "") # Or specific Mailtrap pass env var
 
 # Production config (config/production.py) 
 class ProductionConfig(BaseConfig):

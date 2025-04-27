@@ -1,5 +1,8 @@
-from pydantic_settings import BaseSettings
 from enum import Enum
+from typing import List
+import os
+from pydantic import Field, EmailStr
+from pydantic_settings import BaseSettings
 
 class Environment(str, Enum):
     DEVELOPMENT = "development"
@@ -7,15 +10,25 @@ class Environment(str, Enum):
     TESTING = "testing"
 
 class BaseConfig(BaseSettings):
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
-    ENV: Environment = Environment.DEVELOPMENT
-    DATABASE_URL: str
-    SECRET_KEY: str
+    # Core settings
+    ENV: Environment = Field(default=Environment.DEVELOPMENT, env="ENV")
+    DATABASE_URL: str = Field(..., env="DATABASE_URL")
+    SECRET_KEY: str = Field(..., env="SECRET_KEY")
     ALGORITHM: str = "HS256"
-    
-    # Email configuration
-    SMTP_SERVER: str
-    SMTP_PORT: int
-    SMTP_USERNAME: str
-    SMTP_PASSWORD: str
-    SYSTEM_EMAIL: str = "noreply@salesoptimizer.com"
+    FRONTEND_URL: str = Field(..., env="FRONTEND_URL")
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = Field(default=30, env="ACCESS_TOKEN_EXPIRE_MINUTES")
+
+    # SMTP Settings
+    MAIL_PROVIDER: str = Field(default="gmail", env="MAIL_PROVIDER")
+    SMTP_SERVER: str = Field(..., env="SMTP_SERVER")
+    SMTP_PORT: int = Field(..., env="SMTP_PORT")
+    SMTP_USERNAME: str = Field(..., env="SMTP_USERNAME")
+    SMTP_PASSWORD: str = Field(..., env="SMTP_PASSWORD")
+    SYSTEM_EMAIL: EmailStr = Field(..., env="SYSTEM_EMAIL")
+
+    # CORS Settings
+    CORS_ORIGINS: List[str] = ["*"]
+
+    class Config:
+        case_sensitive = True
+        extra = "ignore"

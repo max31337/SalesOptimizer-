@@ -396,10 +396,193 @@ function viewInteraction(id) { console.log(`View Interaction ${id}`); }
 function editInteraction(id) { console.log(`Edit Interaction ${id}`); }
 function deleteInteraction(id) { console.log(`Delete Interaction ${id}`); /* Add confirmation */ }
 
-// --- Event Listeners for Create Buttons ---
-$('#createOpportunityBtn').on('click', () => console.log('Create New Opportunity clicked'));
-$('#createCustomerBtn').on('click', () => console.log('Create New Customer clicked'));
-$('#createInteractionBtn').on('click', () => console.log('Create New Interaction clicked'));
+// --- Opportunity Modal Logic ---
+
+// Show Modal
+$('#createOpportunityBtn').on('click', () => {
+    console.log('Create New Opportunity clicked - showing modal');
+    // Reset form fields and messages
+    $('#opportunityForm')[0].reset();
+    $('#opportunityError').hide().text('');
+    $('#opportunitySuccess').hide().text('');
+    $('#submitOpportunityBtn').prop('disabled', false).find('span').text('Create'); // Reset button state
+    // Show the modal
+    $('#opportunityModalDiv').fadeIn(); // Use fadeIn or show()
+});
+
+// Hide Modal on Cancel
+$('#cancelOpportunityBtn').on('click', () => {
+    $('#opportunityModalDiv').fadeOut(); // Use fadeOut or hide()
+});
+
+// Hide Modal on clicking outside (optional, but good UX)
+$('#opportunityModalDiv').on('click', function(event) {
+    // Check if the click is directly on the modal background (not the content)
+    if (event.target === this) {
+        $(this).fadeOut();
+    }
+});
+
+// Handle Form Submission
+$('#opportunityForm').on('submit', function(event) {
+    event.preventDefault(); // Prevent default form submission
+    console.log('Opportunity form submitted');
+
+    const $submitButton = $('#submitOpportunityBtn');
+    const $errorP = $('#opportunityError');
+    const $successP = $('#opportunitySuccess');
+
+    // Basic Loading State
+    $submitButton.prop('disabled', true).find('span').text('Creating...');
+    $errorP.hide().text('');
+    $successP.hide().text('');
+
+    const token = localStorage.getItem('token'); // Use 'token', not 'accessToken' based on verifyLocalStorage
+    if (!token) {
+        $errorP.text('Authentication error. Please log in again.').show();
+        $submitButton.prop('disabled', false).find('span').text('Create');
+        return;
+    }
+
+    // Gather form data
+    const formData = {
+        title: $('#opp-title').val(),
+        customer_id: parseInt($('#opp-customer-id').val(), 10), // Ensure it's a number
+        deal_value: parseFloat($('#opp-value').val()), // Ensure it's a number
+        stage: $('#opp-stage').val(),
+        expected_close_date: $('#opp-close-date').val()
+    };
+
+    // Basic Validation (jQuery doesn't handle 'required' automatically like Alpine)
+    if (!formData.title || !formData.customer_id || isNaN(formData.customer_id) || !formData.deal_value || isNaN(formData.deal_value) || !formData.stage || !formData.expected_close_date) {
+        $errorP.text('Please fill in all required fields correctly.').show();
+        $submitButton.prop('disabled', false).find('span').text('Create');
+        return;
+    }
+
+    // AJAX Request
+    $.ajax({
+        url: `${apiConfig.apiUrl}/crm/opportunities/`, // Adjusted endpoint based on loadOpportunities
+        method: 'POST',
+        contentType: 'application/json',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        },
+        data: JSON.stringify(formData),
+        success: (response) => {
+            $successP.text('Opportunity created successfully!').show();
+            console.log('Opportunity created:', response);
+            loadOpportunities(); // Refresh the opportunities table
+            setTimeout(() => { // Close modal after a delay
+                $('#opportunityModalDiv').fadeOut();
+                $submitButton.prop('disabled', false).find('span').text('Create'); // Reset button fully on success close
+            }, 1500);
+        },
+        error: (jqXHR, textStatus, errorThrown) => {
+            console.error('Error creating opportunity:', textStatus, errorThrown, jqXHR.responseText);
+            const errorMsg = jqXHR.responseJSON?.detail || errorThrown || 'Unknown error';
+            $errorP.text(`Failed to create opportunity: ${errorMsg}`).show();
+            $submitButton.prop('disabled', false).find('span').text('Create'); // Re-enable button on error
+        }
+        // No 'complete' needed as we handle button state in success/error
+    });
+});
+
+
+// --- Customer Modal Logic ---
+
+// Show Modal
+$('#createCustomerBtn').on('click', () => {
+    console.log('Create New Customer clicked - showing modal');
+    // Reset form fields and messages
+    $('#customerForm')[0].reset();
+    $('#customerError').hide().text('');
+    $('#customerSuccess').hide().text('');
+    $('#submitCustomerBtn').prop('disabled', false).find('span').text('Create'); // Reset button state
+    // Show the modal
+    $('#customerModalDiv').fadeIn();
+});
+
+// Hide Modal on Cancel
+$('#cancelCustomerBtn').on('click', () => {
+    $('#customerModalDiv').fadeOut();
+});
+
+// Hide Modal on clicking outside
+$('#customerModalDiv').on('click', function(event) {
+    if (event.target === this) {
+        $(this).fadeOut();
+    }
+});
+
+// Handle Form Submission
+$('#customerForm').on('submit', function(event) {
+    event.preventDefault();
+    console.log('Customer form submitted');
+
+    const $submitButton = $('#submitCustomerBtn');
+    const $errorP = $('#customerError');
+    const $successP = $('#customerSuccess');
+
+    // Loading State
+    $submitButton.prop('disabled', true).find('span').text('Creating...');
+    $errorP.hide().text('');
+    $successP.hide().text('');
+
+    const token = localStorage.getItem('token');
+    if (!token) {
+        $errorP.text('Authentication error. Please log in again.').show();
+        $submitButton.prop('disabled', false).find('span').text('Create');
+        return;
+    }
+
+    // Gather form data
+    const formData = {
+        name: $('#cust-name').val(),
+        company_name: $('#cust-company').val(), // Optional field
+        email: $('#cust-email').val(),
+        phone_number: $('#cust-phone').val(), // Optional field
+        status: $('#cust-status').val()
+    };
+
+    // Basic Validation
+    if (!formData.name || !formData.email || !formData.status) { // Check required fields
+        $errorP.text('Please fill in all required fields (Name, Email, Status).').show();
+        $submitButton.prop('disabled', false).find('span').text('Create');
+        return;
+    }
+     // Optional: Add email format validation if needed
+
+    // AJAX Request
+    $.ajax({
+        url: `${apiConfig.apiUrl}/crm/customers/`, // Assuming this is the correct endpoint
+        method: 'POST',
+        contentType: 'application/json',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        },
+        data: JSON.stringify(formData),
+        success: (response) => {
+            $successP.text('Customer created successfully!').show();
+            console.log('Customer created:', response);
+            loadCustomers(); // Refresh the customers table
+            setTimeout(() => {
+                $('#customerModalDiv').fadeOut();
+                $submitButton.prop('disabled', false).find('span').text('Create');
+            }, 1500);
+        },
+        error: (jqXHR, textStatus, errorThrown) => {
+            console.error('Error creating customer:', textStatus, errorThrown, jqXHR.responseText);
+            const errorMsg = jqXHR.responseJSON?.detail || errorThrown || 'Unknown error';
+            $errorP.text(`Failed to create customer: ${errorMsg}`).show();
+            $submitButton.prop('disabled', false).find('span').text('Create');
+        }
+    });
+});
+
+
+// --- Event Listener for Interaction Button ---
+$('#createInteractionBtn').on('click', () => console.log('Create New Interaction clicked - Modal/Form logic needed'));
 
 
 document.addEventListener('DOMContentLoaded', () => {
