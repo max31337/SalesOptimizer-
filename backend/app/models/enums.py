@@ -2,9 +2,9 @@ import enum
 from typing import List
 
 class InteractionType(str, enum.Enum):
-    CALL = "call"
-    EMAIL = "email"
-    MEETING = "meeting"
+    CALL = "CALL"
+    EMAIL = "EMAIL"
+    MEETING = "MEETING"
 
 class OpportunityStage(enum.Enum):
     LEAD = "LEAD"

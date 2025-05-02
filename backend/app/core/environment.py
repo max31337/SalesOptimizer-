@@ -17,6 +17,19 @@ class Environment(str, Enum):
 class Settings(BaseSettings):
     # Core settings
     ENV: Environment = Field(default=Environment.DEVELOPMENT, env="ENV")
+    
+    @validator('ENV', pre=True)
+    def validate_environment(cls, v, values):
+        # Check if running on Railway
+        is_railway = os.getenv('RAILWAY_ENVIRONMENT') is not None
+        
+        # If on Railway, use production regardless of host
+        if is_railway:
+            return Environment.PRODUCTION
+            
+        # Otherwise, use development for local environment
+        return Environment.DEVELOPMENT
+        
     DATABASE_URL: str = Field(..., env="DATABASE_URL")
     SECRET_KEY: str = Field(..., env="SECRET_KEY")
     ALGORITHM: str = "HS256"
@@ -35,12 +48,12 @@ class Settings(BaseSettings):
 
     class Config:
         env_file_mapping = {
-            'development': '.env',
+            'development': '.env.development',
             'production': '.env.production',
             'testing': '.env.test'
         }
         current_env = os.getenv("ENV", "development").lower()
-        env_file = env_file_mapping.get(current_env, '.env')
+        env_file = env_file_mapping.get(current_env, '.env.development')
         case_sensitive = True
         extra = "ignore"
 

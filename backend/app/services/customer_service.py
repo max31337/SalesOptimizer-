@@ -21,13 +21,6 @@ class CustomerService:
     async def search(self, search_term: str, skip: int = 0, limit: int = 100) -> List[Customer]:
         return self.repository.search(search_term, skip=skip, limit=limit)
 
-    async def create(self, customer_data: CustomerCreate) -> Customer:
-        # Check if email already exists
-        if customer_data.email and self.repository.get_by_email(customer_data.email):
-            raise ValidationError("Email already registered")
-        
-        return self.repository.create(customer_data)
-
     async def update(self, id: int, customer_data: CustomerUpdate) -> Customer:
         customer = self.repository.get(id)
         if not customer:

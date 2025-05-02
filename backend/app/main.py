@@ -1,3 +1,4 @@
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
@@ -12,8 +13,13 @@ from app.api.routes import (
     analytics_routes
 )
 
-# Update your FastAPI initialization to include version prefix
 app = FastAPI()
+
+@app.on_event("startup")
+async def startup_event():
+    # Get the host from UVICORN_HOST or default to 127.0.0.1
+    host = os.getenv('UVICORN_HOST', '127.0.0.1')
+    os.environ['HOST'] = host
 
 # Add error handler middleware
 app.middleware("http")(error_handler)

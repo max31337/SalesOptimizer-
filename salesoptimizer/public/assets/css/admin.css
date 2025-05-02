@@ -456,19 +456,6 @@ th {
     font-size: 0.85em;
 }
 
-.analytics-section {
-    margin-bottom: 2rem;
-}
-
-.analytics-card {
-    background: var(--white);
-    border-radius: 8px;
-    padding: 20px;
-    margin: 20px 0;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    height: 400px;
-}
-
 .debug-section {
     margin-top: 20px;
     padding: 15px;
@@ -503,19 +490,6 @@ th {
     margin-bottom: 1rem;
 }
 
-.metrics-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 1.5rem;
-    margin-bottom: 2rem;
-}
-
-.metric-card canvas {
-    margin-top: 1rem;
-    height: 200px !important;
-    width: 100% !important;
-}
-
 .metric-card {
     background: var(--white);
     padding: 1.5rem;
@@ -544,50 +518,139 @@ th {
     width: 100% !important;
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .metrics-grid {
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    }
+/* Overview Layout Styles */
+.metrics-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    padding: 1rem;
 }
 
-@media (max-width: 480px) {
-    .metrics-grid {
-        grid-template-columns: 1fr;
+.metrics-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.metric-group1 {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.metric-group1 .metric-card {
+    flex: 1;
+    min-width: 200px;
+    max-width: 300px;
+}
+
+.metric-pies {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.metric-pies .metric-card {
+    flex: 1;
+    min-width: 300px;
+}
+
+.metrics-records {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.metrics-records .metric-card {
+    flex: 1;
+    min-width: 300px;
+}
+
+.login-activity-container,
+.registration-container {
+    background: var(--white);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+}
+
+.analytics-card {
+    background: var(--white);
+    padding: 1rem;
+    border-radius: var(--border-radius);
+    height: 300px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .metric-group1,
+    .metric-pies,
+    .metrics-records {
+        flex-direction: column;
+    }
+    
+    .metric-group1 .metric-card,
+    .metric-pies .metric-card,
+    .metrics-records .metric-card {
+        max-width: 100%;
     }
 }
 
 .failed-login-stats {
-    margin-top: 1rem;
-    font-size: 0.9rem;
+    display: flex;
+    gap: 2rem;
+    padding: 1rem;
+}
+
+#recentFailures,
+#suspiciousIPs {
+    flex: 1;
 }
 
 .failed-login-stats h4 {
-    color: var(--text-secondary);
-    margin-bottom: 0.5rem;
     font-size: 1rem;
+    font-weight: 500;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
 }
 
-.failure-list li, .ip-list li {
-    padding: 0.5rem;
+.failure-list,
+.ip-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.failure-list li,
+.ip-list li {
+    padding: 0.5rem 0;
     border-bottom: 1px solid var(--border-color);
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 1rem;
 }
 
-.failure-list li:last-child, .ip-list li:last-child {
+.failure-list li span,
+.ip-list li span {
+    flex: 1;
+}
+
+.failure-list li span:last-child,
+.ip-list li span:last-child {
+    text-align: right;
+    color: var(--danger-color);
+    font-weight: 500;
+}
+
+.failure-list li:last-child,
+.ip-list li:last-child {
     border-bottom: none;
 }
 
 .suspicious-ip span:last-child {
     color: var(--danger-color);
     font-weight: 500;
-}
-
-/* Add some spacing between the two lists */
-#recentFailures {
-    margin-bottom: 1.5rem;
 }
 
 .modal-message {

@@ -12,10 +12,16 @@ class OpportunityBase(BaseModel):
     probability: float = 0
     expected_close_date: datetime
     customer_id: int
+    customer_name: Optional[str] = None  # Add this line
 
-class OpportunityCreate(OpportunityBase):
-    pass
-
+class OpportunityCreate(BaseModel):
+    title: str
+    deal_value: float
+    currency: str = "USD"
+    stage: OpportunityStage
+    probability: float = 0
+    expected_close_date: datetime
+    customer_id: int
 class OpportunityUpdate(OpportunityBase):
     title: Optional[str] = None
     deal_value: Optional[float] = None  # Changed from value to deal_value
@@ -38,12 +44,18 @@ class Opportunity(OpportunityBase):
     class Config:
         from_attributes = True
 
+# Rename OpportunitySummary to OpportunityResponse to match the import
+class OpportunityResponse(Opportunity):
+    """Response model for opportunity data that includes all fields from Opportunity"""
+    pass
 
 # Schema for the Opportunity Summary endpoint
 class OpportunitySummary(BaseModel):
     active_count: int
     total_value: float
     win_rate: float # Represented as a float between 0 and 1
+
+
 
 # Schema for individual data points in the sales performance chart
 class SalesPerformancePoint(BaseModel):

@@ -1,22 +1,23 @@
-import os
 from typing import List
 from .base import BaseConfig, Environment
+import os
 
 class DevelopmentConfig(BaseConfig):
     ENV: Environment = Environment.DEVELOPMENT
-    FRONTEND_URL: str = "http://127.0.0.1:5050"
-    MAIL_PROVIDER: str = "mailtrap"
     
-    # Updated Mailtrap SMTP settings
-    SMTP_SERVER: str = "sandbox.smtp.mailtrap.io"
-    SMTP_PORT: int = 2525
-    SMTP_USERNAME: str = "0da5f8344f06e8"  # Your provided username
-    SMTP_PASSWORD: str = "c22d57e063d34f"  # Use your actual password
-    SYSTEM_EMAIL: str = "noreply@salesoptimizer.com"
-
-    # CORS settings
+    # Development-specific settings
+    FRONTEND_URL: str = "http://127.0.0.1:5500"
+    
+    # Mailtrap SMTP settings
+    MAIL_PROVIDER: str = "mailtrap"
+    SMTP_SERVER: str = os.getenv("SMTP_SERVER", "sandbox.smtp.mailtrap.io")
+    SMTP_PORT: int = int(os.getenv("SMTP_PORT", "2525"))
+    SMTP_USERNAME: str = os.getenv("SMTP_USERNAME")
+    SMTP_PASSWORD: str = os.getenv("SMTP_PASSWORD")
+    SYSTEM_EMAIL: str = os.getenv("SYSTEM_EMAIL", "system@salesoptimizer.com")
+    
     CORS_ORIGINS: List[str] = [
-        "http://127.0.0.1:5500",  # Add this line for your development server
+        "http://127.0.0.1:5500",
         "http://localhost:5500"
     ]
 

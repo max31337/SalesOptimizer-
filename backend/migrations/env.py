@@ -1,16 +1,14 @@
 from logging.config import fileConfig
-
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
-
 from alembic import context
 import os
 from dotenv import load_dotenv
 from app.core.environment import get_settings
+from alembic.script.revision import ResolutionError
 
+# Load settings and environment variables
 settings = get_settings()
-
-# Load the appropriate .env file based on environment
 if settings.ENV == "production":
     load_dotenv(".env.production")
 else:
@@ -23,10 +21,10 @@ if config.config_file_name is not None:
 
 # Get DATABASE_URL with Railway compatibility
 DATABASE_URL = os.getenv("DATABASE_URL")
-if DATABASE_URL.startswith("postgres://"):
+if DATABASE_URL and DATABASE_URL.startswith("postgres://"):
     DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
 
-# Override sqlalchemy.url with environment variable
+# Set database URL once
 config.set_main_option("sqlalchemy.url", DATABASE_URL)
 
 # Import Base and all models to ensure they're included in migrations
@@ -42,35 +40,9 @@ from app.models import (
     LoginActivity
 )
 
-# Load environment variables
-load_dotenv()
-
-# this is the Alembic Config object
-config = context.config
-
-# Update the database URL from environment variables
-config.set_main_option('sqlalchemy.url', os.getenv('DATABASE_URL'))
-
 target_metadata = Base.metadata
 
-# other values from the config, defined by the needs of env.py,
-# can be acquired:
-# my_important_option = config.get_main_option("my_important_option")
-# ... etc.
-
-
 def run_migrations_offline() -> None:
-    """Run migrations in 'offline' mode.
-
-    This configures the context with just a URL
-    and not an Engine, though an Engine is acceptable
-    here as well.  By skipping the Engine creation
-    we don't even need a DBAPI to be available.
-
-    Calls to context.execute() here emit the given string to the
-    script output.
-
-    """
     url = config.get_main_option("sqlalchemy.url")
     context.configure(
         url=url,
@@ -82,14 +54,7 @@ def run_migrations_offline() -> None:
     with context.begin_transaction():
         context.run_migrations()
 
-
 def run_migrations_online() -> None:
-    """Run migrations in 'online' mode.
-
-    In this scenario we need to create an Engine
-    and associate a connection with the context.
-
-    """
     connectable = engine_from_config(
         config.get_section(config.config_ini_section, {}),
         prefix="sqlalchemy.",
@@ -104,11 +69,7 @@ def run_migrations_online() -> None:
         with context.begin_transaction():
             context.run_migrations()
 
-
 if context.is_offline_mode():
     run_migrations_offline()
 else:
     run_migrations_online()
-
-# Add this under existing imports
-from alembic.script.revision import ResolutionError

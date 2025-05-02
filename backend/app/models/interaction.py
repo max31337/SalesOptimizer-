@@ -1,5 +1,6 @@
 from sqlalchemy import Column, Integer, String, DateTime, Text, ForeignKey, Enum
 from sqlalchemy.orm import relationship
+from sqlalchemy.ext.hybrid import hybrid_property
 from app.db.database import Base
 from datetime import datetime
 from app.models.enums import InteractionType
@@ -24,3 +25,16 @@ class Interaction(Base):
     # Relationships
     customer = relationship("Customer", back_populates="interactions")
     sales_rep = relationship("User", back_populates="interactions")
+
+    # Add hybrid property for customer_name
+    _customer_name = None
+    
+    @hybrid_property
+    def customer_name(self):
+        if self._customer_name is not None:
+            return self._customer_name
+        return self.customer.name if self.customer else None
+    
+    @customer_name.setter
+    def customer_name(self, value):
+        self._customer_name = value

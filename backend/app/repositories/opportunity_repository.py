@@ -17,26 +17,12 @@ class OpportunityRepository:
         # This fetches all opportunities, might be needed for admin roles
         return self.db.query(Opportunity).offset(skip).limit(limit).all()
 
-    def get_all_for_user(self, user_id: int, skip: int = 0, limit: int = 100) -> List[Opportunity]:
-        """Fetches all opportunities assigned to a specific user (could be sales rep, or any user)."""
-        return self.db.query(Opportunity)\
-            .filter(Opportunity.user_id == user_id)\
-            .offset(skip)\
-            .limit(limit)\
-            .all()
-
     def get_by_customer(self, customer_id: int) -> List[Opportunity]:
         return self.db.query(Opportunity).filter(Opportunity.customer_id == customer_id).all()
 
     def get_by_stage(self, stage: str) -> List[Opportunity]:
         return self.db.query(Opportunity).filter(Opportunity.stage == stage).all()
 
-    def create(self, opportunity_data: dict) -> Opportunity:
-        opportunity = Opportunity(**opportunity_data)  # Use dict directly
-        self.db.add(opportunity)
-        self.db.commit()
-        self.db.refresh(opportunity)
-        return opportunity
 
     def update(self, opportunity: Opportunity, opportunity_data: OpportunityUpdate) -> Opportunity:
         for key, value in opportunity_data.model_dump(exclude_unset=True).items():

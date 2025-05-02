@@ -4,6 +4,7 @@ from app.repositories.interaction_repository import InteractionRepository
 from app.models import Interaction
 from app.schemas.interaction import InteractionCreate, InteractionUpdate
 from app.core.exceptions import NotFoundError, ValidationError
+from app.models import User
 
 class InteractionService:
     def __init__(self, db: Session):
@@ -20,11 +21,6 @@ class InteractionService:
 
     async def get_by_customer(self, customer_id: int) -> List[Interaction]:
         return self.repository.get_by_customer(customer_id)
-
-    async def create(self, interaction_data: InteractionCreate, user_id: int) -> Interaction:
-        interaction_dict = interaction_data.model_dump()
-        interaction_dict['sales_rep_id'] = user_id  # Changed from created_by to sales_rep_id
-        return self.repository.create(interaction_dict)
 
     async def update(self, id: int, interaction_data: InteractionUpdate) -> Interaction:
         interaction = self.repository.get(id)

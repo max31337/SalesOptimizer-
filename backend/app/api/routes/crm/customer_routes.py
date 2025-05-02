@@ -3,23 +3,13 @@ from sqlalchemy.orm import Session
 from typing import List, Optional
 from app.db.database import get_db
 from app.models import User, Customer
-from app.schemas.customer import CustomerCreate, CustomerUpdate, Customer as CustomerSchema
+from app.schemas.customer import CustomerCreate, CustomerUpdate, CustomerSchema
 from app.api.routes.auth.user_check_routes import get_sales_rep  # Updated import
 from app.services.customer_service import CustomerService
 
 router = APIRouter(prefix="/customers", tags=["Customers"])
 
-@router.post("/create/", response_model=CustomerSchema)
-async def create_customer(
-    customer: CustomerCreate,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_sales_rep)  # Updated dependency
-):
-    """Create a new customer"""
-    customer_service = CustomerService(db)
-    return await customer_service.create(customer)
-
-# Update all other route dependencies similarly
+# Update all other route dependencies similarly 
 @router.get("/list/", response_model=List[CustomerSchema])
 async def list_customers(
     skip: int = Query(0, ge=0),

@@ -7,16 +7,13 @@
     <script src="../assets/js/auth-guard.js" type="module"></script>
     <link rel="stylesheet" href="../assets/css/salesrep.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script> <!-- Keep Alpine for other modals for now -->
 </head>
-<!-- Remove opportunityModal from x-data -->
-<body x-data="{ 
-    customerModal: false, 
-    interactionModal: false 
-}">
+<body>
     <div class="salesrep-layout">
         <nav class="sidebar">
             <div class="brand">
@@ -78,17 +75,23 @@
                     </div>
                 </div>
                 <div class="chart-wrapper">
-                    <div class="chart-container">
-                      <canvas id="salesOverviewChart"></canvas>
+                  <div class="first-chart-container">
+                    <div class="pipeline-chart">
+                      <canvas id="salesPipelineChart"></canvas>
                     </div>
-                    <div class="chart-container">
-                      <canvas id="monthlyOpportunitiesChart"></canvas>
-                    </div>
-                    <div class="chart-container">
+                    <div class="pie-chart">
                       <canvas id="winLossRatioChart"></canvas>
                     </div>
+                </div>
+                  <div class ="monthly-charts">
+                    <div class="chart-container">
+                    <canvas id="salesOverviewChart"></canvas>
                   </div>
-                  
+                  <div class="chart-container">
+                    <canvas id="monthlyOpportunitiesChart"></canvas>
+                  </div>
+                  </div>
+                </div>
             </section>
 
             <!-- Opportunities Section -->
@@ -148,7 +151,7 @@
             <section id="interactions" class="content-section hidden">
                 <div class="section-header">
                     <h2>Interactions</h2>
-                    <button @click="interactionModal = true" class="btn-primary">
+                    <button id="newInteractionBtn" class="btn-primary">
                         <i data-lucide="plus"></i>
                         New Interaction
                     </button>
@@ -160,7 +163,7 @@
                                 <th>Date</th>
                                 <th>Customer</th>
                                 <th>Type</th>
-                                <th>Summary</th>
+                                <th>Description</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -171,8 +174,6 @@
         </main>
     </div>
 
-    <script src="../assets/js/config.js" type="module"></script> 
-    <script src="../assets/js/salsesrep.js" type="module"></script> 
 <!-- Opportunity Modal -->
 <div id="opportunityModal" class="modal-overlay" style="display: none;">
   <div class="modal-content">
@@ -221,7 +222,8 @@
       </div>
       <div class="modal-actions">
         <button type="submit" class="btn-primary">Create</button>
-        <button type="button" class="btn-secondary" onclick="closeOpportunityModal()">Cancel</button>      </div>
+        <button type="button" class="btn-secondary" onclick="closeOpportunityModal()">Cancel</button>      
+    </div>
     </form>
   </div>
 </div>
@@ -289,5 +291,143 @@
       </form>
     </div>
   </div>
+
+<!-- Interaction Modal -->
+<div id="interactionModal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Add New Interaction</h3>
+        <button class="close-btn" onclick="closeInteractionModal()">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+      <form id="interactionForm">
+        <div class="interaction-form-flex">
+          <!-- Left Column -->
+          <div class="interaction-form-left">
+            <div class="form-group">
+              <label for="interactType">Type</label>
+              <select id="interactType" name="type" required>
+                <option value="CALL">Call</option>
+                <option value="EMAIL">Email</option>
+                <option value="MEETING">Meeting</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="interactSubject">Subject</label>
+              <input type="text" id="interactSubject" name="subject" required>
+            </div>
+            <div class="form-group">
+              <label for="interactDescription">Description</label>
+              <input type="text" id="interactDescription" name="description" required>
+            </div>
+            <div class="form-group">
+              <label for="interactNotes">Notes</label>
+              <textarea id="interactNotes" name="notes" rows="4" required></textarea>
+            </div>
+            <div class="form-group">
+              <label for="interactDate">Interaction Date</label>
+              <input type="date" id="interactDate" name="date" required>
+            </div>
+            <div class="form-group">
+              <label for="interactFollowUpDate">Follow-Up Date</label>
+              <input type="date" id="interactFollowUpDate" name="followupDate" required>
+            </div>
+          </div>
+      
+          <!-- Right Column -->
+          <div class="interaction-form-right">
+            <div id="taskList" class="form-group">
+              <label>Follow Up Tasks</label>
+              <div class="task-item">
+                <input type="checkbox" disabled>
+                <input type="text" name="tasks[]" placeholder="Enter task" required>
+              </div>
+            </div>
+            <button type="button" id="addTaskBtn">Add Task</button>
+      
+            <div class="form-group">
+              <label for="interactFollowUpStatus">Follow-Up Status</label>
+              <input type="text" id="interactFollowUpStatus" name="followupStatus" required>
+            </div>
+            <div class="form-group">
+              <label for="interactCustomer">Customer</label>
+              <select id="interactCustomer" name="customer_id" required>
+                <option value="">Loading...</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      
+        <div class="modal-actions customer-actions-bottom">
+          <button type="submit" class="btn-primary">Create</button>
+          <button type="button" class="btn-secondary" onclick="closeInteractionModal()">Cancel</button>
+        </div>
+      </form>
+      
+      
+    </div>
+  </div>
+
+
+  <!-- Success Modals -->
+<div id="opportunitySuccessModal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Success</h3>
+        <button class="close-btn" onclick="closeOpportunitySuccessModal()">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Opportunity created successfully!</p>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-primary" onclick="closeOpportunitySuccessModal()">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Customer Success Modal -->
+  <div id="customerSuccessModal" class="modal-overlay" style="display: none;">
+    <div class="modal-content success-modal">
+        <div class="modal-header">
+            <h3>Success</h3>
+            <button class="close-btn" onclick="closeCustomerSuccessModal()">
+                <i data-lucide="x"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="success-icon">
+                <i data-lucide="check-circle"></i>
+            </div>
+            <p>Customer has been successfully recorded!</p>
+        </div>
+    </div>
+</div>
+
+  <!-- Interaction Success Modal -->
+  <div id="interactionSuccessModal" class="modal-overlay" style="display: none;">
+      <div class="modal-content success-modal">
+          <div class="modal-header">
+              <h3>Success</h3>
+              <button class="close-btn" onclick="closeInteractionSuccessModal()">
+                  <i data-lucide="x"></i>
+              </button>
+          </div>
+          <div class="modal-body">
+              <div class="success-icon">
+                  <i data-lucide="check-circle"></i>
+              </div>
+              <p>Interaction has been successfully recorded!</p>
+          </div>
+      </div>
+  </div>
+
+  <script src="../assets/js/config.js" type="module"></script> 
+  <script src="../assets/js/salsesrep.js" type="module"></script> 
+  <script>
+        lucide.createIcons();  
+  </script>
 </body>
 </html>

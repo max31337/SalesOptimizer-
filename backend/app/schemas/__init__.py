@@ -8,6 +8,10 @@ from .auth import (
     TokenResponse
 )
 
+from .customer import CustomerCreate, CustomerUpdate
+from .opportunity import OpportunityCreate, OpportunityUpdate, OpportunityResponse
+from .interaction import InteractionCreate, InteractionUpdate, InteractionResponse
+
 __all__ = [
     "UserCreate", 
     "UserUpdate",

@@ -138,7 +138,7 @@ function loadOverviewData() {
 
     // Fetch summary metrics
     $.ajax({
-        url: `${apiConfig.apiUrl}/crm/opportunities/summary/`, // Assuming this endpoint exists
+        url: `${apiConfig.apiUrl}/summary/`, // Assuming this endpoint exists
         headers: headers,
         method: 'GET',
         success: function(summary) {
@@ -167,100 +167,13 @@ function loadOverviewData() {
     loadSalesOverviewChart();
 }
 
-function loadSalesOverviewChart() {
-    const headers = getAuthHeaders();
-    if (!headers) return;
-
-    const ctx = document.getElementById('salesOverviewChart')?.getContext('2d');
-    if (!ctx) {
-        console.error('Sales Overview Chart canvas element not found.');
-        return;
-    }
-
-    // Destroy existing chart instance if it exists
-    if (salesChartInstance) {
-        salesChartInstance.destroy();
-        salesChartInstance = null; // Ensure it's cleared
-    }
-
-    // Fetch chart data from the API
-    $.ajax({
-        url: `${apiConfig.apiUrl}/crm/sales/performance`, // Assuming this endpoint exists
-        headers: headers,
-        method: 'GET',
-        success: function(chartApiData) {
-            // Assuming API returns data in a format like:
-            // { labels: ['Jan', ...], salesValue: [12000, ...], opportunitiesWon: [5, ...] }
-            
-            const chartData = {
-                labels: chartApiData.labels || [],
-                datasets: [{
-                    label: 'Sales Value ($)',
-                    data: chartApiData.salesValue || [],
-                    borderColor: 'rgb(75, 192, 192)',
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    tension: 0.1,
-                    fill: true,
-                    yAxisID: 'y', // Assign to the primary y-axis
-                }, {
-                    label: 'Opportunities Won',
-                    data: chartApiData.opportunitiesWon || [],
-                    borderColor: 'rgb(255, 99, 132)',
-                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                    tension: 0.1,
-                    fill: true,
-                    yAxisID: 'y1', // Assign to the second y-axis
-                }]
-            };
-
-            const config = {
-                type: 'line',
-                data: chartData,
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: { // Primary Y-axis (Sales Value)
-                            beginAtZero: true,
-                            position: 'left',
-                            title: { display: true, text: 'Sales Value ($)' }
-                        },
-                        y1: { // Secondary Y-axis (Opportunities Won)
-                            beginAtZero: true,
-                            position: 'right',
-                            title: { display: true, text: 'Opportunities Won' },
-                            grid: { drawOnChartArea: false },
-                        }
-                    },
-                    plugins: {
-                        legend: { position: 'top' },
-                        title: { display: true, text: 'Monthly Sales Performance' }
-                    }
-                },
-            };
-
-            // Create the new chart instance
-            salesChartInstance = new Chart(ctx, config);
-        },
-        error: function(xhr) {
-            console.error('Error loading sales overview chart data:', xhr.status, xhr.responseJSON?.detail);
-            // Optionally display an error message on the chart canvas
-            ctx.font = "16px Arial";
-            ctx.fillStyle = "red";
-            ctx.textAlign = "center";
-            ctx.fillText("Error loading chart data.", ctx.canvas.width / 2, ctx.canvas.height / 2);
-            if (xhr.status === 401 || xhr.status === 403) logout();
-        }
-    });
-}
-
 
 function loadOpportunities() {
     const headers = getAuthHeaders();
     if (!headers) return;
 
     $.ajax({
-        url: `${apiConfig.apiUrl}/crm/opportunities/list/`,
+        url: `${apiConfig.apiUrl}/opportunity-list/`,
         headers: headers,
         method: 'GET',
         success: function(opportunities) {
@@ -276,8 +189,8 @@ function loadOpportunities() {
                 const row = `
                     <tr>
                         <td>${opp.title || '-'}</td>
-                        <td>${opp.customer_name || opp.customer_id || '-'}</td> 
-                        <td>${opp.value ? `$${opp.value.toLocaleString()}` : '-'}</td>
+                        <td>${opp.customer_name || opp.customer_name || '-'}</td> 
+                        <td>${opp.deal_value ? `$${opp.deal_value.toLocaleString()}` : '-'}</td>
                         <td>${opp.stage || '-'}</td>
                         <td>${opp.probability ? `${(opp.probability * 100).toFixed(0)}%` : '-'}</td>
                         <td>${closeDate}</td>
@@ -305,7 +218,7 @@ function loadCustomers() {
     if (!headers) return;
 
     $.ajax({
-        url: `${apiConfig.apiUrl}/crm/customers/list/`,
+        url: `${apiConfig.apiUrl}/customer-list/`,
         headers: headers,
         method: 'GET',
         success: function(customers) {
@@ -319,9 +232,9 @@ function loadCustomers() {
                 const row = `
                     <tr>
                         <td>${cust.name || '-'}</td>
-                        <td>${cust.company_name || '-'}</td>
+                        <td>${cust.company || '-'}</td>
                         <td>${cust.email || '-'}</td>
-                        <td>${cust.phone_number || '-'}</td>
+                        <td>${cust.phone || '-'}</td>
                         <td>${cust.status || '-'}</td>
                         <td>
                             <button class="btn-icon" onclick="viewCustomer(${cust.id})"><i data-lucide="eye"></i></button>
@@ -347,7 +260,7 @@ function loadInteractions() {
     if (!headers) return;
 
     $.ajax({
-        url: `${apiConfig.apiUrl}/crm/interactions/list/`,
+        url: `${apiConfig.apiUrl}/interactions/list/`,
         headers: headers,
         method: 'GET',
         success: function(interactions) {
@@ -362,9 +275,9 @@ function loadInteractions() {
                 const row = `
                     <tr>
                         <td>${interactionDate}</td>
-                        <td>${intr.customer_name || intr.customer_id || '-'}</td>
-                        <td>${intr.interaction_type || '-'}</td>
-                        <td>${intr.summary ? intr.summary.substring(0, 50) + (intr.summary.length > 50 ? '...' : '') : '-'}</td>
+                        <td>${intr.customer_name || intr.customer_name || '-'}</td>
+                        <td>${intr.type || '-'}</td>
+                        <td>${intr.description ? intr.description.substring(0, 50) + (intr.description.length > 50 ? '...' : '') : '-'}</td>
                         <td>
                             <button class="btn-icon" onclick="viewInteraction(${intr.id})"><i data-lucide="eye"></i></button>
                             <button class="btn-icon" onclick="editInteraction(${intr.id})"><i data-lucide="edit"></i></button>
@@ -402,15 +315,32 @@ document.getElementById('createOpportunityBtn').addEventListener('click', functi
 document.getElementById('newCustomerBtn').addEventListener('click', function() {
     openCustomerModal();
 });
+document.getElementById('newInteractionBtn').addEventListener('click', function() {
+    openInteractionModal();
+});
 
 // Show the modal
 function openOpportunityModal() {
     $('#opportunityModal').show();
     fetchCustomersForOpportunity();
 }
-
 function openCustomerModal() {
     $('#customerModal').show();
+}
+
+function openInteractionModal() {
+    $('#interactionModal').show();
+    fetchCustomersForInteraction();
+}
+
+function openOpportunitySuccessModal() {
+    $('#opportunitySuccessModal').fadeIn();
+}
+function openCustomerSuccessModal() {
+    $('#customerSuccessModal').fadeIn();
+}
+function openInteractionSuccessModal() {
+    $('#interactionSuccessModal').fadeIn();
 }
 
 // Function to close the modal
@@ -421,10 +351,40 @@ function closeOpportunityModal() {
 
 function closeCustomerModal() {
     $('#customerModal').hide();
-    $('#customerModal')[0].reset();
+
+    const form = document.getElementById('customerForm');
+    if (form && form.tagName === 'FORM') {
+        form.reset();
+    }
 }
+
+function closeInteractionModal() {
+    $('#interactionModal').hide();
+    $('#interactionModal')[0].reset();
+}
+
+function closeOpportunitySuccessModal() {
+    $('#opportunitySuccessModal').hide();
+}
+function closeCustomerSuccessModal() {
+    $('#customerSuccessModal').hide();
+}
+
+function closeInteractionSuccessModal() {
+    $('#interactionSuccessModal').hide();
+}
+
+window.openOpportunitySuccessModal = openOpportunitySuccessModal
+window.openCustomerSuccessModal = openCustomerSuccessModal 
+window.openInteractionSuccessModal = openInteractionSuccessModal
 window.closeOpportunityModal = closeOpportunityModal;
 window.closeCustomerModal = closeCustomerModal;
+window.closeInteractionModal = closeInteractionModal;
+window.closeOpportunitySuccessModal = closeOpportunitySuccessModal;
+window.closeCustomerSuccessModal = closeCustomerSuccessModal;
+window.closeInteractionSuccessModal = closeInteractionSuccessModal;
+
+
 
 
 // Event listeners for closing the modal
@@ -444,6 +404,41 @@ $(document).ready(function() {
         }
     });
 });
+$(document).ready(function() {
+    // Close when clicking outside the modal-content
+    $('#interactionModal').on('click', function(event) {
+        if ($(event.target).is('#interactionModal')) {
+            closeInteractionModal();
+        }
+    });
+});
+
+$(document).ready(function() {
+    // Close when clicking outside the modal-content
+    $('#opportunitySuccessModal').on('click', function(event) {
+        if ($(event.target).is('#opportunitySuccessModal')) {
+            closeOpportunitySuccessModal();
+        }
+    });
+});
+
+$(document).ready(function() {
+    // Close when clicking outside the modal-content
+    $('#customerSuccessModal').on('click', function(event) {
+        if ($(event.target).is('#customerSuccessModal')) {
+            closeCustomerSuccessModal();
+        }
+    });
+});
+
+$(document).ready(function() {
+    // Close when clicking outside the modal-content
+    $('#interactionSuccessModal').on('click', function(event) {
+        if ($(event.target).is('#interactionSuccessModal')) {
+            closeInteractionSuccessModal();
+        }
+    });
+});
 
 // Fetch customers and populate dropdown
 function fetchCustomersForOpportunity() {
@@ -456,7 +451,38 @@ function fetchCustomersForOpportunity() {
         return;
     }
     $.ajax({
-        url: `${apiConfig.apiUrl}/crm/customers/list/`,
+        url: `${apiConfig.apiUrl}/customer-list/`,
+        headers: headers,
+        method: 'GET',
+        success: function(data) {
+            customerSelect.innerHTML = '';
+            if (data && data.length > 0) {
+                data.forEach(function(customer) {
+                    // Check if customer.id exists, if not use customer._id
+                    const customerId = customer.id || customer._id;
+                    customerSelect.innerHTML += `<option value="${customerId}">${customer.name} (ID: ${customerId})</option>`;
+                });
+            } else {
+                customerSelect.innerHTML = '<option value="">No customers found</option>';
+            }
+        },
+        error: function() {
+            customerSelect.innerHTML = '<option value="">Error loading customers</option>';
+        }
+    });
+}
+// Fetch customers and populate dropdown
+function fetchCustomersForInteraction() {
+    const customerSelect = document.getElementById('interactCustomer');
+    customerSelect.innerHTML = '<option value="">Loading...</option>';
+    // Use the API config and auth headers for consistency
+    const headers = getAuthHeaders();
+    if (!headers) {
+        customerSelect.innerHTML = '<option value="">Error loading customers</option>';
+        return;
+    }
+    $.ajax({
+        url: `${apiConfig.apiUrl}/customer-list/`,
         headers: headers,
         method: 'GET',
         success: function(data) {
@@ -490,13 +516,14 @@ document.getElementById('opportunityForm').addEventListener('submit', function(e
         customer_id: parseInt(document.getElementById('oppCustomer').value)
     };
     $.ajax({
-        url: `${apiConfig.apiUrl}/crm/opportunities/create/`,
+        url: `${apiConfig.apiUrl}/opportunity-create/`,
         headers: headers,
         method: 'POST',
         contentType: 'application/json',
         data: JSON.stringify(formData),
         success: function() {
             closeOpportunityModal();
+            openOpportunitySuccessModal(); 
             loadOpportunities && loadOpportunities();
         },
         error: function() {
@@ -505,243 +532,92 @@ document.getElementById('opportunityForm').addEventListener('submit', function(e
     });
 });
 
-// --- Customer Modal Logic ---
-
-// Show Modal
-$('#createCustomerBtn').on('click', () => {
-    console.log('Create New Customer clicked - showing modal');
-    // Reset form fields and messages
-    $('#customerForm')[0].reset();
-    $('#customerError').hide().text('');
-    $('#customerSuccess').hide().text('');
-    $('#submitCustomerBtn').prop('disabled', false).find('span').text('Create'); // Reset button state
-    // Show the modal
-    $('#customerModalDiv').fadeIn();
-});
-
-// Hide Modal on Cancel
-$('#cancelCustomerBtn').on('click', () => {
-    $('#customerModalDiv').fadeOut();
-});
-
-// Hide Modal on clicking outside
-$('#customerModalDiv').on('click', function(event) {
-    if (event.target === this) {
-        $(this).fadeOut();
-    }
-});
-
-// Handle Form Submission
-$('#customerForm').on('submit', function(event) {
-    event.preventDefault();
-    console.log('Customer form submitted');
-
-    const $submitButton = $('#submitCustomerBtn');
-    const $errorP = $('#customerError');
-    const $successP = $('#customerSuccess');
-
-    // Loading State
-    $submitButton.prop('disabled', true).find('span').text('Creating...');
-    $errorP.hide().text('');
-    $successP.hide().text('');
-
-    const token = localStorage.getItem('token');
-    if (!token) {
-        $errorP.text('Authentication error. Please log in again.').show();
-        $submitButton.prop('disabled', false).find('span').text('Create');
-        return;
-    }
-
-    // Gather form data
+document.getElementById('customerForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const headers = getAuthHeaders();
+    if (!headers) return;
     const formData = {
-        name: $('#cust-name').val(),
-        company_name: $('#cust-company').val(), // Optional field
-        email: $('#cust-email').val(),
-        phone_number: $('#cust-phone').val(), // Optional field
-        status: $('#cust-status').val()
+        name: document.getElementById('cusName').value,
+        company: document.getElementById('cusCompany').value,
+        email: document.getElementById('cusEmail').value,
+        phone: document.getElementById('cusPhone').value,
+        address: document.getElementById('cusAddress').value,
+        segment: document.getElementById('cusSegment').value,
+        status: document.getElementById('cusStatus').value,
+        industry: document.getElementById('cusIndustry').value,
+        annualRevenue: parseFloat(document.getElementById('cusAnRevenue').value),
+        employeeCount: parseFloat(document.getElementById('cusEmployeeCount').value),
     };
-
-    // Basic Validation
-    if (!formData.name || !formData.email || !formData.status) { // Check required fields
-        $errorP.text('Please fill in all required fields (Name, Email, Status).').show();
-        $submitButton.prop('disabled', false).find('span').text('Create');
-        return;
-    }
-     // Optional: Add email format validation if needed
-
-    // AJAX Request
     $.ajax({
-        url: `${apiConfig.apiUrl}/crm/customers/`, // Assuming this is the correct endpoint
+        url: `${apiConfig.apiUrl}/customer-create/`,
+        headers: headers,
         method: 'POST',
         contentType: 'application/json',
-        headers: {
-            'Authorization': `Bearer ${token}`
-        },
         data: JSON.stringify(formData),
-        success: (response) => {
-            $successP.text('Customer created successfully!').show();
-            console.log('Customer created:', response);
-            loadCustomers(); // Refresh the customers table
-            setTimeout(() => {
-                $('#customerModalDiv').fadeOut();
-                $submitButton.prop('disabled', false).find('span').text('Create');
-            }, 1500);
+        success: function() {
+            closeCustomerModal();
+            openCustomerSuccessModal();
+            loadCustomers && loadCustomers();
         },
-        error: (jqXHR, textStatus, errorThrown) => {
-            console.error('Error creating customer:', textStatus, errorThrown, jqXHR.responseText);
-            const errorMsg = jqXHR.responseJSON?.detail || errorThrown || 'Unknown error';
-            $errorP.text(`Failed to create customer: ${errorMsg}`).show();
-            $submitButton.prop('disabled', false).find('span').text('Create');
+        error: function(xhr) {
+            if (xhr.responseJSON && xhr.responseJSON.detail) {
+                // Create or get error message container
+                let errorContainer = document.getElementById('customerFormError');
+                if (!errorContainer) {
+                    errorContainer = document.createElement('div');
+                    errorContainer.id = 'customerFormError';
+                    errorContainer.className = 'alert alert-danger alert-dismissible fade show';
+                    errorContainer.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 9999; max-width: 350px; background-color: #f8d7da; color: #721c24; padding: 1rem; border: 1px solid #f5c6cb; border-radius: 4px; box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15); text-align: center;';
+                    
+                    // Add close button
+                    const closeButton = document.createElement('button');
+                    closeButton.type = 'button';
+                    closeButton.className = 'btn-close';
+                    closeButton.setAttribute('data-bs-dismiss', 'alert');
+                    closeButton.style.position = 'absolute';
+                    closeButton.style.right = '10px';
+                    closeButton.style.top = '10px';
+                    closeButton.onclick = function() {
+                        errorContainer.remove();
+                    };
+                    
+                    errorContainer.appendChild(closeButton);
+                    document.body.appendChild(errorContainer);
+                }
+                
+                // Set error message with icon
+                errorContainer.innerHTML = `
+                    <div style="margin-bottom: 10px;">
+                        <i class="fas fa-exclamation-circle" style="font-size: 24px; color: #721c24; margin-bottom: 10px;"></i>
+                    </div>
+                    <div style="margin-bottom: 15px;">${xhr.responseJSON.detail}</div>
+                    <button type="button" class="btn-close" style="position: absolute; right: 10px; top: 10px;" onclick="this.parentElement.remove()"></button>
+                `;
+                
+                // Auto-hide after 5 seconds
+                setTimeout(() => {
+                    if (errorContainer && errorContainer.parentNode) {
+                        errorContainer.remove();
+                    }
+                }, 5000);
+            } else {
+                alert('Failed to create customer.');
+            }
         }
     });
 });
 
-
-// --- Event Listener for Interaction Button ---
-$('#createInteractionBtn').on('click', () => console.log('Create New Interaction clicked - Modal/Form logic needed'));
 
 
 document.addEventListener('DOMContentLoaded', () => {
-    renderSalesOverviewChart();
+    loadSalesOverviewChart();
     renderMonthlyOpportunitiesChart();
     renderWinLossRatioChart();
+    renderSalesPipelineChart();
 });
 
-const defaultOptions = {
-    responsive: true,
-    plugins: {
-        legend: {
-            labels: {
-                color: '#333',
-                font: {
-                    size: 14,
-                    family: "'Segoe UI', sans-serif",
-                }
-            }
-        },
-        tooltip: {
-            backgroundColor: 'rgba(0,0,0,0.7)',
-            titleFont: { size: 14 },
-            bodyFont: { size: 13 }
-        }
-    },
-    scales: {
-        y: {
-            beginAtZero: true,
-            ticks: { color: '#444' },
-            grid: { color: 'rgba(0,0,0,0.05)' }
-        },
-        x: {
-            ticks: { color: '#444' },
-            grid: { color: 'rgba(0,0,0,0.02)' }
-        }
-    }
-};
 
-function renderSalesOverviewChart() {
-    const ctx = document.getElementById('salesOverviewChart').getContext('2d');
-    new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
-            datasets: [{
-                label: 'Sales (USD)',
-                data: [4000, 6000, 5500, 7500, 8200],
-                backgroundColor: 'rgba(54, 162, 235, 0.7)',
-                borderRadius: 8,
-                barThickness: 40
-            }]
-        },
-        options: {
-            ...defaultOptions,
-            plugins: {
-                ...defaultOptions.plugins,
-                title: {
-                    display: true,
-                    text: 'Sales Overview',
-                    font: { size: 18 },
-                    color: '#222',
-                    padding: { bottom: 10 }
-                }
-            }
-        }
-    });
-}
-
-function renderMonthlyOpportunitiesChart() {
-    const ctx = document.getElementById('monthlyOpportunitiesChart').getContext('2d');
-    new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
-            datasets: [{
-                label: 'New Opportunities',
-                data: [10, 14, 8, 16, 12],
-                borderColor: 'rgba(255, 159, 64, 1)',
-                backgroundColor: 'rgba(255, 159, 64, 0.2)',
-                fill: true,
-                tension: 0.4,
-                pointRadius: 5,
-                pointBackgroundColor: '#fff',
-                pointBorderColor: 'rgba(255, 159, 64, 1)'
-            }]
-        },
-        options: {
-            ...defaultOptions,
-            plugins: {
-                ...defaultOptions.plugins,
-                title: {
-                    display: true,
-                    text: 'Monthly Opportunities',
-                    font: { size: 18 },
-                    color: '#222',
-                    padding: { bottom: 10 }
-                }
-            }
-        }
-    });
-}
-
-function renderWinLossRatioChart() {
-    const ctx = document.getElementById('winLossRatioChart').getContext('2d');
-    new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            labels: ['Won', 'Lost'],
-            datasets: [{
-                label: 'Ratio',
-                data: [18, 7],
-                backgroundColor: [
-                    'rgba(75, 192, 192, 0.7)',
-                    'rgba(255, 99, 132, 0.7)'
-                ],
-                borderColor: ['#4bc0c0', '#ff6384'],
-                borderWidth: 2
-            }]
-        },
-        options: {
-            plugins: {
-                legend: {
-                    position: 'bottom',
-                    labels: {
-                        color: '#444',
-                        font: { size: 14 }
-                    }
-                },
-                title: {
-                    display: true,
-                    text: 'Win/Loss Ratio',
-                    font: { size: 18 },
-                    color: '#222'
-                }
-            },
-            responsive: true,
-            cutout: '65%'
-        }
-    });
-}
-
-
+// Function to load the sales overview chart
 function logout() {
     console.log("Logging out..."); // Added for debugging
     // Clear local storage
@@ -756,51 +632,6 @@ function logout() {
 // Explicitly attach logout to the window object if it's called directly from HTML (like onclick="logout()")
 window.logout = logout;
 
-// Assuming you have a function or event listener for the form submission
-$('#addOpportunityForm').on('submit', function(e) {
-    e.preventDefault();
-    const token = localStorage.getItem('token');
-
-    // --- How you get customerId depends on your implementation ---
-    // Example: Get it from a hidden input in the modal form
-    const customerId = $('#opportunityCustomerId').val(); 
-    // Or from a data attribute on the modal itself
-    // const customerId = $('#addOpportunityModal').data('customer-id'); 
-    
-    // Ensure customerId is available
-    if (!customerId) {
-        showNotification('Error: Customer ID is missing.', 'error');
-        console.error("Customer ID not found for opportunity submission.");
-        return; 
-    }
-
-    const opportunityData = {
-        name: $('#opportunityName').val(),
-        stage: $('#opportunityStage').val(),
-        value: $('#opportunityValue').val(),
-        close_date: $('#opportunityCloseDate').val(),
-        customer_id: customerId // <-- Add the customer_id here
-    };
-
-    $.ajax({
-        url: `${apiConfig.apiUrl}/opportunities/`, // Adjust API endpoint if needed
-        method: 'POST',
-        headers: { 
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json' 
-        },
-        data: JSON.stringify(opportunityData),
-        success: function(response) {
-            showNotification('Opportunity added successfully!', 'success');
-            $('#addOpportunityModal').hide(); // Or your modal closing logic
-            loadOpportunities(); // Refresh the opportunities list
-        },
-        error: function(xhr) {
-            showNotification(xhr.responseJSON?.detail || 'Failed to add opportunity', 'error');
-        }
-    });
-});
-
 // You might also need to ensure the customer_id is set when the modal is opened
 // Example: When clicking an "Add Opportunity" button for a specific customer
 $(document).on('click', '.add-opportunity-btn', function() {
@@ -810,3 +641,661 @@ $(document).on('click', '.add-opportunity-btn', function() {
     // $('#addOpportunityModal').data('customer-id', customerId); 
     $('#addOpportunityModal').show(); // Show the modal
 });
+
+// Attach the event listener
+document.addEventListener("DOMContentLoaded", () => {
+    const btn = document.getElementById("addTaskBtn");
+    if (btn) {
+      btn.addEventListener("click", addTask);
+    }
+  });
+
+function addTask() {
+    const container = document.getElementById('taskList');
+    const task = document.createElement('div');
+    task.className = 'task-item';
+    task.innerHTML = `
+      <input type="checkbox" disabled>
+      <input type="text" name="tasks[]" placeholder="Enter task" required>
+    `;
+    container.appendChild(task);
+  }
+
+
+document.getElementById('interactionForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    const headers = getAuthHeaders();
+    if (!headers) return;
+
+    // Collect form data
+    const taskInputs = document.querySelectorAll('#taskList input[name="tasks[]"]');
+    const tasks = Array.from(taskInputs).map(input => input.value.trim()).filter(task => task !== '');
+
+    const formData = {
+        type: document.getElementById('interactType').value,
+        subject: document.getElementById('interactSubject').value,
+        description: document.getElementById('interactDescription').value,
+        notes: document.getElementById('interactNotes').value,
+        interaction_date: document.getElementById('interactDate').value,
+        follow_up_date: document.getElementById('interactFollowUpDate').value,
+        follow_up_status: document.getElementById('interactFollowUpStatus').value,
+        customer_id: document.getElementById('interactCustomer').value,
+        tasks: tasks 
+    };
+
+    $.ajax({
+        url: `${apiConfig.apiUrl}/interaction-create/`,
+        headers: headers,
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(formData),
+        success: function () {
+            $('#interactionModal').hide();
+            $('#interactionSuccessModal').show();
+            loadInteractions && loadInteractions(); // refresh list if applicable
+        },
+        error: function (xhr) {
+            console.error(xhr.responseText);
+            alert('Failed to create interaction.');
+        }
+    });
+});
+
+// charts for overview
+
+function loadSalesOverviewChart() {
+    const headers = getAuthHeaders();
+    if (!headers) return;
+
+    $.ajax({
+        url: `${apiConfig.apiUrl}/monthly-summary/`,
+        headers: headers,
+        method: 'GET',
+        success: function(summary) {
+            if (salesChartInstance) {
+                salesChartInstance.destroy();
+            }
+
+            const ctx = document.getElementById('salesOverviewChart').getContext('2d');
+            
+            // Shadcn UI inspired colors and styling
+            const chartColors = {
+                primary: 'hsl(221.2 83.2% 53.3%)',
+                secondary: 'hsl(346.8 77.2% 49.8%)',
+                muted: 'hsl(215.4 16.3% 46.9%)',
+                background: 'hsl(0 0% 100%)',
+                border: 'hsl(214.3 31.8% 91.4%)'
+            };
+
+            salesChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Monthly Performance'],
+                    datasets: [
+                        {
+                            label: 'Total Value ($)',
+                            data: [summary.monthly_value],
+                            backgroundColor: `${chartColors.primary}`, // Adding transparency
+                            borderColor: chartColors.primary,
+                            borderWidth: 2,
+                            borderRadius: 6,
+                            barThickness: 70
+                            
+                        },
+                        {
+                            label: 'Average Deal Size ($)',
+                            data: [summary.average_deal_size],
+                            backgroundColor: `${chartColors.secondary}`, // Adding transparency
+                            borderColor: chartColors.secondary,
+                            borderWidth: 2,
+                            borderRadius: 6,
+                            barThickness: 70
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Monthly Sales Performance',
+                            color: chartColors.muted,
+                            font: {
+                                size: 16,
+                                weight: '500',
+                                family: "'Inter', sans-serif"
+                            },
+                            padding: {
+                                top: 20,
+                                bottom: 20
+                            }
+                        },
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                usePointStyle: true,
+                                pointStyle: 'circle',
+                                padding: 20,
+                                color: chartColors.muted,
+                                font: {
+                                    family: "'Inter', sans-serif",
+                                    size: 12
+                                }
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: chartColors.background,
+                            titleColor: chartColors.muted,
+                            titleFont: {
+                                family: "'Inter', sans-serif",
+                                size: 13,
+                                weight: '500'
+                            },
+                            bodyColor: chartColors.muted,
+                            bodyFont: {
+                                family: "'Inter', sans-serif",
+                                size: 12
+                            },
+                            borderColor: chartColors.border,
+                            borderWidth: 1,
+                            padding: 12,
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    label += new Intl.NumberFormat('en-US', {
+                                        style: 'currency',
+                                        currency: 'USD'
+                                    }).format(context.raw);
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            border: {
+                                display: false
+                            },
+                            grid: {
+                                color: chartColors.border,
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: chartColors.muted,
+                                font: {
+                                    family: "'Inter', sans-serif",
+                                    size: 12
+                                },
+                                padding: 10,
+                                callback: function(value) {
+                                    return '$' + value.toLocaleString();
+                                }
+                            }
+                        },
+                        x: {
+                            border: {
+                                display: false
+                            },
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: chartColors.muted,
+                                font: {
+                                    family: "'Inter', sans-serif",
+                                    size: 12
+                                },
+                                padding: 10
+                            }
+                        }
+                    }
+                }
+            });
+
+            $('#monthlyDeals').text(summary.monthly_deals);
+        },
+        error: function(xhr) {
+            console.error('Error loading sales overview chart:', xhr.status, xhr.responseJSON?.detail);
+            if (xhr.status === 401 || xhr.status === 403) logout();
+        }
+    });
+}
+
+function renderMonthlyOpportunitiesChart() {
+    const headers = getAuthHeaders();
+    if (!headers) return;
+
+    $.ajax({
+        url: `${apiConfig.apiUrl}/monthly-opportunities/`,
+        headers: headers,
+        method: 'GET',
+        success: function(opportunities) {
+            // Process data for the chart
+            const dates = opportunities.map(opp => new Date(opp.created_at).toLocaleDateString());
+            const values = opportunities.map(opp => opp.deal_value);
+
+            // Shadcn UI inspired colors
+            const colors = {
+                primary: 'hsl(252 83.3% 14.1%)',
+                background: 'hsl(0 0% 100%)',
+                foreground: 'hsl(224 71.4% 4.1%)',
+                muted: 'hsl(215.4 16.3% 46.9%)',
+                border: 'hsl(214.3 31.8% 78.4%)',
+                accent: 'hsl(210 40% 96.1%)'
+            };
+
+            // Get the chart context
+            const ctx = document.getElementById('monthlyOpportunitiesChart').getContext('2d');
+            
+            // Create the line chart with shadcn styling
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: dates,
+                    datasets: [{
+                        label: 'Opportunity Value',
+                        data: values,
+                        borderColor: colors.primary,
+                        backgroundColor: `${colors.primary}`,
+                        borderWidth: 2,
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: colors.primary,
+                        pointBorderColor: colors.primary,
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Monthly Opportunities Timeline',
+                            color: colors.foreground,
+                            font: {
+                                size: 16,
+                                weight: '500',
+                                family: "'Inter', system-ui, sans-serif"
+                            },
+                            padding: {
+                                top: 20,
+                                bottom: 20
+                            }
+                        },
+                        legend: {
+                            position: 'top',
+                            align: 'start',
+                            labels: {
+                                usePointStyle: true,
+                                pointStyle: 'circle',
+                                padding: 20,
+                                color: colors.muted,
+                                font: {
+                                    family: "'Inter', system-ui, sans-serif",
+                                    size: 12
+                                }
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: colors.background,
+                            titleColor: colors.foreground,
+                            bodyColor: colors.muted,
+                            borderColor: colors.border,
+                            borderWidth: 1,
+                            padding: 12,
+                            bodyFont: {
+                                family: "'Inter', system-ui, sans-serif"
+                            },
+                            titleFont: {
+                                family: "'Inter', system-ui, sans-serif",
+                                weight: '500'
+                            },
+                            callbacks: {
+                                label: function(context) {
+                                    return new Intl.NumberFormat('en-US', {
+                                        style: 'currency',
+                                        currency: 'USD'
+                                    }).format(context.raw);
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                color: colors.border,
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: colors.muted,
+                                font: {
+                                    family: "'Inter', system-ui, sans-serif",
+                                    size: 12
+                                }
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            border: {
+                                display: false
+                            },
+                            grid: {
+                                color: colors.border,
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: colors.muted,
+                                font: {
+                                    family: "'Inter', system-ui, sans-serif",
+                                    size: 12
+                                },
+                                callback: function(value) {
+                                    return '$' + value.toLocaleString();
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        },
+        error: function(xhr) {
+            console.error('Error loading monthly opportunities:', xhr.status, xhr.responseJSON?.detail);
+            if (xhr.status === 401 || xhr.status === 403) logout();
+        }
+    });
+}
+
+function renderWinLossRatioChart() {
+    const headers = getAuthHeaders();
+    if (!headers) return;
+
+    $.ajax({
+        url: `${apiConfig.apiUrl}/win-loss/`,
+        headers: headers,
+        method: 'GET',
+        success: function(summary) {
+            const ctx = document.getElementById('winLossRatioChart').getContext('2d');
+            
+            // Shadcn UI inspired colors
+            const colors = {
+                primary: 'hsl(142.1 76.2% 36.3%)',     // Success green
+                danger: 'hsl(346.8 77.2% 49.8%)',      // Danger red
+                muted: 'hsl(215.4 16.3% 46.9%)',
+                border: 'hsl(214.3 31.8% 91.4%)',
+                background: 'hsl(0 0% 100%)'
+            };
+
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Won', 'Lost'],
+                    datasets: [{
+                        data: [
+                            summary.won_opportunities || 0,
+                            summary.lost_opportunities || 0
+                        ],
+                        backgroundColor: [
+                            colors.primary,
+                            colors.danger
+                        ],
+                        borderColor: colors.border,
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '75%',
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Win/Loss Ratio',
+                            color: colors.muted,
+                            font: {
+                                size: 16,
+                                weight: '500',
+                                family: "'Inter', sans-serif"
+                            },
+                            padding: {
+                                top: 20,
+                                bottom: 20
+                            }
+                        },
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                usePointStyle: true,
+                                pointStyle: 'circle',
+                                padding: 20,
+                                color: colors.muted,
+                                font: {
+                                    family: "'Inter', sans-serif",
+                                    size: 12
+                                }
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: colors.background,
+                            titleColor: colors.muted,
+                            bodyColor: colors.muted,
+                            borderColor: colors.border,
+                            borderWidth: 1,
+                            padding: 12,
+                            bodyFont: {
+                                family: "'Inter', sans-serif"
+                            },
+                            titleFont: {
+                                family: "'Inter', sans-serif",
+                                weight: '500'
+                            }
+                        }
+                    }
+                }
+            });
+        },
+        error: function(xhr) {
+            console.error('Error loading win/loss ratio:', xhr.status, xhr.responseJSON?.detail);
+            if (xhr.status === 401 || xhr.status === 403) logout();
+        }
+    });
+}
+
+function renderSalesPipelineChart() {
+    const headers = getAuthHeaders();
+    if (!headers) return;
+
+    $.ajax({
+        url: `${apiConfig.apiUrl}/pipeline-stages/`,
+        headers: headers,
+        method: 'GET',
+        success: function(pipelineData) {
+            const ctx = document.getElementById('salesPipelineChart').getContext('2d');
+            
+            // Shadcn UI inspired colors
+            const colors = {
+                primary: 'hsl(221.2 83.2% 53.3%)',     // Blue for count
+                secondary: 'hsl(346.8 77.2% 49.8%)',   // Pink for value
+                muted: 'hsl(215.4 16.3% 46.9%)',
+                border: 'hsl(214.3 31.8% 91.4%)',
+                background: 'hsl(0 0% 100%)'
+            };
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Lead', 'Prospect', 'Negotiation', 'Closed Won', 'Closed Lost'],
+                    datasets: [
+                        {
+                            label: 'Number of Opportunities',
+                            data: [
+                                pipelineData.lead_count || 0,
+                                pipelineData.prospect_count || 0,
+                                pipelineData.negotiation_count || 0,
+                                pipelineData.won_count || 0,
+                                pipelineData.lost_count || 0
+                            ],
+                            borderColor: colors.primary,
+                            backgroundColor: `${colors.primary}10`,
+                            borderWidth: 2,
+                            tension: 0.4,
+                            pointBackgroundColor: colors.background,
+                            pointBorderColor: colors.primary,
+                            pointBorderWidth: 2,
+                            pointRadius: 4,
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: 'Total Value ($)',
+                            data: [
+                                pipelineData.lead_value || 0,
+                                pipelineData.prospect_value || 0,
+                                pipelineData.negotiation_value || 0,
+                                pipelineData.won_value || 0,
+                                pipelineData.lost_value || 0
+                            ],
+                            borderColor: colors.secondary,
+                            backgroundColor: `${colors.secondary}10`,
+                            borderWidth: 2,
+                            tension: 0.4,
+                            pointBackgroundColor: colors.background,
+                            pointBorderColor: colors.secondary,
+                            pointBorderWidth: 2,
+                            pointRadius: 4,
+                            yAxisID: 'y1'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Sales Pipeline Distribution',
+                            color: colors.muted,
+                            font: {
+                                size: 16,
+                                weight: '500',
+                                family: "'Inter', sans-serif"
+                            },
+                            padding: {
+                                top: 20,
+                                bottom: 20
+                            }
+                        },
+                        legend: {
+                            position: 'top',
+                            align: 'start',
+                            labels: {
+                                usePointStyle: true,
+                                pointStyle: 'circle',
+                                padding: 20,
+                                color: colors.muted,
+                                font: {
+                                    family: "'Inter', sans-serif",
+                                    size: 12
+                                }
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: colors.background,
+                            titleColor: colors.muted,
+                            bodyColor: colors.muted,
+                            borderColor: colors.border,
+                            borderWidth: 1,
+                            padding: 12,
+                            callbacks: {
+                                label: function(context) {
+                                    if (context.datasetIndex === 0) {
+                                        return `Count: ${context.raw}`;
+                                    }
+                                    return `Value: $${context.raw.toLocaleString()}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                color: colors.border,
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: colors.muted,
+                                font: {
+                                    family: "'Inter', sans-serif",
+                                    size: 12
+                                }
+                            }
+                        },
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            title: {
+                                display: true,
+                                text: 'Number of Opportunities',
+                                color: colors.primary
+                            },
+                            grid: {
+                                color: colors.border,
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: colors.muted,
+                                font: {
+                                    family: "'Inter', sans-serif",
+                                    size: 12
+                                }
+                            }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            title: {
+                                display: true,
+                                text: 'Total Value ($)',
+                                color: colors.secondary
+                            },
+                            grid: {
+                                drawOnChartArea: false
+                            },
+                            ticks: {
+                                color: colors.muted,
+                                callback: function(value) {
+                                    return '$' + value.toLocaleString();
+                                },
+                                font: {
+                                    family: "'Inter', sans-serif",
+                                    size: 12
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        },
+        error: function(xhr) {
+            console.error('Error loading pipeline data:', xhr.status, xhr.responseJSON?.detail);
+            if (xhr.status === 401 || xhr.status === 403) logout();
+        }
+    });
+}

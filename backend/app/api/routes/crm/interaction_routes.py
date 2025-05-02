@@ -4,32 +4,11 @@ from datetime import datetime
 from typing import List
 from app.db.database import get_db
 from app.models import Interaction, Customer, User
-from app.schemas.interaction import InteractionCreate, InteractionUpdate, Interaction as InteractionSchema
+from app.schemas.interaction import InteractionCreate, InteractionUpdate, InteractionBase as InteractionSchema
 from app.api.routes.auth.user_check_routes import get_sales_rep  # Fixed import path
+from app.services.interaction_service import InteractionService
 
 router = APIRouter(prefix="/interactions", tags=["Interactions"])
-
-@router.post("/create/", response_model=InteractionSchema)
-async def create_interaction(
-    interaction: InteractionCreate,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_sales_rep)
-):
-    """Create a new interaction"""
-    # Verify customer exists
-    customer = db.query(Customer).filter(Customer.id == interaction.customer_id).first()
-    if not customer:
-        raise HTTPException(status_code=404, detail="Customer not found")
-    
-    # Check authorization
-    if current_user.role != "admin" and customer.assigned_to != current_user.id:
-        raise HTTPException(status_code=403, detail="Not authorized to create interaction for this customer")
-    
-    db_interaction = Interaction(**interaction.dict())
-    db.add(db_interaction)
-    db.commit()
-    db.refresh(db_interaction)
-    return db_interaction
 
 @router.get("/list/", response_model=List[InteractionSchema])
 async def get_interactions(

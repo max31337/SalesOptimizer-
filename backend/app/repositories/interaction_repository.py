@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
-from typing import List, Optional
+from typing import List, Optional 
+from datetime import datetime
 from app.models import Interaction
 from app.schemas.interaction import InteractionCreate, InteractionUpdate
 
@@ -17,13 +18,6 @@ class InteractionRepository:
 
     def get_by_customer(self, customer_id: int) -> List[Interaction]:
         return self.db.query(Interaction).filter(Interaction.customer_id == customer_id).all()
-
-    def create(self, interaction_data: dict) -> Interaction:
-        interaction = Interaction(**interaction_data)
-        self.db.add(interaction)
-        self.db.commit()
-        self.db.refresh(interaction)
-        return interaction
 
     def update(self, interaction: Interaction, interaction_data: InteractionUpdate) -> Interaction:
         for key, value in interaction_data.model_dump(exclude_unset=True).items():

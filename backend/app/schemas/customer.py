@@ -14,6 +14,7 @@ class CustomerBase(BaseModel):
     notes: Optional[str] = None
     annual_revenue: Optional[int] = Field(None, ge=0)
     employee_count: Optional[int] = Field(None, ge=0)
+    is_active: Optional[bool] = True  # Add this field to match the model's default
 
 class CustomerCreate(CustomerBase):
     assigned_to: Optional[int] = None
@@ -25,7 +26,8 @@ class CustomerUpdate(CustomerBase):
     is_active: Optional[bool] = None
     assigned_to: Optional[int] = None
 
-class Customer(CustomerBase):
+# schemas/customer.py
+class CustomerSchema(CustomerBase):
     id: int
     created_at: datetime
     updated_at: datetime
