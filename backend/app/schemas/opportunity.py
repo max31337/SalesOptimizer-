@@ -25,13 +25,6 @@ class OpportunityUpdate(OpportunityBase):
     expected_close_date: Optional[datetime] = None
     customer_id: Optional[int] = None
 
-class OpportunityStage(str, Enum):
-    LEAD = "lead"
-    PROSPECT = "prospect"
-    NEGOTIATION = "negotiation"
-    CLOSED_WON = "closed_won"
-    CLOSED_LOST = "closed_lost"
-
 class Opportunity(OpportunityBase):
     id: int
     sales_rep_id: int

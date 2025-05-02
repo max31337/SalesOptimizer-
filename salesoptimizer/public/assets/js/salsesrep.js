@@ -396,98 +396,114 @@ function viewInteraction(id) { console.log(`View Interaction ${id}`); }
 function editInteraction(id) { console.log(`Edit Interaction ${id}`); }
 function deleteInteraction(id) { console.log(`Delete Interaction ${id}`); /* Add confirmation */ }
 
-// --- Opportunity Modal Logic ---
+document.getElementById('createOpportunityBtn').addEventListener('click', function() {
+    openOpportunityModal();
+});
+document.getElementById('newCustomerBtn').addEventListener('click', function() {
+    openCustomerModal();
+});
 
-// Show Modal
-$('#createOpportunityBtn').on('click', () => {
-    console.log('Create New Opportunity clicked - showing modal');
-    // Reset form fields and messages
+// Show the modal
+function openOpportunityModal() {
+    $('#opportunityModal').show();
+    fetchCustomersForOpportunity();
+}
+
+function openCustomerModal() {
+    $('#customerModal').show();
+}
+
+// Function to close the modal
+function closeOpportunityModal() {
+    $('#opportunityModal').hide();
     $('#opportunityForm')[0].reset();
-    $('#opportunityError').hide().text('');
-    $('#opportunitySuccess').hide().text('');
-    $('#submitOpportunityBtn').prop('disabled', false).find('span').text('Create'); // Reset button state
-    // Show the modal
-    $('#opportunityModalDiv').fadeIn(); // Use fadeIn or show()
-});
+}
 
-// Hide Modal on Cancel
-$('#cancelOpportunityBtn').on('click', () => {
-    $('#opportunityModalDiv').fadeOut(); // Use fadeOut or hide()
-});
+function closeCustomerModal() {
+    $('#customerModal').hide();
+    $('#customerModal')[0].reset();
+}
+window.closeOpportunityModal = closeOpportunityModal;
+window.closeCustomerModal = closeCustomerModal;
 
-// Hide Modal on clicking outside (optional, but good UX)
-$('#opportunityModalDiv').on('click', function(event) {
-    // Check if the click is directly on the modal background (not the content)
-    if (event.target === this) {
-        $(this).fadeOut();
-    }
-});
 
-// Handle Form Submission
-$('#opportunityForm').on('submit', function(event) {
-    event.preventDefault(); // Prevent default form submission
-    console.log('Opportunity form submitted');
-
-    const $submitButton = $('#submitOpportunityBtn');
-    const $errorP = $('#opportunityError');
-    const $successP = $('#opportunitySuccess');
-
-    // Basic Loading State
-    $submitButton.prop('disabled', true).find('span').text('Creating...');
-    $errorP.hide().text('');
-    $successP.hide().text('');
-
-    const token = localStorage.getItem('token'); // Use 'token', not 'accessToken' based on verifyLocalStorage
-    if (!token) {
-        $errorP.text('Authentication error. Please log in again.').show();
-        $submitButton.prop('disabled', false).find('span').text('Create');
-        return;
-    }
-
-    // Gather form data
-    const formData = {
-        title: $('#opp-title').val(),
-        customer_id: parseInt($('#opp-customer-id').val(), 10), // Ensure it's a number
-        deal_value: parseFloat($('#opp-value').val()), // Ensure it's a number
-        stage: $('#opp-stage').val(),
-        expected_close_date: $('#opp-close-date').val()
-    };
-
-    // Basic Validation (jQuery doesn't handle 'required' automatically like Alpine)
-    if (!formData.title || !formData.customer_id || isNaN(formData.customer_id) || !formData.deal_value || isNaN(formData.deal_value) || !formData.stage || !formData.expected_close_date) {
-        $errorP.text('Please fill in all required fields correctly.').show();
-        $submitButton.prop('disabled', false).find('span').text('Create');
-        return;
-    }
-
-    // AJAX Request
-    $.ajax({
-        url: `${apiConfig.apiUrl}/crm/opportunities/`, // Adjusted endpoint based on loadOpportunities
-        method: 'POST',
-        contentType: 'application/json',
-        headers: {
-            'Authorization': `Bearer ${token}`
-        },
-        data: JSON.stringify(formData),
-        success: (response) => {
-            $successP.text('Opportunity created successfully!').show();
-            console.log('Opportunity created:', response);
-            loadOpportunities(); // Refresh the opportunities table
-            setTimeout(() => { // Close modal after a delay
-                $('#opportunityModalDiv').fadeOut();
-                $submitButton.prop('disabled', false).find('span').text('Create'); // Reset button fully on success close
-            }, 1500);
-        },
-        error: (jqXHR, textStatus, errorThrown) => {
-            console.error('Error creating opportunity:', textStatus, errorThrown, jqXHR.responseText);
-            const errorMsg = jqXHR.responseJSON?.detail || errorThrown || 'Unknown error';
-            $errorP.text(`Failed to create opportunity: ${errorMsg}`).show();
-            $submitButton.prop('disabled', false).find('span').text('Create'); // Re-enable button on error
+// Event listeners for closing the modal
+$(document).ready(function() {
+    // Close when clicking outside the modal-content
+    $('#opportunityModal').on('click', function(event) {
+        if ($(event.target).is('#opportunityModal')) {
+            closeOpportunityModal();
         }
-        // No 'complete' needed as we handle button state in success/error
+    });
+});
+$(document).ready(function() {
+    // Close when clicking outside the modal-content
+    $('#customerModal').on('click', function(event) {
+        if ($(event.target).is('#customerModal')) {
+            closeCustomerModal();
+        }
     });
 });
 
+// Fetch customers and populate dropdown
+function fetchCustomersForOpportunity() {
+    const customerSelect = document.getElementById('oppCustomer');
+    customerSelect.innerHTML = '<option value="">Loading...</option>';
+    // Use the API config and auth headers for consistency
+    const headers = getAuthHeaders();
+    if (!headers) {
+        customerSelect.innerHTML = '<option value="">Error loading customers</option>';
+        return;
+    }
+    $.ajax({
+        url: `${apiConfig.apiUrl}/crm/customers/list/`,
+        headers: headers,
+        method: 'GET',
+        success: function(data) {
+            customerSelect.innerHTML = '';
+            if (data && data.length > 0) {
+                data.forEach(function(customer) {
+                    customerSelect.innerHTML += `<option value="${customer.id}">${customer.name} (ID: ${customer.id})</option>`;
+                });
+            } else {
+                customerSelect.innerHTML = '<option value="">No customers found</option>';
+            }
+        },
+        error: function() {
+            customerSelect.innerHTML = '<option value="">Error loading customers</option>';
+        }
+    });
+}
+
+// Handle form submission
+document.getElementById('opportunityForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const headers = getAuthHeaders();
+    if (!headers) return;
+    const formData = {
+        title: document.getElementById('oppTitle').value,
+        deal_value: parseFloat(document.getElementById('oppDealValue').value),
+        currency: document.getElementById('oppCurrency').value,
+        stage: document.getElementById('oppStage').value,
+        probability: parseFloat(document.getElementById('oppProbability').value) / 100, // Convert percent to 0-1
+        expected_close_date: document.getElementById('oppExpectedClose').value,
+        customer_id: parseInt(document.getElementById('oppCustomer').value)
+    };
+    $.ajax({
+        url: `${apiConfig.apiUrl}/crm/opportunities/create/`,
+        headers: headers,
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(formData),
+        success: function() {
+            closeOpportunityModal();
+            loadOpportunities && loadOpportunities();
+        },
+        error: function() {
+            alert('Failed to create opportunity.');
+        }
+    });
+});
 
 // --- Customer Modal Logic ---
 
@@ -739,3 +755,58 @@ function logout() {
 
 // Explicitly attach logout to the window object if it's called directly from HTML (like onclick="logout()")
 window.logout = logout;
+
+// Assuming you have a function or event listener for the form submission
+$('#addOpportunityForm').on('submit', function(e) {
+    e.preventDefault();
+    const token = localStorage.getItem('token');
+
+    // --- How you get customerId depends on your implementation ---
+    // Example: Get it from a hidden input in the modal form
+    const customerId = $('#opportunityCustomerId').val(); 
+    // Or from a data attribute on the modal itself
+    // const customerId = $('#addOpportunityModal').data('customer-id'); 
+    
+    // Ensure customerId is available
+    if (!customerId) {
+        showNotification('Error: Customer ID is missing.', 'error');
+        console.error("Customer ID not found for opportunity submission.");
+        return; 
+    }
+
+    const opportunityData = {
+        name: $('#opportunityName').val(),
+        stage: $('#opportunityStage').val(),
+        value: $('#opportunityValue').val(),
+        close_date: $('#opportunityCloseDate').val(),
+        customer_id: customerId // <-- Add the customer_id here
+    };
+
+    $.ajax({
+        url: `${apiConfig.apiUrl}/opportunities/`, // Adjust API endpoint if needed
+        method: 'POST',
+        headers: { 
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json' 
+        },
+        data: JSON.stringify(opportunityData),
+        success: function(response) {
+            showNotification('Opportunity added successfully!', 'success');
+            $('#addOpportunityModal').hide(); // Or your modal closing logic
+            loadOpportunities(); // Refresh the opportunities list
+        },
+        error: function(xhr) {
+            showNotification(xhr.responseJSON?.detail || 'Failed to add opportunity', 'error');
+        }
+    });
+});
+
+// You might also need to ensure the customer_id is set when the modal is opened
+// Example: When clicking an "Add Opportunity" button for a specific customer
+$(document).on('click', '.add-opportunity-btn', function() {
+    const customerId = $(this).data('customer-id'); // Get customer ID from button's data attribute
+    $('#opportunityCustomerId').val(customerId); // Set it in the hidden input
+    // Or set it on the modal data attribute
+    // $('#addOpportunityModal').data('customer-id', customerId); 
+    $('#addOpportunityModal').show(); // Show the modal
+});

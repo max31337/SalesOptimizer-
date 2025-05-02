@@ -23,8 +23,10 @@ class CustomerRepository:
             )
         ).offset(skip).limit(limit).all()
 
-    def create(self, customer_data: CustomerCreate) -> Customer:
-        customer = Customer(**customer_data.dict())
+    def create(self, customer_data: CustomerCreate, assigned_to: int) -> Customer:
+        customer_dict = customer_data.dict()
+        customer_dict['assigned_to'] = assigned_to
+        customer = Customer(**customer_dict)
         self.db.add(customer)
         self.db.commit()
         self.db.refresh(customer)
