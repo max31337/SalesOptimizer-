@@ -8,10 +8,13 @@ from app.schemas.interaction import InteractionBase, InteractionCreate, Interact
 from app.schemas.opportunity import OpportunityCreate, OpportunityUpdate
 from app.schemas.customer import CustomerCreate, CustomerUpdate
 from fastapi import HTTPException
-
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
 class SalesRepRepository:
-    def __init__(self, db: Session):
+    def __init__(self, db):
+        # Accept either Session or AsyncSession
         self.db = db
+        self.is_async = isinstance(db, AsyncSession)
 
     def get(self, id: int) -> Optional[User]:
         return self.db.query(User).filter(User.id == id).first()
@@ -237,3 +240,14 @@ class SalesRepRepository:
         self.db.commit()
         self.db.refresh(interaction)
         return interaction
+
+    async def get_opportunities_for_training(self) -> List[Opportunity]:
+            """Asynchronous fetch of opportunities for training."""
+            if self.is_async:
+                # If using AsyncSession
+                result = await self.db.execute(select(Opportunity).filter(Opportunity.closed_date.isnot(None)))
+                opportunities = result.scalars().all()  # No await needed here
+                return opportunities
+            else:
+                # If using synchronous Session
+                return self.db.query(Opportunity).filter(Opportunity.closed_date.isnot(None)).all()

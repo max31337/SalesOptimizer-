@@ -40,3 +40,7 @@ class OpportunityService:
         if not opportunity:
             raise NotFoundError("Opportunity", id)
         return self.repository.update_stage(opportunity, stage)
+
+    async def create(self, opportunity_data: OpportunityCreate) -> Opportunity:
+        opportunity = self.repository.create(opportunity_data)
+        return self.repository.update(opportunity, update_data)
